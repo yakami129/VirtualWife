@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-position: top center;
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+@layer components {
+  .input-range {
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: #858585;
+    height: 2px;
+    width: 100%;
+    border-radius: 4px;
+  }
+  .input-range:focus,
+  .input-range:active {
+    outline: none;
+  }
+  .input-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    display: block;
+    border: 2px solid #856292;
+    background-color: #ffffff;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+  }
+}
+
+@layer utilities {
+  .scroll-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scroll-hidden::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "chat-vrm",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next export",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@charcoal-ui/icons": "^2.6.0",
+    "@tailwindcss/line-clamp": "^0.4.4",
+    "@types/dom-speech-recognition": "^0.0.1",
+    "eslint": "8.36.0",
+    "eslint-config-next": "13.2.4",
+    "next": "13.2.4",
+    "node-fetch": "^3.3.1",
+    "openai": "^3.2.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "three": "^0.149.0",
+    "typescript": "5.0.2"
+  },
+  "devDependencies": {
+    "@charcoal-ui/tailwind-config": "^2.6.0",
+    "@gltf-transform/core": "^2.4.6",
+    "@pixiv/three-vrm": "^1.0.9",
+    "@types/node": "18.15.10",
+    "@types/react": "18.0.29",
+    "@types/react-dom": "18.0.11",
+    "@types/three": "0.149.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.3.1"
+  },
+  "engines": {
+    "node": "16.14.2"
+  }
+}
