@@ -4,3 +4,4 @@ python-dotenv==1.0.0
 langchain==0.0.176
 Django==4.2.1
 djangorestframework
+django-cors-headers

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+     'corsheaders',
     'rest_framework',
     'app'
 ]
@@ -49,7 +50,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True # 允许所有来源
+CORS_ALLOW_HEADERS = ['*'] # 允许所有请求头
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE'] # 允许的请求方法
 
 ROOT_URLCONF = 'VirtualWife.urls'
 
