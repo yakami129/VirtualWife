@@ -84,3 +84,31 @@ export async function getChatResponseStream(
 
   return stream;
 }
+
+
+export async function chat(
+  message: string
+) {
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json"
+  };
+
+  const res = await fetch("http://127.0.0.1:8000/app/chat", {
+    headers: headers,
+    method: "POST",
+    body: JSON.stringify({
+      query: message
+    }),
+  });
+
+  const chatRes = (await res.json()) as any;
+  console.log(chatRes);
+  if (chatRes.code !== '200') {
+    throw new Error("Something went wrong");
+  }
+
+  return chatRes.response;
+}
+
+

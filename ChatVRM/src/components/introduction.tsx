@@ -6,7 +6,7 @@ type Props = {
   onChangeAiKey: (openAiKey: string) => void;
 };
 export const Introduction = ({ openAiKey, onChangeAiKey }: Props) => {
-  const [opened, setOpened] = useState(true);
+  const [opened, setOpened] = useState(false);
 
   const handleAiKeyChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {

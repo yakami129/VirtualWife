@@ -51,7 +51,7 @@ export const Settings = ({
       <div className="max-h-full overflow-auto">
         <div className="text-text1 max-w-3xl mx-auto px-24 py-64 ">
           <div className="my-24 typography-32 font-bold">设定</div>
-          <div className="my-24">
+          {/* <div className="my-24">
             <div className="my-16 typography-20 font-bold">OpenAI API 配置</div>
             <input
               className="text-ellipsis px-16 py-8 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
@@ -70,7 +70,7 @@ export const Settings = ({
               <br />
               ※API键和对话文不被发送到pixsib的服务器。
             </div>
-          </div>
+          </div> */}
           <div className="my-40">
             <div className="my-16 typography-20 font-bold">
               角色模型
@@ -79,7 +79,7 @@ export const Settings = ({
               <TextButton onClick={onClickOpenVrmFile}>打开VRM</TextButton>
             </div>
           </div>
-          <div className="my-40">
+          {/* <div className="my-40">
             <div className="my-8">
               <div className="my-16 typography-20 font-bold">
                 角色设定(系统提示)
@@ -94,7 +94,7 @@ export const Settings = ({
               onChange={onChangeSystemPrompt}
               className="px-16 py-8  bg-surface1 hover:bg-surface1-hover h-168 rounded-8 w-full"
             ></textarea>
-          </div>
+          </div> */}
           <div className="my-40">
             <div className="my-16 typography-20 font-bold">声音调整</div>
             <div>

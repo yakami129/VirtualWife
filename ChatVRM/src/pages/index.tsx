@@ -10,7 +10,7 @@ import { speakCharacter } from "@/features/messages/speakCharacter";
 import { MessageInputContainer } from "@/components/messageInputContainer";
 import { SYSTEM_PROMPT } from "@/features/constants/systemPromptConstants";
 import { KoeiroParam, DEFAULT_PARAM } from "@/features/constants/koeiroParam";
-import { getChatResponseStream } from "@/features/chat/openAiChat";
+import { chat, getChatResponseStream } from "@/features/chat/openAiChat";
 import { M_PLUS_2, Montserrat } from "next/font/google";
 import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
@@ -89,10 +89,10 @@ export default function Home() {
    */
   const handleSendChat = useCallback(
     async (text: string) => {
-      if (!openAiKey) {
-        setAssistantMessage("APIキーが入力されていません");
-        return;
-      }
+      // if (!openAiKey) {
+      //   setAssistantMessage("APIキーが入力されていません");
+      //   return;
+      // }
 
       const newMessage = text;
 
@@ -115,28 +115,36 @@ export default function Home() {
         ...messageLog,
       ];
 
-      const stream = await getChatResponseStream(messages, openAiKey).catch(
+      // const stream = await getChatResponseStream(messages, openAiKey).catch(
+      //   (e) => {
+      //     console.error(e);
+      //     return null;
+      //   }
+      // );
+      // if (stream == null) {
+      //   setChatProcessing(false);
+      //   return;
+      // }
+
+      // const reader = stream.getReader();
+      // let receivedMessage = "";
+      let aiTextLog = "";
+      let tag = "";
+      const sentences = new Array<string>();
+
+      let receivedMessage = await chat(newMessage).catch(
         (e) => {
           console.error(e);
           return null;
         }
       );
-      if (stream == null) {
-        setChatProcessing(false);
-        return;
-      }
 
-      const reader = stream.getReader();
-      let receivedMessage = "";
-      let aiTextLog = "";
-      let tag = "";
-      const sentences = new Array<string>();
       try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+        // while (true) {
+        //   const { done, value } = await reader.read();
+        //   if (done) break;
 
-          receivedMessage += value;
+          // receivedMessage += value;
 
           // 返答内容のタグ部分の検出
           const tagMatch = receivedMessage.match(/^\[(.*?)\]/);
@@ -163,7 +171,7 @@ export default function Home() {
                 ""
               )
             ) {
-              continue;
+              // continue;
             }
 
             const aiText = `${tag} ${sentence}`;
@@ -176,12 +184,12 @@ export default function Home() {
               setAssistantMessage(currentAssistantMessage);
             });
           }
-        }
+        // }
       } catch (e) {
         setChatProcessing(false);
         console.error(e);
       } finally {
-        reader.releaseLock();
+        // reader.releaseLock();
       }
 
       // アシスタントの返答をログに追加
