@@ -3,7 +3,7 @@ import { buildUrl } from "@/utils/buildUrl";
 export const GitHubLink = () => {
   return (
     <div className="absolute right-0 z-10 m-24">
-      <a
+      {/* <a
         draggable={false}
         href="https://github.com/pixiv/ChatVRM"
         rel="noopener noreferrer"
@@ -18,7 +18,7 @@ export const GitHubLink = () => {
           ></img>
           <div className="mx-4 text-white font-M_PLUS_2 font-bold">Fork me</div>
         </div>
-      </a>
+      </a> */}
     </div>
   );
 };

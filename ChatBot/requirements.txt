@@ -3,5 +3,7 @@ openai==0.27.6
 python-dotenv==1.0.0
 langchain==0.0.176
 Django==4.2.1
+aiohttp==3.8.3
+Brotli==1.0.9
 djangorestframework
 django-cors-headers

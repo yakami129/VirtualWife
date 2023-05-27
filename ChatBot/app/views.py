@@ -2,7 +2,7 @@ from django.shortcuts import render
 import json
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .core.cat_lady_chat_robot import CatLady
+from .core.enice_chat_robot import Enice
 from .translation.translation_client import TranslationClient
 
 
@@ -17,7 +17,7 @@ def chat(request):
     data = json.loads(request.body.decode('utf-8'))
     chat = None
     try:
-        chat = CatLady.chat(query=data["query"])
+        chat = Enice.chat(query=data["query"])
     except Exception as e:
         print("chat error: %s" % str(e))
         chat = '发生系统错误，请稍后重试'
