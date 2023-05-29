@@ -26,7 +26,6 @@ export const MessageInputContainer = ({
     (event: SpeechRecognitionEvent) => {
       const text = event.results[0][0].transcript;
       setUserMessage(text);
-
       // 発言の終了時
       if (event.results[0].isFinal) {
         setUserMessage(text);

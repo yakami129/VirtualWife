@@ -48,9 +48,9 @@ export const MessageInput = ({
             />
           </div>
         </div>
-        <div className="py-4 bg-[#413D43] text-center text-white font-Montserrat">
+        {/* <div className="py-4 bg-[#413D43] text-center text-white font-Montserrat">
           powered by VRoid, Koeiro API, ChatGPT API
-        </div>
+        </div> */}
       </div>
     </div>
   );

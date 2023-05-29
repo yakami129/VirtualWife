@@ -1,12 +1,13 @@
 from django.shortcuts import render
+import asyncio
 import json
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .core.enice_chat_robot import Enice
 from .translation.translation_client import TranslationClient
+import logging
+logging.basicConfig(level=logging.INFO)
 
-
-# Create your views here.
 @api_view(['POST'])
 def chat(request):
     '''

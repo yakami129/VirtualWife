@@ -7,3 +7,6 @@ aiohttp==3.8.3
 Brotli==1.0.9
 djangorestframework
 django-cors-headers
+channels
+daphne
+
