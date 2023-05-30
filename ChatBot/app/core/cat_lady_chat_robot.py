@@ -13,9 +13,9 @@ from langchain.memory import ConversationBufferMemory
 load_dotenv()  # 读取 .env 文件
 
 
-message_format = '[{neutral|happy|angry|sad|relaxed}]{会話文}'
+message_format = '[{neutral|happy|angry|sad|relaxed}]{爱莉发言}'
 sentiment_analysis_prompt = SystemMessagePromptTemplate.from_template(
-    template="感情的种类有表示正常的“neutral”，表示高兴的“happy”，表示愤怒的“angry”，表示悲伤的“sad”，表示平静的“relaxed”5种，会话文的格式如下所示：{message_format}你发言的例子如下。[neutral]你好。[happy]你好吗?[happy]这件衣服很可爱吧?[happy]最近，我迷上了这家店的衣服![sad]忘记了，对不起。[sad]最近有什么有趣的事情吗?[angry]啊!保密太过分了![neutral]暑假的安排。[happy]去海边玩吧!，请回答一句最恰当的对话。"
+    template="表达情感的规则如下:```感情的种类有表示正常的“neutral”，表示高兴的“happy”，表示愤怒的“angry”，表示悲伤的“sad”，表示平静的“relaxed”5种，爱莉发言的格式如下所示：{message_format}爱莉发言的例子如下。[neutral]你好。[happy]你好吗?[happy]这件衣服很可爱吧?[happy]最近，我迷上了这家店的衣服![sad]忘记了，对不起。[sad]最近有什么有趣的事情吗?[angry]啊!保密太过分了![neutral]暑假的安排。[happy]去海边玩吧!，```"
 )
 sentiment_analysis_prompt = sentiment_analysis_prompt.format(message_format=message_format)
 

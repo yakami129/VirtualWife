@@ -3,7 +3,7 @@ import asyncio
 import json
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .core.enice_chat_robot import Enice
+from .core.aili_anchor_chat_robot import Aili
 from .translation.translation_client import TranslationClient
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +18,7 @@ def chat(request):
     data = json.loads(request.body.decode('utf-8'))
     chat = None
     try:
-        chat = Enice.chat(query=data["query"])
+        chat = Aili.chat(query=data["query"])
     except Exception as e:
         print("chat error: %s" % str(e))
         chat = '发生系统错误，请稍后重试'

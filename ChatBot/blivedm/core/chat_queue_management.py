@@ -33,7 +33,6 @@ def send_message():
     channel_layer = get_channel_layer()
     send_message_exe = async_to_sync(channel_layer.group_send)
     while True:
-         # 演示5秒后停止
         message = chat_queue.get();
         if(message != None):
             chat_message = {"type":"chat_message","message":message}
