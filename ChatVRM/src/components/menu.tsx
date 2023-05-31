@@ -90,7 +90,7 @@ export const Menu = ({
   return (
     <>
       <div className="absolute z-10 m-24">
-        {/* <div className="grid grid-flow-col gap-[8px]">
+        <div className="grid grid-flow-col gap-[8px]">
           <IconButton
             iconName="24/Menu"
             label="设置"
@@ -113,7 +113,7 @@ export const Menu = ({
               onClick={() => setShowChatLog(true)}
             />
           )}
-        </div> */}
+        </div>
       </div>
       {showChatLog && <ChatLog messages={chatLog} />}
       {showSettings && (
