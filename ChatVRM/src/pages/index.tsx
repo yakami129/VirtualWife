@@ -104,7 +104,6 @@ export default function Home() {
   
       const newMessage = text;
   
-      console.log('run sendChatExc '+newMessage);
       if (newMessage == null) return;
   
       setChatProcessing(true);
@@ -113,7 +112,6 @@ export default function Home() {
         ...chatLog,
         { role: "user", content: newMessage },
       ];
-      console.log('user:'+JSON.stringify(messageLog));
       setChatLog(messageLog);
   
       // Chat GPTへ
@@ -148,6 +146,7 @@ export default function Home() {
           return null;
         }
       );
+      //let receivedMessage = '哇塞！看见你这么努力，真的想把你的智商放到我的钱包里，让它感受到一下世界的危险。'
   
       try {
         // while (true) {

@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'channels',
     'app',
-    'blivedm'
+    'blivedm',
+    'tts',
+    'utils'
 ]
 
 MIDDLEWARE = [

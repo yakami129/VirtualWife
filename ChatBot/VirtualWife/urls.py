@@ -19,5 +19,6 @@ from django.urls import path, include, re_path
 
 urlpatterns = [
      path("app/", include("app.urls")),
-     path("blivedm/", include("blivedm.urls"))
+     path("blivedm/", include("blivedm.urls")),
+     path("tts/", include("tts.urls"))
 ]

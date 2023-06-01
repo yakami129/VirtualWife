@@ -3,6 +3,8 @@ import { synthesizeVoice } from "../koeiromap/koeiromap";
 import { Viewer } from "../vrmViewer/viewer";
 import { Screenplay } from "./messages";
 import { Talk } from "./messages";
+import axios from 'axios';
+
 
 const createSpeakCharacter = () => {
   let lastTime = 0;
@@ -43,19 +45,35 @@ const createSpeakCharacter = () => {
 export const speakCharacter = createSpeakCharacter();
 
 export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
-  const ttsVoice = await synthesizeVoice(
-    talk.message,
-    talk.speakerX,
-    talk.speakerY,
-    talk.style
-  );
-  const url = ttsVoice.audio;
+  // const ttsVoice = await synthesizeVoice(
+  //   talk.message,
+  //   talk.speakerX,
+  //   talk.speakerY,
+  //   talk.style
+  // );
+  // const url = ttsVoice.audio;
+  // if (url == null) {
+  //   throw new Error("Something went wrong");
+  // }
 
-  if (url == null) {
-    throw new Error("Something went wrong");
+  // const resAudio = await fetch(url);
+  // const buffer = await resAudio.arrayBuffer();
+  // return buffer;
+
+  const requestBody = {
+    text: talk.message,
+    voice: "xiaoyi",
+  };
+
+  try {
+    const response = await axios.post('http://127.0.0.1:8000/tts/generateAudio', requestBody, {
+      responseType: 'arraybuffer',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error('Failed to fetch audio');
   }
-
-  const resAudio = await fetch(url);
-  const buffer = await resAudio.arrayBuffer();
-  return buffer;
 };
