@@ -4,7 +4,7 @@ import asyncio
 from dotenv import load_dotenv
 from .handlers import BaseHandler
 from .client import BLiveClient
-from .models import (HeartbeatMessage,DanmakuMessage,GiftMessage,GuardBuyMessage,SuperChatMessage)
+from .models import (HeartbeatMessage,DanmakuMessage,GiftMessage,GuardBuyMessage,SuperChatMessage,LikeInfoV3ClickMessage)
 from django.core.management.base import BaseCommand
 from django.apps import AppConfig
 from .chat_queue_management import put_chat_message
@@ -66,15 +66,22 @@ async def stop():
 class BiliHandler(BaseHandler):
 
     async def _on_heartbeat(self, client: BLiveClient, message: HeartbeatMessage):
-        print(f'[{client.room_id}] 当前人气值：{message.popularity}')
-
-    async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
+        cmd_str  = f'爱莉现在的人气为:{message.popularity}，请使用生动形象开玩笑的方式形容一下你的直播间人气'
         message_body = {
-            "user_name":message.uname,
-            "content":message.msg
+            "type":"system",
+            "content":'',
+            'cmd': cmd_str
         }
         put_chat_message(message_body)
-        print(f'[{client.room_id}] {message.uname}：{message.msg}')
+
+    async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
+        message_str  = f'{message.uname}说：{message.msg}'
+        message_body = {
+            "type":"user",
+            "user_name":message.uname,
+            "content":message_str
+        }
+        put_chat_message(message_body)
 
     async def _on_gift(self, client: BLiveClient, message: GiftMessage):
         print(f'[{client.room_id}] {message.uname} 赠送{message.gift_name}x{message.num}'
@@ -85,4 +92,28 @@ class BiliHandler(BaseHandler):
 
     async def _on_super_chat(self, client: BLiveClient, message: SuperChatMessage):
         print(f'[{client.room_id}] 醒目留言 ¥{message.price} {message.uname}：{message.message}')
+
+    async def _on_like_click(self, client: BLiveClient, message: LikeInfoV3ClickMessage):
+        cmd_str  = f'{message.uname}摸了摸爱莉的头，请使用生动形象开玩笑的方式回绝'
+        message_str  = f'{message.uname}摸了摸爱莉的头'
+        message_body = {
+            "type":"system",
+            "user_name":message.uname,
+            "content":message_str,
+            'cmd': cmd_str
+        }
+        put_chat_message(message_body)
+
+    async def _on_welcome(self, client: BLiveClient, message):
+        message_str  = f'{message.uname}进入了直播间：{message.msg}'
+        message_body = {
+            "user_name":message.uname,
+            "content":message_str
+        }
+        put_chat_message(message.msg)
+        
+    async def __room_real_time_message_update(self, client: BLiveClient, message):
+        """
+        粉丝变化
+        """
 

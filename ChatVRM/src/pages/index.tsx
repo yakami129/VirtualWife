@@ -106,6 +106,8 @@ export default function Home() {
   
       if (newMessage == null) return;
   
+      const oldMessage = text;
+
       setChatProcessing(true);
       // ユーザーの発言を追加して表示
       const messageLog: Message[] = [
@@ -147,7 +149,8 @@ export default function Home() {
         }
       );
       //let receivedMessage = '哇塞！看见你这么努力，真的想把你的智商放到我的钱包里，让它感受到一下世界的危险。'
-  
+      receivedMessage = oldMessage + "。" + receivedMessage;
+
       try {
         // while (true) {
         //   const { done, value } = await reader.read();

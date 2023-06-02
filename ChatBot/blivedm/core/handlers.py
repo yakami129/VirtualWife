@@ -32,7 +32,6 @@ IGNORED_CMDS = (
     'PK_BATTLE_SETTLE_USER',
     'PK_BATTLE_SETTLE_V2',
     'PREPARING',
-    'ROOM_REAL_TIME_MESSAGE_UPDATE',
     'STOP_LIVE_ROOM_LIST',
     'SUPER_CHAT_MESSAGE_JPN',
     'WIDGET_BANNER',
@@ -74,6 +73,15 @@ class BaseHandler(HandlerInterface):
 
     def __super_chat_message_delete_callback(self, client: client_.BLiveClient, command: dict):
         return self._on_super_chat_delete(client, models.SuperChatDeleteMessage.from_command(command['data']))
+    
+    def __like_info_v3_click_callback(self, client: client_.BLiveClient, command: dict):
+        return self._on_like_click(client, models.LikeInfoV3ClickMessage.from_command(command['data']))
+    
+    def __welcome_callback(self, client: client_.BLiveClient, command: dict):
+        return command['data'];
+
+    def __room_real_time_message_update_callback(self, client: client_.BLiveClient, command: dict):
+        return command['data'];
 
     _CMD_CALLBACK_DICT: Dict[
         str,
@@ -95,6 +103,14 @@ class BaseHandler(HandlerInterface):
         'SUPER_CHAT_MESSAGE': __super_chat_message_callback,
         # 删除醒目留言
         'SUPER_CHAT_MESSAGE_DELETE': __super_chat_message_delete_callback,
+         # 删除醒目留言
+        'LIKE_INFO_V3_CLICK': __like_info_v3_click_callback,
+         # 欢迎加入房间
+        'WELCOME': __welcome_callback,
+         # 欢迎舰长进入房间
+        'ENTRY_EFFECT': __welcome_callback,
+         # 关注数变化
+        'ROOM_REAL_TIME_MESSAGE_UPDATE': __room_real_time_message_update_callback
     }
     """cmd -> 处理回调"""
     # 忽略其他常见cmd
@@ -147,4 +163,19 @@ class BaseHandler(HandlerInterface):
     async def _on_super_chat_delete(self, client: client_.BLiveClient, message: models.SuperChatDeleteMessage):
         """
         删除醒目留言
+        """
+
+    async def _on_like_click(self, client: client_.BLiveClient, message: models.LikeInfoV3ClickMessage):
+        """
+        给主播点赞了
+        """
+
+    async def _on_welcome(self, client: client_.BLiveClient, message):
+        """
+        xx进入房间
+        """
+        
+    async def __room_real_time_message_update(self, client: client_.BLiveClient, message):
+        """
+        粉丝变化
         """

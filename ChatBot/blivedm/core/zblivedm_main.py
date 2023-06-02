@@ -1,5 +1,6 @@
 
 import asyncio
+import logging
 from .bili_handle import start,stop
 from .chat_queue_management import start_chat_queue_handle
 import threading
@@ -12,10 +13,10 @@ def start_handle():
     background_thread.daemon = True
     # 启动后台线程
     background_thread.start()
-    print("[BIZ] start blivedm_handel....")
+    logging.debug("[BIZ] start blivedm_handel....")
 
     start_chat_queue_handle();
-    print("[BIZ] chat_queue_handle")
+    logging.debug("[BIZ] chat_queue_handle")
 
 def run_start():
     # 在新的事件循环中运行异步函数

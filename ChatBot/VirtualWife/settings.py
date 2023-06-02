@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from blivedm.core.zblivedm_main import start_handle
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -144,3 +145,5 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
 }
+
+start_handle()

@@ -381,3 +381,24 @@ class SuperChatDeleteMessage:
         return cls(
             ids=data['ids'],
         )
+
+
+@dataclasses.dataclass
+class LikeInfoV3ClickMessage:
+    """
+    为主播点赞
+    """
+    """用户唯一标识"""
+    uid: int = None
+    """like的内容"""
+    message: str = None
+    """用户名"""
+    uname: str = None
+
+    @classmethod
+    def from_command(cls, data: dict):
+        return cls(
+            uid=data['uid'],
+            message=data['like_text'],
+            uname=data['uname'],
+        )

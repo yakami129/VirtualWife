@@ -98,7 +98,7 @@ class BLiveClient:
         room_id,
         uid=0,
         session: Optional[aiohttp.ClientSession] = None,
-        heartbeat_interval=30,
+        heartbeat_interval=60,
         ssl: Union[bool, ssl_.SSLContext] = True,
     ):
         self._tmp_room_id = room_id
