@@ -14,4 +14,5 @@ djangorestframework
 django-cors-headers
 channels
 daphne
+schedule
 

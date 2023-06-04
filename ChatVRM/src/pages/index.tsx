@@ -96,17 +96,16 @@ export default function Home() {
    * アシスタントとの会話を行う
    */
   const handleSendChat = useCallback(
-    async (text: string) => {
+    async (text: string,cmd: string) => {
       // if (!openAiKey) {
       //   setAssistantMessage("APIキーが入力されていません");
       //   return;
       // }
   
       const newMessage = text;
+      const oldMessage = text;
   
       if (newMessage == null) return;
-  
-      const oldMessage = text;
 
       setChatProcessing(true);
       // ユーザーの発言を追加して表示
@@ -141,13 +140,26 @@ export default function Home() {
       let aiTextLog = "";
       let tag = "";
       const sentences = new Array<string>();
-  
-      let receivedMessage = await chat(newMessage).catch(
-        (e) => {
-          console.error(e);
-          return null;
-        }
-      );
+
+      let receivedMessage = "";
+      if(cmd != '' && cmd != null){
+         receivedMessage = await chat(cmd).catch(
+          (e) => {
+            console.error(e);
+            return null;
+          }
+        );
+        console.log("cmd:"+cmd)
+      }else{
+        receivedMessage = await chat(newMessage).catch(
+          (e) => {
+            console.error(e);
+            return null;
+          }
+        );
+        console.log("message:"+newMessage)
+      }
+     
       //let receivedMessage = '哇塞！看见你这么努力，真的想把你的智商放到我的钱包里，让它感受到一下世界的危险。'
       receivedMessage = oldMessage + "。" + receivedMessage;
 
@@ -222,7 +234,7 @@ export default function Home() {
           const data = event.data;
           var dataJson = JSON.parse(data);
           console.log('Received WebSocket data:', dataJson);
-          handleSendChat(dataJson.message.content).catch(e => {
+          handleSendChat(dataJson.message.content,dataJson.message.cmd).catch(e => {
             console.log(e);
           });
         };

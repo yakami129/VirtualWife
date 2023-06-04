@@ -4,7 +4,7 @@ import asyncio
 from dotenv import load_dotenv
 from .handlers import BaseHandler
 from .client import BLiveClient
-from .models import (HeartbeatMessage,DanmakuMessage,GiftMessage,GuardBuyMessage,SuperChatMessage,LikeInfoV3ClickMessage)
+from .models import (HeartbeatMessage,DanmakuMessage,GiftMessage,GuardBuyMessage,SuperChatMessage,LikeInfoV3ClickMessage,EntryEffectMessage,InteractWordMessage)
 from django.core.management.base import BaseCommand
 from django.apps import AppConfig
 from .chat_queue_management import put_chat_message
@@ -66,13 +66,13 @@ async def stop():
 class BiliHandler(BaseHandler):
 
     async def _on_heartbeat(self, client: BLiveClient, message: HeartbeatMessage):
-        cmd_str  = f'爱莉现在的人气为:{message.popularity}，请使用生动形象开玩笑的方式形容一下你的直播间人气'
+        cmd_str  = f'爱莉现在的人气为:{message.popularity}，请使用生动形象开玩笑的方式形容一下你的直播间人气或者讲讲最近发生的一些趣事，语言尽量简短一些，每次都需要使用不同的方式形容'
         message_body = {
             "type":"system",
             "content":'',
             'cmd': cmd_str
         }
-        put_chat_message(message_body)
+        # put_chat_message(message_body)
 
     async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
         message_str  = f'{message.uname}说：{message.msg}'
@@ -84,11 +84,22 @@ class BiliHandler(BaseHandler):
         put_chat_message(message_body)
 
     async def _on_gift(self, client: BLiveClient, message: GiftMessage):
-        print(f'[{client.room_id}] {message.uname} 赠送{message.gift_name}x{message.num}'
-              f' （{message.coin_type}瓜子x{message.total_coin}）')
+        cmd_str  = f'{message.uname}赠送{message.gift_name}x{message.num}'
+        message_body = {
+            "type":"system",
+            "content":'',
+            'cmd': cmd_str
+        }
+        put_chat_message(message_body)
 
     async def _on_buy_guard(self, client: BLiveClient, message: GuardBuyMessage):
-        print(f'[{client.room_id}] {message.username} 购买{message.gift_name}')
+        cmd_str  = f'{message.username}购买{message.gift_name}'
+        message_body = {
+            "type":"system",
+            "content":'',
+            'cmd': cmd_str
+        }
+        put_chat_message(message_body)
 
     async def _on_super_chat(self, client: BLiveClient, message: SuperChatMessage):
         print(f'[{client.room_id}] 醒目留言 ¥{message.price} {message.uname}：{message.message}')
@@ -104,16 +115,23 @@ class BiliHandler(BaseHandler):
         }
         put_chat_message(message_body)
 
-    async def _on_welcome(self, client: BLiveClient, message):
-        message_str  = f'{message.uname}进入了直播间：{message.msg}'
+    async def _on_entry_effect(self, client: BLiveClient, message: EntryEffectMessage):
         message_body = {
-            "user_name":message.uname,
-            "content":message_str
+            "type":"system",
+            "content":message.copy_writing
         }
-        put_chat_message(message.msg)
+        #put_chat_message(message_body)
         
-    async def __room_real_time_message_update(self, client: BLiveClient, message):
+    async def _on_interact_word(self, client: BLiveClient, message: InteractWordMessage):
         """
-        粉丝变化
+        用户进入直播间，用户关注直播间
         """
+        message_str  = f'{message.uname}进入了直播间'
+        cmd_str  = message_str + '请使用生动形象开玩笑的方式欢迎，语言尽量简短一些'
+        message_body = {
+            "type":"system",
+            "content": message_str,
+            'cmd': cmd_str
+        }
+        put_chat_message(message_body)
 

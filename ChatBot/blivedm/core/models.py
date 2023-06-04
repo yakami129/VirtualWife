@@ -402,3 +402,40 @@ class LikeInfoV3ClickMessage:
             message=data['like_text'],
             uname=data['uname'],
         )
+    
+@dataclasses.dataclass
+class EntryEffectMessage:
+    """
+    舰长进入直播间
+    """
+     
+    """用户唯一标识"""
+    uid: int = None
+    """舰长信息"""
+    copy_writing: str = None
+
+    @classmethod
+    def from_command(cls, data: dict):
+        return cls(
+            uid=data['uid'],
+            copy_writing=data['copy_writing']
+        )
+    
+@dataclasses.dataclass
+class InteractWordMessage:
+
+    """
+    用户进入直播间，用户关注直播间
+    """
+     
+    """用户唯一标识"""
+    uid: int = None
+    """用户名称"""
+    uname: str = None
+
+    @classmethod
+    def from_command(cls, data: dict):
+        return cls(
+            uid=data['uid'],
+            uname=data['uname']
+        )

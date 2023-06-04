@@ -14,10 +14,8 @@ logger = logging.getLogger('blivedm')
 
 IGNORED_CMDS = (
     'COMBO_SEND',
-    'ENTRY_EFFECT',
     'HOT_RANK_CHANGED',
     'HOT_RANK_CHANGED_V2',
-    'INTERACT_WORD',
     'LIVE',
     'LIVE_INTERACTIVE_GAME',
     'NOTICE_MSG',
@@ -34,7 +32,7 @@ IGNORED_CMDS = (
     'PREPARING',
     'STOP_LIVE_ROOM_LIST',
     'SUPER_CHAT_MESSAGE_JPN',
-    'WIDGET_BANNER',
+    'WIDGET_BANNER'
 )
 """常见可忽略的cmd"""
 
@@ -78,10 +76,13 @@ class BaseHandler(HandlerInterface):
         return self._on_like_click(client, models.LikeInfoV3ClickMessage.from_command(command['data']))
     
     def __welcome_callback(self, client: client_.BLiveClient, command: dict):
-        return command['data'];
+        return self._on_welcome(client, models.LikeInfoV3ClickMessage.from_command(command['data']))
+    
+    def __entry_effect_callback(self, client: client_.BLiveClient, command: dict):
+        return self._on_entry_effect(client, models.EntryEffectMessage.from_command(command['data']))
 
-    def __room_real_time_message_update_callback(self, client: client_.BLiveClient, command: dict):
-        return command['data'];
+    def __interact_word_callback(self, client: client_.BLiveClient, command: dict):
+        return self._on_interact_word(client, models.InteractWordMessage.from_command(command['data']))
 
     _CMD_CALLBACK_DICT: Dict[
         str,
@@ -107,10 +108,10 @@ class BaseHandler(HandlerInterface):
         'LIKE_INFO_V3_CLICK': __like_info_v3_click_callback,
          # 欢迎加入房间
         'WELCOME': __welcome_callback,
-         # 欢迎舰长进入房间
-        'ENTRY_EFFECT': __welcome_callback,
-         # 关注数变化
-        'ROOM_REAL_TIME_MESSAGE_UPDATE': __room_real_time_message_update_callback
+         # 舰长、高能榜、老爷进入直播间
+        'ENTRY_EFFECT': __entry_effect_callback,
+         # 用户进入直播间，用户关注直播间
+        'INTERACT_WORD': __interact_word_callback,
     }
     """cmd -> 处理回调"""
     # 忽略其他常见cmd
@@ -174,8 +175,13 @@ class BaseHandler(HandlerInterface):
         """
         xx进入房间
         """
-        
-    async def __room_real_time_message_update(self, client: client_.BLiveClient, message):
+
+    async def _on_entry_effect(self, client: client_.BLiveClient, message: models.EntryEffectMessage):
         """
-        粉丝变化
+        舰长进入房间
+        """
+
+    async def _on_interact_word(self, client: client_.BLiveClient, message: models.InteractWordMessage):
+        """
+        用户进入直播间，用户关注直播间
         """

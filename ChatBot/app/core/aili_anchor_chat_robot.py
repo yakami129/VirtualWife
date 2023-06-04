@@ -7,7 +7,8 @@ from langchain.prompts import(
 )
 from langchain.chains import ConversationChain
 from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationSummaryMemory,ChatMessageHistory
+from langchain.llms import OpenAI
 
 ## 初始化操作
 load_dotenv()  # 读取 .env 文件
@@ -34,8 +35,14 @@ prompt = ChatPromptTemplate.from_messages([
 
  ## 初始化聊天模型、添加聊天记忆
 llm = ChatOpenAI(temperature=1.0,model_name="gpt-3.5-turbo")
-memory = ConversationBufferMemory(return_messages=True)
-conversation = ConversationChain(memory=memory,prompt=prompt,llm=llm)
+
+
+history = ChatMessageHistory()
+memory = ConversationSummaryMemory.from_messages(llm=OpenAI(temperature=0), chat_memory=history, return_messages=True)
+conversation = ConversationChain(
+    memory=memory,
+    prompt=prompt,
+    llm=llm)
 
 class Aili:
     
