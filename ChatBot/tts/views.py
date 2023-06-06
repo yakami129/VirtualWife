@@ -18,16 +18,22 @@ def generateAudio(request):
     data = json.loads(request.body.decode('utf-8'))
     text = data["text"]
     voice = data["voice"]
-    file_name = createAudio(text, voice)
-    pwdPath = os.getcwd()
-    file_path = pwdPath + "/tmp/" + file_name
 
-    # 设置HTTP响应头部
-    # 打开音频文件进行流式传输
-    audio_file = open(file_path, 'rb')
+    try:
+          file_name = createAudio(text, voice)
+          pwdPath = os.getcwd()
+          file_path = pwdPath + "/tmp/" + file_name
 
-    # 使用FileResponse进行流式传输
-    response = FileResponse(audio_file, content_type='audio/mpeg')
-    response['Content-Disposition'] = 'attachment; filename="audio.mp3"'
+          # 设置HTTP响应头部
+          # 打开音频文件进行流式传输
+          audio_file = open(file_path, 'rb')
 
-    return response
+          # 使用FileResponse进行流式传输
+          response = FileResponse(audio_file, content_type='audio/mpeg')
+          response['Content-Disposition'] = 'attachment; filename="audio.mp3"'
+          return response
+    except Exception as e:
+        print("generateAudio error: %s" % str(e))
+        raise RuntimeWarning("生成语音失败")
+   
+  

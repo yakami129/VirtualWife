@@ -7,7 +7,7 @@ from .client import BLiveClient
 from .models import (HeartbeatMessage,DanmakuMessage,GiftMessage,GuardBuyMessage,SuperChatMessage,LikeInfoV3ClickMessage,EntryEffectMessage,InteractWordMessage)
 from django.core.management.base import BaseCommand
 from django.apps import AppConfig
-from .chat_queue_management import put_chat_message
+from .chat_priority_queue_management import put_chat_message
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -24,6 +24,20 @@ TEST_ROOM_IDS = [
 
 client = None;
 enable = False;
+
+'''消息优先级'''
+# 舰长弹幕消息
+CAPTAIN_BARRAGE_MESSAGE = 1
+# 活跃用户消息
+ACTIVE_USER_BARRAGE_MESSAGE = 2
+# 触摸头消息
+TOUCH_THE_HEAD_MESSAGE = 3
+# 进入房间消息
+ENTER_THE_ROOM_MESSAGE = 4
+# 送礼物消息
+SEND_GIFTS_MESSAGE = 5
+# 默认消息
+DEFAULT_MESSAGE = 10
 
 async def start():
     """
@@ -81,7 +95,7 @@ class BiliHandler(BaseHandler):
             "user_name":message.uname,
             "content":message_str
         }
-        put_chat_message(message_body)
+        put_chat_message(CAPTAIN_BARRAGE_MESSAGE,message_body)
 
     async def _on_gift(self, client: BLiveClient, message: GiftMessage):
         cmd_str  = f'{message.uname}赠送{message.gift_name}x{message.num}'
@@ -90,7 +104,7 @@ class BiliHandler(BaseHandler):
             "content":'',
             'cmd': cmd_str
         }
-        put_chat_message(message_body)
+        #put_chat_message(message_body)
 
     async def _on_buy_guard(self, client: BLiveClient, message: GuardBuyMessage):
         cmd_str  = f'{message.username}购买{message.gift_name}'
@@ -99,7 +113,7 @@ class BiliHandler(BaseHandler):
             "content":'',
             'cmd': cmd_str
         }
-        put_chat_message(message_body)
+        put_chat_message(SEND_GIFTS_MESSAGE,message_body)
 
     async def _on_super_chat(self, client: BLiveClient, message: SuperChatMessage):
         print(f'[{client.room_id}] 醒目留言 ¥{message.price} {message.uname}：{message.message}')
@@ -113,7 +127,7 @@ class BiliHandler(BaseHandler):
             "content":message_str,
             'cmd': cmd_str
         }
-        put_chat_message(message_body)
+        put_chat_message(TOUCH_THE_HEAD_MESSAGE,message_body)
 
     async def _on_entry_effect(self, client: BLiveClient, message: EntryEffectMessage):
         message_body = {
@@ -133,5 +147,5 @@ class BiliHandler(BaseHandler):
             "content": message_str,
             'cmd': cmd_str
         }
-        put_chat_message(message_body)
+        put_chat_message(ENTER_THE_ROOM_MESSAGE,message_body)
 

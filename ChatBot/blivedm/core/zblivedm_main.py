@@ -2,7 +2,7 @@
 import asyncio
 import logging
 from .bili_handle import start,stop
-from .chat_queue_management import start_chat_queue_handle
+from .chat_priority_queue_management import start_chat_queue_handle
 import threading
 
 def start_handle():
