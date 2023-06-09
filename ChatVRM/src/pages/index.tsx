@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import VrmViewer from "@/components/vrmViewer";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
 import {
@@ -12,6 +12,7 @@ import { SYSTEM_PROMPT } from "@/features/constants/systemPromptConstants";
 import { KoeiroParam, DEFAULT_PARAM } from "@/features/constants/koeiroParam";
 import { chat, getChatResponseStream } from "@/features/chat/openAiChat";
 import { connect } from "@/features/blivedm/blivedm";
+import { chatPriorityQueue } from "@/features/queue/ChatPriorityQueue";
 import { M_PLUS_2, Montserrat } from "next/font/google";
 import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
@@ -44,7 +45,6 @@ export default function Home() {
   const [chatProcessing, setChatProcessing] = useState(false);
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [assistantMessage, setAssistantMessage] = useState("");
-  
 
   useEffect(() => {
     if (window.localStorage.getItem("chatVRMParams")) {
@@ -104,6 +104,8 @@ export default function Home() {
   
       const newMessage = text;
       const oldMessage = text;
+
+      console.log('bbx:'+newMessage)
   
       if (newMessage == null) return;
 
@@ -227,18 +229,29 @@ export default function Home() {
     [systemPrompt, chatLog, setChatLog, handleSpeakAi, openAiKey, koeiroParam]
   );
 
+
   useEffect(() => {
+
     if (!bind_message_event) {
+
       socket.then(webSocket => {
         webSocket.onmessage = (event) => {
           const data = event.data;
-          var dataJson = JSON.parse(data);
-          console.log('Received WebSocket data:', dataJson);
-          handleSendChat(dataJson.message.content,dataJson.message.cmd).catch(e => {
-            console.log(e);
-          });
+          var chatMessage = JSON.parse(data);
+          chatPriorityQueue.queue({ message: chatMessage.message, priority: chatMessage.priority});
+          console.log('Received WebSocket data:', chatMessage);
         };
       })
+     
+      setInterval(() => {
+          if (chatPriorityQueue.length > 0) {
+              const chatMessage = chatPriorityQueue.dequeue();
+              handleSendChat(chatMessage.message.content,chatMessage.message.cmd).catch(e => {
+                console.log(e);
+              });
+              console.log('run handleSendChat chatMessage:',chatMessage);
+          }
+      }, 1000);
       bind_message_event = true;
     }
   }, [handleSendChat]);

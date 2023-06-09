@@ -90,7 +90,8 @@ class BiliHandler(BaseHandler):
 
     async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
         message_str  = f'{message.msg}'
-        cmd_str  = f'{message.uname}说：{message.msg}'
+        #cmd_str  = f'{message.uname}说：{message.msg}'
+        cmd_str  = f'{message.msg}'
         message_body = {
             "type":"user",
             "user_name":message.uname,
@@ -121,8 +122,8 @@ class BiliHandler(BaseHandler):
         print(f'[{client.room_id}] 醒目留言 ¥{message.price} {message.uname}：{message.message}')
 
     async def _on_like_click(self, client: BLiveClient, message: LikeInfoV3ClickMessage):
-        cmd_str  = f'{message.uname}摸了摸爱莉的头'
-        message_str  = f'{message.uname}摸了摸爱莉的头'
+        cmd_str  = f'{message.uname}偷偷摸了摸爱莉的头，请开玩笑的方式回绝'
+        message_str  = f'{message.uname}偷偷摸了摸爱莉的头'
         message_body = {
             "type":"system",
             "user_name":message.uname,
@@ -143,7 +144,7 @@ class BiliHandler(BaseHandler):
         用户进入直播间，用户关注直播间
         """
         message_str  = f'{message.uname}进入了直播间'
-        cmd_str  = message_str + '请使用开玩笑的方式欢迎，语言尽量简短一些'
+        cmd_str  = message_str + '，请表示欢迎'
         message_body = {
             "type":"system",
             "content": message_str,
