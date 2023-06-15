@@ -7,8 +7,3 @@ interface ChatMessage {
 }
 
 export const chatPriorityQueue = new PriorityQueue<ChatMessage>({ comparator: (a, b) => a.priority - b.priority });
-
-export function addNewItem(item: ChatMessage) {
-    chatPriorityQueue.queue(item);
-}
-

@@ -90,8 +90,7 @@ class BiliHandler(BaseHandler):
 
     async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
         message_str  = f'{message.msg}'
-        #cmd_str  = f'{message.uname}说：{message.msg}'
-        cmd_str  = f'{message.msg}'
+        cmd_str  = f'[{message.uname}说]：{message.msg}'
         message_body = {
             "type":"user",
             "user_name":message.uname,
@@ -107,7 +106,8 @@ class BiliHandler(BaseHandler):
             "content":'',
             'cmd': cmd_str
         }
-        put_chat_message(message_body)
+        put_chat_message(CAPTAIN_BARRAGE_MESSAGE,message_body)
+
 
     async def _on_buy_guard(self, client: BLiveClient, message: GuardBuyMessage):
         cmd_str  = f'{message.username}购买{message.gift_name}'
@@ -144,7 +144,7 @@ class BiliHandler(BaseHandler):
         用户进入直播间，用户关注直播间
         """
         message_str  = f'{message.uname}进入了直播间'
-        cmd_str  = message_str + '，请表示欢迎'
+        cmd_str  = message_str + '，请表示热情的欢迎'
         message_body = {
             "type":"system",
             "content": message_str,
