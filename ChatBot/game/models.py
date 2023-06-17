@@ -7,7 +7,8 @@ from django.db import models
 class Riddle(models.Model):
     riddle_answer = models.CharField('谜语答案',max_length=30)
     riddle_type = models.CharField('谜语类型',max_length=30)
-    riddle_description = models.CharField('谜语描述',max_length=30)
+    riddle_count = models.IntegerField('谜语字数',default=0)
+    riddle_description = models.CharField('谜语描述',max_length=300)
     riddle_image_id = models.CharField('谜语图片id',default="",max_length=100)
 
 ''' 比赛实体 '''
