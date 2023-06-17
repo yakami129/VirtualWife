@@ -13,6 +13,7 @@ import { KoeiroParam, DEFAULT_PARAM } from "@/features/constants/koeiroParam";
 import { chat, getChatResponseStream } from "@/features/chat/openAiChat";
 import { connect } from "@/features/blivedm/blivedm";
 import { chatPriorityQueue } from "@/features/queue/ChatPriorityQueue";
+import { PhotoFrame } from '@/features/game/photoFrame';
 import { M_PLUS_2, Montserrat } from "next/font/google";
 import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
@@ -45,6 +46,8 @@ export default function Home() {
   const [chatProcessing, setChatProcessing] = useState(false);
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [assistantMessage, setAssistantMessage] = useState("");
+  const [imageUrl, setImageUrl] = useState('');
+
 
   useEffect(() => {
     if (window.localStorage.getItem("chatVRMParams")) {
@@ -105,8 +108,6 @@ export default function Home() {
       const newMessage = text;
       const oldMessage = text;
 
-      console.log('bbx:'+newMessage)
-  
       if (newMessage == null) return;
 
       setChatProcessing(true);
@@ -145,7 +146,13 @@ export default function Home() {
 
       let receivedMessage = "";
 
-      if(type === 'game'){
+      if(type === 'image'){
+
+        let imageUrl = "http://localhost:8000/game/image/"+cmd+"/";
+        setImageUrl(imageUrl);
+
+      }else if(type === 'game'){
+
 
       }else{
         if(cmd != '' && cmd != null){
@@ -233,7 +240,7 @@ export default function Home() {
       setChatLog(messageLogAssistant);
       setChatProcessing(false);
     },
-    [systemPrompt, chatLog, setChatLog, handleSpeakAi, openAiKey, koeiroParam]
+    [systemPrompt, chatLog, setChatLog, handleSpeakAi,setImageUrl, openAiKey, koeiroParam]
   );
 
 
@@ -268,6 +275,9 @@ export default function Home() {
     <div className={`${m_plus_2.variable} ${montserrat.variable}`}>
       <Meta />
       <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey} />
+      <div className="photo-app">
+        <PhotoFrame imageUrl={imageUrl} />
+      </div>
       <VrmViewer />
       <MessageInputContainer
         isChatProcessing={chatProcessing}

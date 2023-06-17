@@ -4,36 +4,36 @@ import json
 import logging
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from tts.tts_core import createAudio
-from django.http import HttpResponse, FileResponse
+from tts.tts_core import create_audio
+from django.http import HttpResponse, FileResponse, StreamingHttpResponse
 logging.basicConfig(level=logging.INFO)
 
 @api_view(['POST'])
-def generateAudio(request):
-    '''
-      合成语音
-    :param request:
-    :return:
-    '''
-    data = json.loads(request.body.decode('utf-8'))
-    text = data["text"]
-    voice = data["voice"]
-
+def generate_audio(request):
+    """
+    Generate audio from text.
+    """
     try:
-          file_name = createAudio(text, voice)
-          pwdPath = os.getcwd()
-          file_path = pwdPath + "/tmp/" + file_name
+        data = json.loads(request.body.decode('utf-8'))
+        text = data["text"]
+        voice = data["voice"]
 
-          # 设置HTTP响应头部
-          # 打开音频文件进行流式传输
-          audio_file = open(file_path, 'rb')
+        file_name = create_audio(text, voice)
+        pwd_path = os.getcwd()
+        file_path = os.path.join(pwd_path, "tmp", file_name)
 
-          # 使用FileResponse进行流式传输
-          response = FileResponse(audio_file, content_type='audio/mpeg')
-          response['Content-Disposition'] = 'attachment; filename="audio.mp3"'
-          return response
+        # Open the audio file in binary mode.
+        audio_file = open(file_path, 'rb')
+
+        # Use FileResponse to stream the file.
+        response = StreamingHttpResponse(audio_file, content_type='audio/mpeg')
+        response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+
+        # Attach a callback to close the file when the response is finished.
+        response.closed = audio_file.close
+        return response
     except Exception as e:
-        print("generateAudio error: %s" % str(e))
-        raise RuntimeWarning("生成语音失败")
+        print(f"generate_audio error: {e}")
+        return HttpResponse(status=500, content="Failed to generate audio.")
    
   

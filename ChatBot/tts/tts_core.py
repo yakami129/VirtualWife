@@ -31,7 +31,7 @@ def remove_html(string):
     regex = re.compile(r'<[^>]+>')
     return regex.sub('', string)
 
-def createAudio(text, voiceId):
+def create_audio(text, voiceId):
     new_text = remove_html(text)
     print(f"Text without html tags: {new_text}")
     voice = getVoiceById(voiceId)

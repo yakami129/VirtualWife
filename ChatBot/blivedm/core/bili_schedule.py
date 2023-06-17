@@ -3,7 +3,7 @@ import threading
 from .chat_priority_queue_management import *
 
 def job():
-     cmd_str  = '爱莉现在的人气比较低'
+     cmd_str  = '爱莉现在正在直播你画我猜游戏，请活跃一下气氛'
      message_body = {
         "type":"system",
         "content":'',

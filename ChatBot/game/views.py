@@ -1,3 +1,5 @@
+import os
+from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 import json
 from rest_framework.decorators import api_view
@@ -35,5 +37,21 @@ def start_game(request):
     '''
     start_competition()
     return Response({"response": '开始游戏', "code": "200"})
+
+
+@swagger_auto_schema(method='GET')
+@api_view(['GET'])
+def serve_image(request, image_name):
+    '''
+      获取图片
+    '''
+    try:
+        pwd_path = os.getcwd()
+        file_path = os.path.join(pwd_path, "game_image", image_name)
+        with open(file_path, "rb") as f:
+            image_data = f.read()  # 读取图片文件中的数据
+        return HttpResponse(image_data, content_type='image/png')  # 返回HttpResponse而不是FileResponse
+    except FileNotFoundError:
+        return HttpResponseNotFound("Image not found")
 
 

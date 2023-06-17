@@ -33,13 +33,13 @@ def start_competition():
     current_competition_id = db_competition["id"]
     current_competition_turn = 1
 
-    # content =  f'开始新一轮你画我猜游戏了，嘻嘻~，小伙伴们你们准备好了吗？'
-    # message_body = {
-    #     "type":"game",
-    #     "content": content,
-    #     "cmd" : ''
-    # }
-    # put_chat_message(MessagePriority.GAME_MESSAGE,message_body)
+    cmd =  f'开始新一轮你画我猜游戏了，请你活跃一下气氛'
+    message_body = {
+        "type":"system",
+        "content": '',
+        "cmd" : cmd
+    }
+    put_chat_message(MessagePriority.GAME_MESSAGE,message_body)
     logging.info('[BIZ]开始新一轮的你画我猜游戏')
 
     # 2.开始下一个答题
@@ -154,9 +154,10 @@ def next_riddle():
     current_riddle_description = riddle.riddle_description
 
     # 2. 发送消息给前端渲染新的谜题
-    cmd_str =  {"imageId":riddle.riddle_image_id}
+    cmd_str = riddle.riddle_image_id
     message_body = {
-        "type":"game",
+        "type":"image",
+        "content":"",
         'cmd': cmd_str
     }
     put_chat_message(MessagePriority.GAME_MESSAGE,message_body)
