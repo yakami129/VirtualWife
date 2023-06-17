@@ -13,7 +13,7 @@ competition_record_request_body = openapi.Schema(
 
 class CompetitionRecordDTO:
     
-    def __init__(self,id, competition_id, participant_name, score):
+    def __init__(self,id=None, competition_id=None, participant_name=None, score=None):
         self.id = id
         self.competition_id = competition_id
         self.participant_name = participant_name

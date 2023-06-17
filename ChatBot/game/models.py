@@ -8,6 +8,7 @@ class Riddle(models.Model):
     riddle_answer = models.CharField('谜语答案',max_length=30)
     riddle_type = models.CharField('谜语类型',max_length=30)
     riddle_description = models.CharField('谜语描述',max_length=30)
+    riddle_image_id = models.CharField('谜语图片id',default="",max_length=100)
 
 ''' 比赛实体 '''
 class Competition(models.Model):
@@ -19,7 +20,7 @@ class Competition(models.Model):
 
 '''比赛记录实体'''
 class CompetitionRecord(models.Model):
-    competition_id = models.ForeignKey(Competition,on_delete=models.CASCADE)
+    competition_id = models.BigIntegerField('比赛ID')
     participant_name = models.CharField('比赛参与者',max_length=50)
     score = models.IntegerField('比赛分数')
 

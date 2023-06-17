@@ -7,7 +7,9 @@ from .client import BLiveClient
 from .models import (HeartbeatMessage,DanmakuMessage,GiftMessage,GuardBuyMessage,SuperChatMessage,LikeInfoV3ClickMessage,EntryEffectMessage,InteractWordMessage)
 from django.core.management.base import BaseCommand
 from django.apps import AppConfig
-from .chat_priority_queue_management import put_chat_message
+from .chat_priority_queue_management import *
+from game.service.game_service import commit_riddle_answer
+from asgiref.sync import sync_to_async
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -24,20 +26,6 @@ TEST_ROOM_IDS = [
 
 client = None;
 enable = False;
-
-'''消息优先级'''
-# 舰长弹幕消息
-CAPTAIN_BARRAGE_MESSAGE = 1
-# 活跃用户消息
-ACTIVE_USER_BARRAGE_MESSAGE = 2
-# 触摸头消息
-TOUCH_THE_HEAD_MESSAGE = 3
-# 进入房间消息
-ENTER_THE_ROOM_MESSAGE = 4
-# 送礼物消息
-SEND_GIFTS_MESSAGE = 5
-# 默认消息
-DEFAULT_MESSAGE = 10
 
 async def start():
     """
@@ -89,15 +77,20 @@ class BiliHandler(BaseHandler):
         # put_chat_message(message_body)
 
     async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
-        message_str  = f'{message.msg}'
-        cmd_str  = f'[{message.uname}说]：{message.msg}'
-        message_body = {
-            "type":"user",
-            "user_name":message.uname,
-            "content":message_str,
-            'cmd': cmd_str
-        }
-        put_chat_message(CAPTAIN_BARRAGE_MESSAGE,message_body)
+        if message.msg.startswith('#'):
+            # 如果字符串以 '#' 开头，执行提交游戏答案代码
+             await sync_to_async(commit_riddle_answer)(user_name=message.uname,riddle_answer=message.msg)
+        else:
+            # 如果字符串不以 '#' 开头，执行闲聊模式
+            message_str  = f'{message.msg}'
+            cmd_str  = f'[{message.uname}说]：{message.msg}'
+            message_body = {
+                "type":"user",
+                "user_name":message.uname,
+                "content":message_str,
+                'cmd': cmd_str
+            }
+            put_chat_message(MessagePriority.CAPTAIN_BARRAGE_MESSAGE,message_body)
 
     async def _on_gift(self, client: BLiveClient, message: GiftMessage):
         cmd_str  = f'{message.uname}赠送{message.gift_name}x{message.num}'
@@ -106,7 +99,7 @@ class BiliHandler(BaseHandler):
             "content":'',
             'cmd': cmd_str
         }
-        put_chat_message(CAPTAIN_BARRAGE_MESSAGE,message_body)
+        put_chat_message(MessagePriority.CAPTAIN_BARRAGE_MESSAGE,message_body)
 
 
     async def _on_buy_guard(self, client: BLiveClient, message: GuardBuyMessage):
@@ -116,7 +109,7 @@ class BiliHandler(BaseHandler):
             "content":'',
             'cmd': cmd_str
         }
-        put_chat_message(SEND_GIFTS_MESSAGE,message_body)
+        put_chat_message(MessagePriority.SEND_GIFTS_MESSAGE,message_body)
 
     async def _on_super_chat(self, client: BLiveClient, message: SuperChatMessage):
         print(f'[{client.room_id}] 醒目留言 ¥{message.price} {message.uname}：{message.message}')
@@ -130,7 +123,7 @@ class BiliHandler(BaseHandler):
             "content":message_str,
             'cmd': cmd_str
         }
-        put_chat_message(TOUCH_THE_HEAD_MESSAGE,message_body)
+        put_chat_message(MessagePriority.TOUCH_THE_HEAD_MESSAGE,message_body)
 
     async def _on_entry_effect(self, client: BLiveClient, message: EntryEffectMessage):
         message_body = {
@@ -150,5 +143,5 @@ class BiliHandler(BaseHandler):
             "content": message_str,
             'cmd': cmd_str
         }
-        put_chat_message(ENTER_THE_ROOM_MESSAGE,message_body)
+        put_chat_message(MessagePriority.ENTER_THE_ROOM_MESSAGE,message_body)
 

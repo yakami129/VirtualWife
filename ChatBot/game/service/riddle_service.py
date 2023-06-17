@@ -4,6 +4,6 @@ class RiddleQuery:
 
     '''获取所有谜语实体'''
     @classmethod
-    def all():
+    def all(cls):
        return Riddle.objects.all()
 

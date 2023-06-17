@@ -1,6 +1,6 @@
 import time
 import threading
-from .chat_priority_queue_management import put_chat_message
+from .chat_priority_queue_management import *
 
 def job():
      cmd_str  = '爱莉现在的人气比较低'
@@ -9,7 +9,7 @@ def job():
         "content":'',
         'cmd': cmd_str
      }
-     put_chat_message(10,message_body)
+     put_chat_message(MessagePriority.DEFAULT_MESSAGE,message_body)
 
 
 def run_job_every_interval(interval, job):

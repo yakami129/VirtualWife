@@ -96,7 +96,7 @@ export default function Home() {
    * アシスタントとの会話を行う
    */
   const handleSendChat = useCallback(
-    async (text: string,cmd: string) => {
+    async (text: string,cmd: string,type: string) => {
       // if (!openAiKey) {
       //   setAssistantMessage("APIキーが入力されていません");
       //   return;
@@ -144,23 +144,30 @@ export default function Home() {
       const sentences = new Array<string>();
 
       let receivedMessage = "";
-      if(cmd != '' && cmd != null){
-         receivedMessage = await chat(cmd).catch(
-          (e) => {
-            console.error(e);
-            return null;
-          }
-        );
-        console.log("cmd:"+cmd)
+
+      if(type === 'game'){
+
       }else{
-        receivedMessage = await chat(newMessage).catch(
-          (e) => {
-            console.error(e);
-            return null;
-          }
-        );
-        console.log("message:"+newMessage)
+        if(cmd != '' && cmd != null){
+          receivedMessage = await chat(cmd).catch(
+           (e) => {
+             console.error(e);
+             return null;
+           }
+         );
+         console.log("cmd:"+cmd)
+       }else{
+         receivedMessage = await chat(newMessage).catch(
+           (e) => {
+             console.error(e);
+             return null;
+           }
+         );
+         console.log("message:"+newMessage)
+       }
       }
+
+      
      
       //let receivedMessage = '哇塞！看见你这么努力，真的想把你的智商放到我的钱包里，让它感受到一下世界的危险。'
       receivedMessage = oldMessage + "。" + receivedMessage;
@@ -246,7 +253,7 @@ export default function Home() {
       setInterval(() => {
           if (chatPriorityQueue.length > 0) {
               const chatMessage = chatPriorityQueue.dequeue();
-              handleSendChat(chatMessage.message.content,chatMessage.message.cmd).catch(e => {
+              handleSendChat(chatMessage.message.content,chatMessage.message.cmd,chatMessage.message.type).catch(e => {
                 console.log(e);
               });
               console.log('run handleSendChat chatMessage:',chatMessage);

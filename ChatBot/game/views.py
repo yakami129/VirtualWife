@@ -8,6 +8,7 @@ from .dto.competition_dto import *
 from .dto.competition_record_dto import *
 from django.utils.dateparse import parse_datetime
 from drf_yasg.utils import swagger_auto_schema
+from .service.game_service import start_competition;
 
 # Create your views here.
 @swagger_auto_schema(method='post', request_body=competition_request_body)
@@ -24,5 +25,15 @@ def create_competition_req(request):
     competition_dto = CompetitionDTO.from_dict(data)
     db_competition = CompetitionHandle.create(competition_dto)
     return Response({"response": db_competition, "code": "200"})
+
+
+@swagger_auto_schema(method='GET')
+@api_view(['GET'])
+def start_game(request):
+    '''
+      开始你画我猜游戏
+    '''
+    start_competition()
+    return Response({"response": '开始游戏', "code": "200"})
 
 

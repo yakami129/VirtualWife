@@ -13,7 +13,7 @@ competition_request_body = openapi.Schema(
 )
 
 class CompetitionDTO:
-    def __init__(self, id,name, turn, victor_name, start_date, end_date):
+    def __init__(self, id=None, name=None, turn=None, victor_name=None, start_date=None, end_date=None):
         self.id = id
         self.name = name
         self.turn = turn

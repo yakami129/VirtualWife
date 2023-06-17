@@ -3,7 +3,7 @@ from ..dto.competition_dto import CompetitionDTO
 from ..models import Competition
 
 
-def create_competition(competition_dto: CompetitionDTO):
+def create_competition(cls,competition_dto: CompetitionDTO):
     ## 构建比赛实体
     competition = Competition(
         name = competition_dto.name,

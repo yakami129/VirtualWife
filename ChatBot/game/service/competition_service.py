@@ -6,7 +6,7 @@ from ..models import Competition
 class CompetitionHandle:
 
     @classmethod
-    def create(competition_dto: CompetitionDTO):
+    def create(cls,competition_dto: CompetitionDTO):
         ## 构建比赛实体
         competition = Competition(
             name = competition_dto.name,
@@ -18,7 +18,7 @@ class CompetitionHandle:
         return {'id':competition.id,'name':competition.name}
     
     @classmethod
-    def update(competition_dto: CompetitionDTO):
+    def update(cls,competition_dto: CompetitionDTO):
         ## 构建比赛实体
         competition = Competition(
             id = competition_dto.id,
@@ -26,12 +26,12 @@ class CompetitionHandle:
             victor_name = competition_dto.victor_name,
             end_date = competition_dto.end_date
         )
-        competition.save();
+        competition.save(update_fields=["turn","victor_name","end_date"]);
         return {'id':competition.id,'name':competition.name}
     
 
 class CompetitionQuery:
 
     @classmethod
-    def get(id:int):
+    def get(cls,id:int):
        return Competition.objects.get(id=id)
