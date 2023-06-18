@@ -74,6 +74,6 @@ export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
     });
     return response.data;
   } catch (error) {
-    throw new Error('Failed to fetch audio');
+    console.log(error)
   }
 };

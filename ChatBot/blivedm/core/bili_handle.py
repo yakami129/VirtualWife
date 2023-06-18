@@ -81,7 +81,7 @@ class BiliHandler(BaseHandler):
         if chat_message.startswith('#'):
             # 如果字符串以 '#' 开头，执行提交游戏答案代码
              await sync_to_async(commit_riddle_answer)(user_name=message.uname,riddle_answer=chat_message)
-        elif chat_message.endswith(('?', '。')):
+        elif chat_message.endswith(('?', '。',"？")):
             # 如果字符串以 '？'，'。' 结尾，执行闲聊模式
             message_str  = f'{chat_message}'
             cmd_str  = f'[{message.uname}说]：{chat_message}'

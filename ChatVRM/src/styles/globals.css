@@ -49,8 +49,8 @@ body {
 }
 
 .photo-frame {
-  width: 512px; 
-  height: 512px;
+  width: 650px; 
+  height: 650px;
   border: 10px solid #333;
   border-radius: 20px;
   overflow: hidden;
@@ -72,7 +72,7 @@ body {
   justify-content: center;
   align-items: center;
   position: fixed;
-  top: 50%;
-  left: 48%;
+  top: 40%;
+  left: 60%;
   transform: translate(-50%, -50%);
 }
