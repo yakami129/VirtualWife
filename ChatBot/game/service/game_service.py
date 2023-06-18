@@ -3,16 +3,21 @@ from .competition_service import *
 from .riddle_service import *
 from .leaderboard_service import *
 from blivedm.core.chat_priority_queue_management import *
+import queue
 import logging
+import random
+
+'''临时使用'''
+riddle_queue = queue.Queue()
 
 '''后续看要不要放到缓存'''
 
-# 当前谜题下标
-current_riddle_index = 0
 # 当前谜题答案
 current_riddle_answer = ''
 # 当前谜题类型
 current_riddle_type = ''
+# 当前谜题答案字数
+current_riddle_count = 0
 # 当前谜题描述
 current_riddle_description = ''
 # 当前比赛ID
@@ -78,7 +83,7 @@ def commit_riddle_answer(user_name:str,riddle_answer:str):
         CompetitionRecordHandle.update(competition_record_dto)
 
         # 5.回答错误，发送消息
-        cmd_str = f'{user_name}在你画我猜游戏中回答正确，请祝福一下他'
+        cmd_str = f'{user_name}在你画我猜游戏中回答正确'
         content = f'{user_name}回答正确'
         message_body = {
             "type":"system",
@@ -92,7 +97,7 @@ def commit_riddle_answer(user_name:str,riddle_answer:str):
 
     else:
         # 5.回答错误，发送消息
-        cmd_str = f'{user_name}在你画我猜游戏中回答错误，请鼓励一下他'
+        cmd_str = f'{user_name}在你画我猜游戏中回答错误'
         content = f'{user_name}回答错误'
         message_body = {
             "type":"system",
@@ -104,7 +109,8 @@ def commit_riddle_answer(user_name:str,riddle_answer:str):
     # 6.判断当前轮次，如果等于5，结束比赛
     logging.info(f'当前游戏轮次：{current_competition_turn}')
     if(current_competition_turn > 5):
-        end_comptition()
+        #end_comptition()
+        print("")
     else:
         competition = CompetitionDTO(id=current_competition_id,turn=current_competition_turn)
         CompetitionHandle.update(competition)
@@ -141,10 +147,10 @@ def end_comptition():
 
 def next_riddle():
 
-    global current_riddle_index
     global current_riddle_answer
     global current_riddle_type
     global current_riddle_description
+    global current_riddle_count
     global current_competition_turn
     
     # 1. 通过当前下标获取谜题
@@ -152,6 +158,15 @@ def next_riddle():
     current_riddle_answer = riddle.riddle_answer
     current_riddle_type = riddle.riddle_type
     current_riddle_description = riddle.riddle_description
+    current_riddle_count = riddle.riddle_count
+
+    riddle_message = {
+        "current_riddle_answer":riddle.riddle_answer,
+        "current_riddle_type":riddle.riddle_type,
+        "current_riddle_description":riddle.riddle_description,
+        "current_riddle_count":riddle.riddle_count,
+    }
+    riddle_queue.put(riddle_message)
 
     # 2. 发送消息给前端渲染新的谜题
     cmd_str = riddle.riddle_image_id
@@ -162,13 +177,11 @@ def next_riddle():
     }
     put_chat_message(MessagePriority.GAME_MESSAGE,message_body)
 
-    # 3. 比赛轮次+1、谜题下标+1
-    current_riddle_index = current_riddle_index + 1
+    # 3. 比赛轮次+1
     current_competition_turn = current_competition_turn + 1
 
 '''随机获取谜题'''
 def getRandomRiddle():
-    global current_riddle_index
     riddles =  RiddleQuery.all()
-    riddle = riddles[current_riddle_index]
+    riddle = random.choice(riddles)
     return riddle

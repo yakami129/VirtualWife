@@ -77,13 +77,14 @@ class BiliHandler(BaseHandler):
         # put_chat_message(message_body)
 
     async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
-        if message.msg.startswith('#'):
+        chat_message = message.msg;
+        if chat_message.startswith('#'):
             # 如果字符串以 '#' 开头，执行提交游戏答案代码
-             await sync_to_async(commit_riddle_answer)(user_name=message.uname,riddle_answer=message.msg)
-        else:
-            # 如果字符串不以 '#' 开头，执行闲聊模式
-            message_str  = f'{message.msg}'
-            cmd_str  = f'[{message.uname}说]：{message.msg}'
+             await sync_to_async(commit_riddle_answer)(user_name=message.uname,riddle_answer=chat_message)
+        elif chat_message.endswith(('?', '。')):
+            # 如果字符串以 '？'，'。' 结尾，执行闲聊模式
+            message_str  = f'{chat_message}'
+            cmd_str  = f'[{message.uname}说]：{chat_message}'
             message_body = {
                 "type":"user",
                 "user_name":message.uname,
@@ -91,6 +92,8 @@ class BiliHandler(BaseHandler):
                 'cmd': cmd_str
             }
             put_chat_message(MessagePriority.CAPTAIN_BARRAGE_MESSAGE,message_body)
+        else:
+            logging.info(f'[BIZ] 用户闲聊 [{message.uname}说]：{chat_message}')
 
     async def _on_gift(self, client: BLiveClient, message: GiftMessage):
         cmd_str  = f'{message.uname}赠送{message.gift_name}x{message.num}'
@@ -143,5 +146,5 @@ class BiliHandler(BaseHandler):
             "content": message_str,
             'cmd': cmd_str
         }
-        put_chat_message(MessagePriority.ENTER_THE_ROOM_MESSAGE,message_body)
+        ##put_chat_message(MessagePriority.ENTER_THE_ROOM_MESSAGE,message_body)
 
