@@ -114,5 +114,5 @@ http://localhost:3000/
 
 ## 技术交流群
 
-![IMG_3896](docs/IMG_3896.JPG)
+![IMG_3896](docs/IMG_3897.JPG)
 
