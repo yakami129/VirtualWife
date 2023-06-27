@@ -34,6 +34,6 @@ urlpatterns = [
      path("app/", include("app.urls")),
      path("blivedm/", include("blivedm.urls")),
      path("tts/", include("tts.urls")),
-     path("game/", include("game.urls")),
+    #  path("game/", include("game.urls")),
      path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]

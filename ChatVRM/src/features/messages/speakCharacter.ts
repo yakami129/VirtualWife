@@ -60,12 +60,11 @@ export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
   // const buffer = await resAudio.arrayBuffer();
   // return buffer;
 
-  const requestBody = {
-    text: talk.message,
-    voice: "xiaoyi",
-  };
+    const requestBody = {
+      text: talk.message,
+      voice: "xiaoyi",
+    };
 
-  try {
     const response = await axios.post('http://127.0.0.1:8000/tts/generateAudio', requestBody, {
       responseType: 'arraybuffer',
       headers: {
@@ -73,7 +72,4 @@ export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
       },
     });
     return response.data;
-  } catch (error) {
-    console.log(error)
-  }
 };

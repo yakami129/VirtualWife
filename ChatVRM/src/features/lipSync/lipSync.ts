@@ -32,21 +32,24 @@ export class LipSync {
   }
 
   public async playFromArrayBuffer(buffer: ArrayBuffer, onEnded?: () => void) {
+
+    let bufferSource;
+
       try {
         const audioBuffer = await this.audio.decodeAudioData(buffer);
-        const bufferSource = this.audio.createBufferSource();
+        bufferSource = this.audio.createBufferSource();
         bufferSource.buffer = audioBuffer;
-
         bufferSource.connect(this.audio.destination);
         bufferSource.connect(this.analyser);
         bufferSource.start();
-        if (onEnded) {
-          bufferSource.addEventListener("ended", onEnded);
-        }
       } catch (error) {
         // 这里捕获了所有的错误，你可以在这里处理错误，比如打印错误信息
         console.error('Error while trying to play from array buffer:', error);
         // 或者你也可以向用户显示一个错误提示，或者是抛出这个异常让上层函数处理
+      } finally{
+        if (onEnded) {
+          bufferSource?.addEventListener("ended", onEnded);
+        }
       }
   }
 

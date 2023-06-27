@@ -145,36 +145,23 @@ export default function Home() {
       const sentences = new Array<string>();
 
       let receivedMessage = "";
-
-      if(type === 'image'){
-
-        let imageUrl = "http://localhost:8000/game/image/"+cmd+"/";
-        setImageUrl(imageUrl);
-
-      }else if(type === 'game'){
-
-
+      if(cmd != '' && cmd != null){
+         receivedMessage = await chat(cmd).catch(
+          (e) => {
+            console.error(e);
+            return null;
+          }
+        );
+        console.log("cmd:"+cmd)
       }else{
-        if(cmd != '' && cmd != null){
-          receivedMessage = await chat(cmd).catch(
-           (e) => {
-             console.error(e);
-             return null;
-           }
-         );
-         console.log("cmd:"+cmd)
-       }else{
-         receivedMessage = await chat(newMessage).catch(
-           (e) => {
-             console.error(e);
-             return null;
-           }
-         );
-         console.log("message:"+newMessage)
-       }
+        receivedMessage = await chat(newMessage).catch(
+          (e) => {
+            console.error(e);
+            return null;
+          }
+        );
+        console.log("message:"+newMessage)
       }
-
-      
      
       //let receivedMessage = '哇塞！看见你这么努力，真的想把你的智商放到我的钱包里，让它感受到一下世界的危险。'
       receivedMessage = oldMessage + "。" + receivedMessage;
@@ -275,9 +262,9 @@ export default function Home() {
     <div className={`${m_plus_2.variable} ${montserrat.variable}`}>
       <Meta />
       <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey} />
-      <div className="photo-app">
+      {/* <div className="photo-app">
         <PhotoFrame imageUrl={imageUrl} />
-      </div>
+      </div> */}
       <VrmViewer />
       <MessageInputContainer
         isChatProcessing={chatProcessing}

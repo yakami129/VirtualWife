@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 import blivedm.routing
 import os
 import blivedm.core.bili_schedule
-import game.schedule.game_schedule
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator

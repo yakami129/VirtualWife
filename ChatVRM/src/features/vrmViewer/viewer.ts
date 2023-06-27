@@ -55,7 +55,7 @@ export class Viewer {
       });
       
       // 修改相机的位置
-      this._camera?.position.set(1, 10, 5);  // 把相机位置设为 (0, 2.6, 3.0)
+      //this._camera?.position.set(1, 10, 5);  // 把相机位置设为 (0, 2.6, 3.0)
 
       this._scene.add(this.model.vrm.scene);
 

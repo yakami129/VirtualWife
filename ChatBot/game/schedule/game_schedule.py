@@ -17,7 +17,7 @@ def job():
             current_riddle_count = riddle_message['current_riddle_count']
             current_riddle_description = riddle_message['current_riddle_description']
 
-            cmd_str  = f'现在粉丝都猜不出答案，谜题答案：{current_riddle_answer}，谜题的类型是：{current_riddle_type}，当前谜题答案字数是：{current_riddle_count}，谜题描述：{current_riddle_description},请少量的透露一些信息给粉丝，不要直接透露答案'
+            cmd_str  = f'现在粉丝都猜不出答案，需要你给出一些提示，谜题答案：{current_riddle_answer}，谜题的类型是：{current_riddle_type}，当前谜题答案字数是：{current_riddle_count}，谜题描述：{current_riddle_description},请适当透露一些信息给粉丝，一定不能直接透露答案和出现答案的字眼，请模糊透露。'
             message_body = {
                 "type":"system",
                 "content":'',
@@ -31,5 +31,5 @@ def run_job_every_interval(interval, job):
     job()
     logging.info("[BIZ] 启动谜题提示定时任务")
 
-# 运行 job 函数，每 60 秒运行一次
-run_job_every_interval(60, job)
+# 运行 job 函数，每 50 秒运行一次
+run_job_every_interval(50, job)

@@ -172,6 +172,7 @@ def next_riddle():
     riddle_queue.put(riddle_message)
 
     # 2. 发送消息给前端渲染新的谜题
+    content = f"谜题类型：{current_riddle_type},谜题描述：{current_riddle_description},请你简述一下谜题的内容，告诉粉丝需要关注哪些内容"
     cmd_str = riddle.riddle_image_id
     message_body = {
         "type":"image",

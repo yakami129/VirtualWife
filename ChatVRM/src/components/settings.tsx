@@ -95,7 +95,7 @@ export const Settings = ({
               className="px-16 py-8  bg-surface1 hover:bg-surface1-hover h-168 rounded-8 w-full"
             ></textarea>
           </div> */}
-          <div className="my-40">
+          {/* <div className="my-40">
             <div className="my-16 typography-20 font-bold">声音调整</div>
             <div>
               使用KoeiroAPI详细说明请查阅
@@ -172,8 +172,8 @@ export const Settings = ({
                 }}
               ></input>
             </div>
-          </div>
-          {chatLog.length > 0 && (
+          </div> */}
+          {/* {chatLog.length > 0 && (
             <div className="my-40">
               <div className="my-8 grid-cols-2">
                 <div className="my-16 typography-20 font-bold">对话记录</div>
@@ -205,7 +205,7 @@ export const Settings = ({
                 })}
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
     </div>

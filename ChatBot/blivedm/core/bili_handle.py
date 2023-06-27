@@ -8,8 +8,6 @@ from .models import (HeartbeatMessage,DanmakuMessage,GiftMessage,GuardBuyMessage
 from django.core.management.base import BaseCommand
 from django.apps import AppConfig
 from .chat_priority_queue_management import *
-from game.service.game_service import commit_riddle_answer
-from asgiref.sync import sync_to_async
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -78,22 +76,29 @@ class BiliHandler(BaseHandler):
 
     async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
         chat_message = message.msg;
-        if chat_message.startswith('#'):
-            # 如果字符串以 '#' 开头，执行提交游戏答案代码
-             await sync_to_async(commit_riddle_answer)(user_name=message.uname,riddle_answer=chat_message)
-        elif chat_message.endswith(('?', '。',"？")):
-            # 如果字符串以 '？'，'。' 结尾，执行闲聊模式
-            message_str  = f'{chat_message}'
-            cmd_str  = f'[{message.uname}说]：{chat_message}'
-            message_body = {
-                "type":"user",
-                "user_name":message.uname,
-                "content":message_str,
-                'cmd': cmd_str
-            }
-            put_chat_message(MessagePriority.CAPTAIN_BARRAGE_MESSAGE,message_body)
-        else:
-            logging.info(f'[BIZ] 用户闲聊 [{message.uname}说]：{chat_message}')
+        # if chat_message.startswith('#'):
+        #     # 如果字符串以 '#' 开头，执行提交游戏答案代码
+        #      await sync_to_async(commit_riddle_answer)(user_name=message.uname,riddle_answer=chat_message)
+        # elif chat_message.endswith(('?', '。',"？")):
+        #     # 如果字符串以 '？'，'。' 结尾，执行闲聊模式
+        #     message_str  = f'{chat_message}'
+        #     cmd_str  = f'[{message.uname}说]：{chat_message}'
+        #     message_body = {
+        #         "type":"user",
+        #         "user_name":message.uname,
+        #         "content":message_str,
+        #         'cmd': cmd_str
+        #     }
+        #     put_chat_message(MessagePriority.CAPTAIN_BARRAGE_MESSAGE,message_body)
+        message_str  = f'{chat_message}'
+        cmd_str  = f'[{message.uname}说]：{chat_message}'
+        message_body = {
+            "type":"user",
+            "user_name":message.uname,
+            "content":message_str,
+            'cmd': cmd_str
+        }
+        put_chat_message(MessagePriority.CAPTAIN_BARRAGE_MESSAGE,message_body)
 
     async def _on_gift(self, client: BLiveClient, message: GiftMessage):
         cmd_str  = f'{message.uname}赠送{message.gift_name}x{message.num}'
@@ -140,11 +145,11 @@ class BiliHandler(BaseHandler):
         用户进入直播间，用户关注直播间
         """
         message_str  = f'{message.uname}进入了直播间'
-        cmd_str  = message_str + '，请表示热情的欢迎'
+        cmd_str  = message_str + '，请简单欢迎，不能超过10个字'
         message_body = {
             "type":"system",
             "content": message_str,
             'cmd': cmd_str
         }
-        ##put_chat_message(MessagePriority.ENTER_THE_ROOM_MESSAGE,message_body)
+        put_chat_message(MessagePriority.ENTER_THE_ROOM_MESSAGE,message_body)
 
