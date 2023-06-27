@@ -4,10 +4,6 @@ VirtualWife 是一个虚拟主播项目，目前支持在B站进行直播，用�
 
 本项目只是一个实验品，满足基本聊天能力，用户可以通过弹幕与虚拟主播进行对话
 
-## 演示视频
-
-<video src="docs/d1.mp4" controls="controls" width="500" height="300"></video>
-
 ## 项目技术栈说明
 
 - React：前端服务框架
