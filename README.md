@@ -6,9 +6,7 @@ VirtualWife 是一个虚拟主播项目，目前支持在B站进行直播，用�
 
 ## 演示视频
 
-<video width="320" height="240" controls>
-    <source src="docs/d1.mp4" type="video/mp4">
-</video>
+<video src="docs/d1.mp4" controls="controls" width="500" height="300"></video>
 
 ## 项目技术栈说明
 
@@ -114,5 +112,5 @@ http://localhost:3000/
 
 ## 技术交流群
 
-![IMG_3896](docs/IMG_3897.JPG)
+![IMG_3897](docs/IMG_3897.JPG)
 
