@@ -104,7 +104,7 @@ http://localhost:3000/
 
 ## 后记
 
-本项目是作者第一次接触数字人开发的实验型demo，基于[ChatVRM](https://github.com/pixiv/ChatVRM)+Edge-tts+LangChain+OpenAI实现，希望能通过这个项目让大家快速搭建自己的虚拟主播，如果项目对你有用，可以帮忙点个start（下次一定。。。），优化建议、bug可以提issues
+本项目是作者第一次接触数字人开发的实验型demo，基于[ChatVRM](https://github.com/pixiv/ChatVRM)+Edge-tts+LangChain+OpenAI实现，希望能通过这个项目让大家快速搭建自己的虚拟主播，如果项目对你有用，可以帮忙点个start，优化建议、bug可以提issues
 
 ## 技术交流群
 
