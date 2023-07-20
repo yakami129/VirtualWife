@@ -1,0 +1,3 @@
+FROM openresty/openresty:1.21.4.1-4-buster-fat
+
+COPY ../infrastructure-gateway/conf.d/ /etc/nginx/conf.d/

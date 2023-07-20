@@ -94,7 +94,7 @@ export async function chat(
     "Content-Type": "application/json"
   };
 
-  const res = await fetch("http://127.0.0.1:8000/app/chat", {
+  const res = await fetch("/api/chatbot/app/chat", {
     headers: headers,
     method: "POST",
     body: JSON.stringify({

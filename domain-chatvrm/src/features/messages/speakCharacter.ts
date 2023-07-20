@@ -65,7 +65,7 @@ export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
       voice: "xiaoyi",
     };
 
-    const response = await axios.post('http://127.0.0.1:8000/tts/generateAudio', requestBody, {
+    const response = await axios.post('/api/chatbot/tts/generateAudio', requestBody, {
       responseType: 'arraybuffer',
       headers: {
         'Content-Type': 'application/json',
