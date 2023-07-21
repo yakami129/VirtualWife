@@ -17,8 +17,9 @@ VirtualWife 是一个虚拟主播项目，目前支持在B站进行直播，用�
 
 ### 核心服务说明
 
-- ChatBot: AI核心服务
-- ChatVRM: 聊天客户端
+- domain-chatbot: AI核心服务
+- domain-chatvrm: 聊天客户端
+- infrastructure-gateway: 基础设施-网关
 
 ### 环境要求
 
@@ -27,11 +28,78 @@ VirtualWife 是一个虚拟主播项目，目前支持在B站进行直播，用�
 
 ## 快速开始
 
-### 如何启动ChatBot？
+### 安装Docker环境
 
-- 进入ChatBot文件夹
+[Docker官网](https://www.docker.com/)按照官方文档进行安装即可
+
+### 进入VirtualWife安装程序目录
+
+```
+cd installer
+```
+
+```
+├── README.md               # 安装程序使用说明
+├── docker-compose.yaml     # docker编排文件
+├── env_example             # 环境变量配置模版，使用时需要将文件名改成.env
+├── linux                   # linux 启动和关闭程序
+│   ├── start.sh
+│   └── stop.sh
+└── windows                 # windows 启动和关闭程序
+    ├── start.bat
+    └── stop.bat
+```
+
+### 设置环境变量
+
+- 更改境变量配置模版文件名为.env
+```
+mv env_example .evn
+```
+- 设置环境变量
+```
+# OpenAI Key
+OPENAI_API_KEY=sk-XXXXX
+
+# B站直播间ID
+B_STATION_ID=27892212
+
+# 时区
+TIMEZONE=Asia/Shanghai
+
+# 程序版本号，程序版本号可以查阅项目的release发布版本号，latest代表最新版本
+CHATBOT_TAG=latest
+CHATVRM_TAG=latest
+GATEWAY_TAG=latest
+```
+
+### 启动程序
+
+- 以Linux系统为例，启动程序示例如下
+```
+## 进入linux脚本目录
+cd linux
+
+## 启动程序，初次启动需要下载镜像，整个过程可能需要5分钟
+sh start.sh
+```
+
+### 访问页面
+
+- Web访问路径
 ```shell
-cd ChatBot
+http://localhost/
+```
+- 页面展示
+![](docs/16878738708227.jpg)
+
+## 本地开发
+
+### 如何启动domain-chatbot？
+
+- 进入domain-chatbot文件夹
+```shell
+cd domain-chatbot
 ```
 
 - 如何获取OpenAIKey?
@@ -47,26 +115,26 @@ OPENAI_API_KEY=xxxxxx
 # B站直播间ID
 B_STATION_ID=xxxxx
 ```
-- 安装ChatBot项目依赖
+- 安装domain-chatbot项目依赖
 ```shell
 pip3 install -r requirements.txt
 ```
-- 启动ChatBot项目
+- 启动domain-chatbot项目
 ```shell
 python manage.py runserver
 ```
 
-### 如何启动ChatVRM？
+### 如何启动domain-chatvrm？
 
-- 进入ChatVRM文件夹
+- 进入domain-chatvrm文件夹
 ```shell
-cd ChatVRM
+cd domain-chatvrm
 ```
-- 安装ChatVRM项目依赖
+- 安装domain-chatvrm项目依赖
 ```shell
 npm install
 ```
-- 启动ChatVRM项目
+- 启动domain-chatvrm项目
 ```shell
 npm run dev
 ```
@@ -74,8 +142,6 @@ npm run dev
 ```shell
 http://localhost:3000/
 ```
-- 页面展示
-![](docs/16878738708227.jpg)
 
 ### 如何在B站上进行直播呢？
 

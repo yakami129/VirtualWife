@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+   chatbot:
+       container_name: chatbot
+       image: okapi0129/virtualwife-chatbot:${CHATBOT_TAG:-latest}
+       ports:
+        - 8000:8000
+       environment:
+         - TZ=${TIMEZONE}
+       env_file:
+         - "${ENV_FILE:-.env}"
+       networks:
+         - virtualwife
+   chatvrm:
+      container_name: chatvrm
+      image: okapi0129/virtualwife-chatvrm:${CHATVRM_TAG:-latest}
+      environment:
+        - TZ=${TIMEZONE}  
+      env_file:
+        - "${ENV_FILE:-.env}"
+      networks:
+        - virtualwife
+   gateway:
+     container_name: gateway
+     image: okapi0129/virtualwife-gateway:${GATEWAY_TAG:-latest}
+     restart: always
+     ports:
+       - ${NGINX_HTTP_PORT:-80}:80
+       - ${NGINX_HTTPS_PORT:-443}:443
+     environment:
+       - TZ=${TIMEZONE}
+     env_file:
+       - "${ENV_FILE:-.env}"
+     networks:
+       - virtualwife
+
+networks:
+  virtualwife:
+    driver: bridge
