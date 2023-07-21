@@ -28,9 +28,21 @@ VirtualWife 是一个虚拟主播项目，目前支持在B站进行直播，用�
 
 ## 快速开始
 
-### 安装Docker环境
+### 安装[Docker](https://www.docker.com/)环境
 
-[Docker官网](https://www.docker.com/)按照官方文档进行安装即可
+- 方式一：命令行方式安装
+    - [docker安装手册](https://www.runoob.com/docker/macos-docker-install.html)
+    - [docker-compose安装手册](https://www.runoob.com/docker/docker-compose.html)
+- 方式二：下载Docker桌面程序（桌面程序一般自带docker-compose）
+    - [下载Docker桌面程序](https://www.docker.com/)
+    - 然后下一步下一步就安装好了，如果拉取镜像比较慢，可以更改为国内镜像地址
+
+- 检查是否安装成功，安装正常会打印日志
+```
+docker -v
+docker-compose -v
+```
+![](docs/docker-version-log.png)
 
 ### 进入VirtualWife安装程序目录
 
