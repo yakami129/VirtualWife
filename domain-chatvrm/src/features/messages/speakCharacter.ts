@@ -4,6 +4,7 @@ import { Viewer } from "../vrmViewer/viewer";
 import { Screenplay } from "./messages";
 import { Talk } from "./messages";
 import axios from 'axios';
+import { postRequestArraybuffer } from "../httpclient/httpclient";
 
 
 const createSpeakCharacter = () => {
@@ -65,11 +66,10 @@ export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
       voice: "xiaoyi",
     };
 
-    const response = await axios.post('/api/chatbot/tts/generateAudio', requestBody, {
-      responseType: 'arraybuffer',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    return response.data;
+    const headers = {
+      'Content-Type': 'application/json',
+    }
+
+    const data = await postRequestArraybuffer("/tts/generateAudio",headers, requestBody);
+    return data;
 };

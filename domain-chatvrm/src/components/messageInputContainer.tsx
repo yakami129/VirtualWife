@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 
 type Props = {
   isChatProcessing: boolean;
-  onChatProcessStart: (text: string,cmd: string) => void;
+  onChatProcessStart: (text: string,cmd: string,type: string) => void;
 };
 
 /**
@@ -30,7 +30,7 @@ export const MessageInputContainer = ({
       if (event.results[0].isFinal) {
         setUserMessage(text);
         // 返答文の生成を開始
-        onChatProcessStart(text,"");
+        onChatProcessStart(text,"","");
       }
     },
     [onChatProcessStart]
@@ -54,7 +54,7 @@ export const MessageInputContainer = ({
   }, [isMicRecording, speechRecognition]);
 
   const handleClickSendButton = useCallback(() => {
-    onChatProcessStart(userMessage,"");
+    onChatProcessStart(userMessage,"","");
   }, [onChatProcessStart, userMessage]);
 
   useEffect(() => {

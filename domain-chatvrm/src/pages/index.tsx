@@ -1,3 +1,8 @@
+// 引入 polyfill 的代码需要在客户端环境中执行
+if (typeof window !== 'undefined') {
+  require('abortcontroller-polyfill/dist/polyfill-patch-fetch');
+}
+
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import VrmViewer from "@/components/vrmViewer";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
@@ -13,13 +18,12 @@ import { KoeiroParam, DEFAULT_PARAM } from "@/features/constants/koeiroParam";
 import { chat, getChatResponseStream } from "@/features/chat/openAiChat";
 import { connect } from "@/features/blivedm/blivedm";
 import { chatPriorityQueue } from "@/features/queue/ChatPriorityQueue";
-import { PhotoFrame } from '@/features/game/photoFrame';
+// import { PhotoFrame } from '@/features/game/photoFrame';
 import { M_PLUS_2, Montserrat } from "next/font/google";
 import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
 import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
-import { log } from "console";
 
 const m_plus_2 = M_PLUS_2({
   variable: "--font-m-plus-2",

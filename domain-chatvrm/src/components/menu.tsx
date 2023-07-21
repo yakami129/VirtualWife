@@ -132,9 +132,9 @@ export const Menu = ({
           onClickResetSystemPrompt={handleClickResetSystemPrompt}
         />
       )}
-      {!showChatLog && assistantMessage && (
+      {/* {!showChatLog && assistantMessage && (
         <AssistantText message={assistantMessage} />
-      )}
+      )} */}
       <input
         type="file"
         className="hidden"

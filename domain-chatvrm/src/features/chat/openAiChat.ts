@@ -1,5 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 import { Message } from "../messages/messages";
+import { postRequest } from "../httpclient/httpclient";
 
 export async function getChatResponse(messages: Message[], apiKey: string) {
   if (!apiKey) {
@@ -94,16 +95,8 @@ export async function chat(
     "Content-Type": "application/json"
   };
 
-  const res = await fetch("/api/chatbot/app/chat", {
-    headers: headers,
-    method: "POST",
-    body: JSON.stringify({
-      query: message
-    }),
-  });
-
-  const chatRes = (await res.json()) as any;
-  console.log(chatRes);
+  const body = {query: message};
+  const chatRes = await postRequest("/app/chat",headers, body);
   if (chatRes.code !== '200') {
     throw new Error("Something went wrong");
   }
