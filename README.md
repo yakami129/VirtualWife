@@ -188,5 +188,3 @@ http://localhost:3000/
 
 ![IMG_3897](docs/IMG_3897.JPG)
 
-群码过期可以加个人微信：Yakim1290，我会拉你进群
-
