@@ -4,7 +4,7 @@ services:
 
    chatbot:
        container_name: chatbot
-       image: virtualwife/chatbot:latest
+       image: okapi0129/virtualwife-chatbot:${CHATBOT_TAG:-latest}
        ports:
         - 8000:8000
        environment:
@@ -15,7 +15,7 @@ services:
          - virtualwife
    chatvrm:
       container_name: chatvrm
-      image: virtualwife/chatvrm:latest
+      image: okapi0129/virtualwife-chatvrm:${CHATVRM_TAG:-latest}
       environment:
         - TZ=${TIMEZONE}  
       env_file:
@@ -24,7 +24,7 @@ services:
         - virtualwife
    gateway:
      container_name: gateway
-     image: virtualwife/gateway:latest
+     image: okapi0129/virtualwife-gateway:${GATEWAY_TAG:-latest}
      restart: always
      ports:
        - ${NGINX_HTTP_PORT:-80}:80

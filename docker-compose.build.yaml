@@ -3,17 +3,17 @@ version: '3'
 services:
 
   chatbot:
-    image: ${DISTRO:-virtualwife}/chatbot:${TAG:-latest}
+    image: ${DISTRO:-okapi0129}/virtualwife-chatbot:${TAG:-latest}
     build:
       context: .
       dockerfile: infrastructure-packaging/Dockerfile.ChatBot
   chatvrm:
-    image: ${DISTRO:-virtualwife}/chatvrm:${TAG:-latest}
+    image: ${DISTRO:-okapi0129}/virtualwife-chatvrm:${TAG:-latest}
     build:
       context: .
       dockerfile: infrastructure-packaging/Dockerfile.ChatVRM
   gateway:
-    image: ${DISTRO:-virtualwife}/gateway:${TAG:-latest}
+    image: ${DISTRO:-okapi0129}/virtualwife-gateway:${TAG:-latest}
     build:
       context: .
       dockerfile: infrastructure-packaging/Dockerfile.Gateway
