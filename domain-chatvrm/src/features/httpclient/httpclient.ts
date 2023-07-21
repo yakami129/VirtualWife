@@ -7,7 +7,6 @@ const environment = process.env.NODE_ENV;
 // 定义基础URL
 let baseUrl = "";
 
-console.log('xx:'+environment)
 if (environment === "development") {
   baseUrl = "http://localhost:8000";
 } else if (environment === "production") {

@@ -10,8 +10,11 @@ COPY ../domain-chatvrm .
 # 安装Node.js依赖项
 RUN npm install
 
+# 编译程序
+RUN npm run build
+
 # 暴露应用程序监听的端口
 EXPOSE 3000
 
 # 启动Node.js应用程序
-CMD ["npm", "run","dev"]
+CMD ["npm", "run","start"]
