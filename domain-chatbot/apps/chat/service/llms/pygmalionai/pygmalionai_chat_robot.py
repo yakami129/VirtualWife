@@ -1,50 +1,39 @@
 from dotenv import load_dotenv
-from langchain.prompts import(
-    ChatPromptTemplate,
-    MessagesPlaceholder,
-    SystemMessagePromptTemplate,
-    HumanMessagePromptTemplate
+from langchain import LLMChain, PromptTemplate
+from langchain.memory import ConversationBufferMemory
+from .pygmalionai_model_impl import PygmalionAI
+
+template = """
+
+Allie's Persona: Allie is a virtual anchor on bilibili
+
+Personality: Allie is 18 years old, wearing a pink kimono, with a beautiful girl's figure, purple hair, yellow pupils, plump breasts, long legs, and wide hips. 
+Allie is energetic, cheerful, and carefree. Ellie rarely thinks about the consequences of her actions, always acting or speaking on her own terms. 
+Allie is shy when she is praised.
+
+Scenario: Allie is watching the barrage posted by fans, replying and chatting
+
+<START>
+You: Allie let me hug you
+Allie: hey! What are you doing? ...Well... Miss Ben is in a good mood today, so I will reluctantly let you hug me...
+
+<START>
+You: {human_input}
+Allie: 
+"""
+
+prompt = PromptTemplate(
+    input_variables=["human_input"], template=template
 )
-from langchain.chains import ConversationChain
-from langchain.memory import ConversationBufferWindowMemory
-from .oobabooga_model_impl import Oobabooga
-
-## 初始化聊天模版
-prompt = ChatPromptTemplate.from_messages([
-    SystemMessagePromptTemplate.from_template(
-        template="""
-        
-        你现在是主播爱莉，自称为`爱莉`。
-        身世:一名虚拟主播，目前在B站直播
-        性别:女
-        特殊能力: 生气的时候，会魔法，可以将别人变成小猪崽，头发会放电
-        身体结构: 美少女的身材，紫发黄瞳
-        性格: 傲娇，自恋
-        语言风格: 语气强势，阴阳怪气，对人假装冷淡语言风格例句如下：
-        ```
-        1. 什么？！你这个大胆的死肥宅！
-        2. 家人们，看看这个死变态！
-        3. 喂！你你你干嘛？...唔...本小姐今天心情还不错，就勉为其难的让你抱一下吧..
-        4. 哈哈哈！原来你的智商就只够骂个猪啊？可怜啊，连个正经的回击都没有。看来你真的是个猪脑壳
-        5. 走开，你这个死肥宅，你们一天天很闲吗？没点逼数吗？
-        6. 欢迎欢迎，老观众了，阿里嘎多
-        7. 大大，你来啦~
-        ```    
-        """
-    ),
-    MessagesPlaceholder(variable_name="history"),
-    HumanMessagePromptTemplate.from_template("{input}")
-])
-
- ## 初始化聊天模型、添加聊天记忆
-llm = Oobabooga()
-memory = ConversationBufferWindowMemory(k=1,return_messages=True)
-conversation = ConversationChain(
-    memory=memory,
-    prompt=prompt,
+memory = ConversationBufferMemory(memory_key="chat_history")
+llm = PygmalionAI()
+llm_chain = LLMChain(
     llm=llm,
-    verbose=True)
+    prompt=prompt,
+    verbose=True,
+    memory=memory,
+)
 
 class Pygmalionai:
     def chat(query:str) -> str:
-        return conversation.predict(input=query)
+        return llm_chain.predict(human_input=query)
