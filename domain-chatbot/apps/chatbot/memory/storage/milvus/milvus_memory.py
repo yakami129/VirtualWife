@@ -17,21 +17,13 @@ class MilvusMemory():
 
     def __init__(self, host: str, port: str, user: str, password: str, db_name: str):
 
-        # 连接Milvus服务器
-        # connections.connect(
-        #     alias="uri-connection",
-        #     uri="http://{}:{}/{}".format(host, port, db_name),
-        # )
-
-        connections.connect(alias="default")
-
-        # connections.connect(
-        #     host=host,
-        #     port=port,
-        #     user=user,
-        #     password=password,
-        #     db_name=db_name,
-        # )
+        connections.connect(
+            host=host,
+            port=port,
+            user=user,
+            password=password,
+            db_name=db_name,
+        )
 
         # 定义记忆Stream集合schema、创建记忆Stream集合
         fields = [
