@@ -16,4 +16,7 @@ channels
 daphne
 schedule
 drf-yasg
-
+pymilvus==2.2.12
+datetime
+transformers
+sentence-transformers
