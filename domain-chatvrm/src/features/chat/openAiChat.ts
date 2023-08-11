@@ -96,7 +96,7 @@ export async function chat(
   };
 
   const body = {query: message};
-  const chatRes = await postRequest("/app/chat",headers, body);
+  const chatRes = await postRequest("/chatbot/chat",headers, body);
   if (chatRes.code !== '200') {
     throw new Error("Something went wrong");
   }

@@ -4,10 +4,6 @@ from abc import ABC, abstractmethod
 # from .openai.cat_lady_chat_robot import CatLady
 # from .openai.enice_chat_robot import Enice
 from .pygmalionai.pygmalionai_chat_robot import Pygmalionai
-import logging
-logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
-
 # 定义llm_model的抽象类
 
 

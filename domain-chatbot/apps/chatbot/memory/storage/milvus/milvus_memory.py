@@ -1,5 +1,5 @@
 # 导入所需模块
-from utils.snowflake_utils import SnowFlake
+from ....utils.snowflake_utils import SnowFlake
 from pymilvus import DataType, FieldSchema, CollectionSchema, Collection, connections
 from sentence_transformers import SentenceTransformer
 import time
@@ -141,7 +141,7 @@ class MilvusMemory():
         ids_result = self.collection.query(
             expr=f"owner=='{owner}'",
             offset=0,
-            limit=10,
+            limit=100,
             output_fields=["id"])
         ids = [item['id'] for item in ids_result]
         ids_expr = f"id in {ids}"

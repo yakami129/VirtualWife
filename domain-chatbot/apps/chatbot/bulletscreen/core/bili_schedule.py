@@ -17,4 +17,4 @@ def run_job_every_interval(interval, job):
     job()
 
 # 运行 job 函数，每 1800 秒运行一次
-run_job_every_interval(1800, job)
+# run_job_every_interval(1800, job)

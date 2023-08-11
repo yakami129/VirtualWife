@@ -4,12 +4,12 @@ import json
 import logging
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from tts.tts_core import create_audio
+from .tts_core import create_audio
 from django.http import HttpResponse, FileResponse, StreamingHttpResponse
 logging.basicConfig(level=logging.INFO)
 
 @api_view(['POST'])
-def generate_audio(request):
+def generate(request):
     """
     Generate audio from text.
     """

@@ -1,9 +1,7 @@
-import logging
 import os
 import re
-import sys
 
-from utils.uuid_generator import generate
+from .utils.uuid_generator import generate
 
 voiceMap = {
     "xiaoxiao": "zh-CN-XiaoxiaoNeural",
@@ -32,7 +30,7 @@ def remove_html(string):
     return regex.sub('', string)
 
 def create_audio(text, voiceId):
-    new_text = remove_html(text)
+    new_text = text
     print(f"Text without html tags: {new_text}")
     voice = getVoiceById(voiceId)
     if not voice:

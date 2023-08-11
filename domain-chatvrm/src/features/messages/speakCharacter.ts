@@ -70,6 +70,6 @@ export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
       'Content-Type': 'application/json',
     }
 
-    const data = await postRequestArraybuffer("/tts/generateAudio",headers, requestBody);
+    const data = await postRequestArraybuffer("/tts/generate",headers, requestBody);
     return data;
 };

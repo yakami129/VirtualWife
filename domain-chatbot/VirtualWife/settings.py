@@ -43,10 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'channels',
-    'app',
-    'blivedm',
-    'tts',
-    'utils'
+    'apps',
 ]
 
 MIDDLEWARE = [
@@ -156,15 +153,15 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': 'logs/debug.log',
+            'filename': 'logs/info.log',
         },
     },
     'loggers': {
         'django': {
             'handlers': ['file'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     },

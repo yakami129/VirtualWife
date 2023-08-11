@@ -35,6 +35,5 @@ def send_message():
         message = chat_queue.get();
         if(message != None and message != ''):
             chat_message = {"type":"chat_message","message":message}
-            print("[BIZ] send_chat_message:",chat_message)
             send_message_exe(chat_channel,chat_message)
   
