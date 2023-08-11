@@ -10,11 +10,7 @@ Scenario: {scenario}
 
 <START>
 {chat_example}
-
-<START>
 {history}
-
-<START>
 {you_name}: {input}
 {role_name}: 
 """

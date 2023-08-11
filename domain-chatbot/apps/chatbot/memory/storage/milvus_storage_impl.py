@@ -6,12 +6,12 @@ class MilvusStorage(BaseStorage):
     '''Milvus向量存储记忆模块'''
     milvus_memory: MilvusMemory
 
-    def __init__(self, storage_config: dict[str, str]):
-        host = storage_config["host"]
-        port = storage_config["port"]
-        user = storage_config["user"]
-        password = storage_config["password"]
-        db_name = storage_config["db_name"]
+    def __init__(self, memory_storage_config: dict[str, str]):
+        host = memory_storage_config["host"]
+        port = memory_storage_config["port"]
+        user = memory_storage_config["user"]
+        password = memory_storage_config["password"]
+        db_name = memory_storage_config["db_name"]
         self.milvus_memory = MilvusMemory(
             host=host, port=port, user=user, password=password, db_name=db_name)
 
@@ -28,7 +28,11 @@ class MilvusStorage(BaseStorage):
         # 排序获得最高分的记忆
         memories = sorted(
             memories, key=lambda m: m["total_score"], reverse=True)
-        return memories[0]
+
+        if len(memories) > 0:
+            return [memories[0]["text"]]
+        else:
+            return [""]
 
     def save(self, quer_text: str, owner: str) -> None:
         self.milvus_memory.loda()
