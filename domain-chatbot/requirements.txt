@@ -22,3 +22,4 @@ transformers
 sentence-transformers
 easygoogletranslate
 volcengine
+requests

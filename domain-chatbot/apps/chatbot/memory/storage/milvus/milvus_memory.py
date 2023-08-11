@@ -100,12 +100,12 @@ class MilvusMemory():
         query_embedding = self.get_embedding_from_language_model(query_text)
         search_params = {"metric_type": "L2", "params": {"nprobe": 30}}
 
-        # 向量搜索表达式
+        # 搜索向量关联的最新1条记忆
         vector_hits = self.collection.search(
             data=[query_embedding],
             anns_field="embedding",
             param=search_params,
-            limit=10,
+            limit=1,
             expr=f"owner=='{owner}'",
             output_fields=["id", "text", "owner", "timestamp"]
         )

@@ -2,15 +2,12 @@ from langchain.prompts import StringPromptTemplate
 from pydantic import BaseModel, validator
 
 PROMPT = """
-{role_name}'s Persona: {persona}
-Personality: {personality}
-Scenario: {scenario}
+{role_name}'s Persona:{persona} Personality:{personality} Scenario:{scenario}
 <START>
 {chat_example}
-<START>
 {history}
-{you_name}: {input}
-{role_name}: 
+{you_name}：{input}
+{role_name}： 
 """
 
 

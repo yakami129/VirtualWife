@@ -59,7 +59,7 @@ class PygmalionAI(LLM):
             'truncation_length': 2048,
             'ban_eos_token': False,
             'skip_special_tokens': True,
-            'stopping_strings': ['You:', '<|endoftext|>', '\\end']
+            'stopping_strings': []
         }
 
         response = requests.post(self.chat_api_url, json=body)

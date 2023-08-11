@@ -39,8 +39,9 @@ class ChatService():
         # 检索相关记忆
         history_arr = self.memory_storage_driver.search(
             query_text=query, owner=you_name)
-        history = "\n".join(history_arr)
-        print("historyQ", history)
+        history = ""
+        if len(history_arr) > 0:
+            history = "\n".join(history_arr)
 
         # 对话聊天
         answer_text = self.llm_model_driver.chat(type=self.llm_model_type, role_name=role_name,
@@ -54,7 +55,7 @@ class ChatService():
         logging.info(
             f'[BIZ] # ChatService.chat # role_name：{role_name} you_name：{you_name} query：{query} history：{history} # \n => answer_text：{answer_text}')
 
-        # self.memory_storage_driver.clear(owner=you_name)
+        self.memory_storage_driver.clear(owner=you_name)
 
         # 合成语音
         return answer_text
