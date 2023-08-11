@@ -19,6 +19,7 @@ import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
 import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
+import { translation } from "@/features/translation/translationApi";
 
 // const m_plus_2 = M_PLUS_2({
 //   variable: "--font-m-plus-2",
@@ -104,10 +105,17 @@ export default function Home() {
       //   return;
       // }
 
-      const newMessage = text;
-      const oldMessage = text;
+      let newMessage = text;
+      let oldMessage = text;
 
       if (newMessage == null) return;
+
+      newMessage = await translation(newMessage, "en").catch(
+        (e) => {
+          console.error(e);
+          return oldMessage;
+        }
+      );
 
       setChatProcessing(true);
       // ユーザーの発言を追加して表示
@@ -130,13 +138,19 @@ export default function Home() {
       let tag = "";
       const sentences = new Array<string>();
 
-      const receivedMessage = await chat(newMessage).catch(
+      let receivedMessage = await chat(newMessage).catch(
         (e) => {
           console.error(e);
           return null;
         }
       );
-      console.log("message:" + newMessage)
+      receivedMessage = await translation(receivedMessage, "zh").catch(
+        (e) => {
+          console.error(e);
+          return oldMessage;
+        }
+      );
+      console.log("message:" + receivedMessage)
 
       try {
 
