@@ -32,7 +32,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
      path("chatbot/", include("apps.chatbot.urls")),
-     path("tts/", include("apps.speech.urls")),
+     path("speech/", include("apps.speech.urls")),
     #  path("blivedm/", include("blivedm.urls")),
      path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]

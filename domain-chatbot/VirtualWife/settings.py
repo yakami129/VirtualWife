@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -57,17 +59,16 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware'
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True # 允许所有来源
-CORS_ALLOW_HEADERS = ['*'] # 允许所有请求头
-CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE'] # 允许的请求方法
+CORS_ALLOW_ALL_ORIGINS = True  # 允许所有来源
+CORS_ALLOW_HEADERS = ['*']  # 允许所有请求头
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE']  # 允许的请求方法
 
 ROOT_URLCONF = 'VirtualWife.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

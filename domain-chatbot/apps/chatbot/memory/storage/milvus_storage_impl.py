@@ -30,7 +30,8 @@ class MilvusStorage(BaseStorage):
             memories, key=lambda m: m["total_score"], reverse=True)
 
         if len(memories) > 0:
-            return [memories[0]["text"]]
+            memories_text = [item['text'] for item in memories]
+            return memories_text
         else:
             return [""]
 

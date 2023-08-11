@@ -54,7 +54,7 @@ class ChatService():
         logging.info(
             f'[BIZ] # ChatService.chat # role_name：{role_name} you_name：{you_name} query：{query} history：{history} # \n => answer_text：{answer_text}')
 
-        ##self.memory_storage_driver.clear(owner=you_name)
+        # self.memory_storage_driver.clear(owner=you_name)
 
         # 合成语音
         return answer_text

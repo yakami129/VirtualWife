@@ -1,11 +1,7 @@
 import requests
 import os
 import json
-from dotenv import load_dotenv
 from ..utils.AuthV3Util import addAuthParams
-
-## 初始化操作
-load_dotenv()  # 读取 .env 文件
 
 # 您的应用ID
 APP_KEY = os.getenv("YOUDAO_APP_KEY")

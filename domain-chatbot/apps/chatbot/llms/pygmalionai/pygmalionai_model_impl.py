@@ -1,11 +1,9 @@
 import json
 from langchain.llms.base import LLM
 from typing import Dict, List, Any, Optional
-from dotenv import load_dotenv
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 import requests
 import os
-load_dotenv()
 
 
 class PygmalionAI(LLM):

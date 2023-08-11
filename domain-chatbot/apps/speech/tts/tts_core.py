@@ -1,7 +1,7 @@
 import os
 import re
 
-from .utils.uuid_generator import generate
+from ..utils.uuid_generator import generate
 
 voiceMap = {
     "xiaoxiao": "zh-CN-XiaoxiaoNeural",

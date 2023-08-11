@@ -20,3 +20,5 @@ pymilvus==2.2.12
 datetime
 transformers
 sentence-transformers
+easygoogletranslate
+volcengine

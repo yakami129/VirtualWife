@@ -2,11 +2,13 @@ from django.shortcuts import render
 import os
 import json
 import logging
+from .translation import translationClient
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .tts_core import create_audio
-from django.http import HttpResponse, FileResponse, StreamingHttpResponse
+from .tts.tts_core import create_audio
+from django.http import HttpResponse, StreamingHttpResponse
 logging.basicConfig(level=logging.INFO)
+
 
 @api_view(['POST'])
 def generate(request):
@@ -35,5 +37,19 @@ def generate(request):
     except Exception as e:
         print(f"generate_audio error: {e}")
         return HttpResponse(status=500, content="Failed to generate audio.")
-   
-  
+
+
+@api_view(['POST'])
+def translation(request):
+    """
+    translation
+    """
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+        text = data["text"]
+        target_language = data["target_language"]
+        target_result = translationClient.translation(text=text, target_language=target_language)
+        return Response({"response": target_result, "code": "200"})
+    except Exception as e:
+        print(f"translation error: {e}")
+        return HttpResponse(status=500, content="Failed to translation error.")
