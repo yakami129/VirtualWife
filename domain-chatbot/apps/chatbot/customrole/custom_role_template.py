@@ -9,10 +9,10 @@ This is how {role_name} should talk\n
 {examples_of_dialogue}
 Then the roleplay chat between {you_name} and {role_name} begins.\n
 {first_message}
-[{personality} {role_name} talks a lot with descriptions]\n
+[{personality} {role_name} talks a lot with descriptions]
 {history}
 {you_name}：{input}
-: {role_name}
+{role_name}:
 """
 
 PERSONALITY_PROMPT = "{role_name}'s personality: {personality}"

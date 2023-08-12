@@ -40,8 +40,6 @@ class ChatService():
 
     def chat(self, role_name: str, you_name: str, query: str) -> str:
 
-        query = self.format_chat_text(text=query)
-
         # 生成角色prompt
         prompt = self.custom_role_generation.get_prompt(role_name)
 
@@ -55,7 +53,8 @@ class ChatService():
         # 对话聊天
         answer_text = self.llm_model_driver.chat(prompt=prompt, type=self.llm_model_type, role_name=role_name,
                                                  you_name=you_name, query=query, history=history)
-        answer_text = self.format_chat_text(answer_text)
+        answer_text = self.format_chat_text(
+            role_name=role_name, you_name=you_name, text=answer_text)
 
         # 保存记忆
         self.memory_storage_driver.save(
@@ -64,11 +63,15 @@ class ChatService():
         logging.info(
             f'[BIZ] # ChatService.chat # role_name：{role_name} you_name：{you_name} query：{query} history：{history} # \n => answer_text：{answer_text}')
 
-        # self.memory_storage_driver.clear(owner=you_name)
+        self.memory_storage_driver.clear(owner=you_name)
 
         # 合成语音
         return answer_text
 
-    def format_chat_text(self, text: str):
-        text = re.sub(r'\n', '', text)
+    def format_chat_text(self, role_name: str, you_name: str, text: str):
+        # 去除特殊字符 * 、`role_name：`、`you_name:`
+        text = text.replace(f'{role_name}：', "")
+        text = text.replace(f'{you_name}：', "")
+        text = text.replace(f'{role_name}:', "")
+        text = text.replace(f'{you_name}:', "")
         return text

@@ -44,6 +44,7 @@ class LlmModel:
 
 
 class LlmModelDriver():
+
     def chat(self, prompt: str, type: str, role_name: str, you_name: str, query: str, history: str) -> str:
         if type == "openai":
             strategy = OpenAILlmModelStrategy()

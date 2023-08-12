@@ -7,9 +7,9 @@ import os
 
 
 class TextGenerationModel(LLM):
-    max_token: int = 2048
-    temperature: float = 0.7
-    top_p: float = 0.95
+    max_new_tokens: int = 2048
+    temperature: float = 0.5
+    top_p: float = 0.9
 
     # .env add text_generation_api_url=xxx
     text_generation_api_url: str = os.getenv("TEXT_GENERATION_API_URL")
@@ -30,9 +30,12 @@ class TextGenerationModel(LLM):
               stop: Optional[List[str]] = None,
               run_manager: Optional[CallbackManagerForLLMRun] = None,
               ) -> str:
+
+        print("stop:", stop)
+
         body = {
             'prompt': prompt,
-            'max_new_tokens': self.max_token,
+            'max_new_tokens': self.max_new_tokens,
             'preset': 'None',
             'do_sample': True,
             'temperature': self.temperature,
@@ -59,7 +62,7 @@ class TextGenerationModel(LLM):
             'truncation_length': 2048,
             'ban_eos_token': False,
             'skip_special_tokens': True,
-            'stopping_strings': []
+            'stopping_strings': ['alan:', '<|endoftext|>', '\\end']
         }
 
         response = requests.post(self.chat_api_url, json=body)
