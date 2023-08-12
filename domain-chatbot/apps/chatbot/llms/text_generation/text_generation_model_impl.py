@@ -6,25 +6,25 @@ import requests
 import os
 
 
-class PygmalionAI(LLM):
+class TextGenerationModel(LLM):
     max_token: int = 2048
     temperature: float = 0.7
     top_p: float = 0.95
 
-    # .env add OOBABOOGA_API_URL=xxx
-    oobabooga_url: str = os.getenv("OOBABOOGA_API_URL")
-    chat_api_url: str = oobabooga_url + '/api/v1/generate'
+    # .env add text_generation_api_url=xxx
+    text_generation_api_url: str = os.getenv("TEXT_GENERATION_API_URL")
+    chat_api_url: str = text_generation_api_url + '/api/v1/generate'
 
     def __init__(self):
         super().__init__()
-        print("########################### init Oobabooga ###########################")
-        print('oobabooga_url:', self.oobabooga_url)
+        print("########################### init TextGeneration ###########################")
+        print('text_generation_api_url:', self.text_generation_api_url)
         print('chat_api_url:', self.chat_api_url)
         print("######################################################################")
 
     @property
     def _llm_type(self) -> str:
-        return "pygmalionai"
+        return "text_generation"
 
     def _call(self, prompt: str,
               stop: Optional[List[str]] = None,

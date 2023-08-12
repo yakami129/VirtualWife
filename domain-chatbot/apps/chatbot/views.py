@@ -19,7 +19,7 @@ def chat(request):
     chat = None
     query = data["query"]
     you_name = "alan"
-    role_name = "Allie"
+    role_name = "Maiko"
     # try:
     #     chat = chat_service.chat(
     #         role_name=role_name, you_name=you_name, query=query)

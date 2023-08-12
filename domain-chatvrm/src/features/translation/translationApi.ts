@@ -19,4 +19,5 @@ export async function translation(
     }
 
     return chatRes.response;
+    // return text;
 }

@@ -3,8 +3,8 @@
 # OpenAI Key
 OPENAI_API_KEY=sk-XXXXX
 
-# oobabooga/text-generation-webui
-OOBABOOGA_API_URL=http://127.0.0.1:5000
+# text-generation-webui
+TEXT_GENERATION_API_URL=http://127.0.0.1:5000
 
 # B站直播间ID
 B_STATION_ID=27892212
