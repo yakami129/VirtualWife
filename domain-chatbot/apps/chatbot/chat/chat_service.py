@@ -63,13 +63,14 @@ class ChatService():
         logging.info(
             f'[BIZ] # ChatService.chat # role_name：{role_name} you_name：{you_name} query：{query} history：{history} # \n => answer_text：{answer_text}')
 
-        self.memory_storage_driver.clear(owner=you_name)
+        # self.memory_storage_driver.clear(owner=you_name)
 
         # 合成语音
         return answer_text
 
     def format_chat_text(self, role_name: str, you_name: str, text: str):
         # 去除特殊字符 * 、`role_name：`、`you_name:`
+        text = text.replace(f'*', "")
         text = text.replace(f'{role_name}：', "")
         text = text.replace(f'{you_name}：', "")
         text = text.replace(f'{role_name}:', "")
