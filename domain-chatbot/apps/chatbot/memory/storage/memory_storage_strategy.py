@@ -1,3 +1,4 @@
+import re
 from typing import Tuple
 from ...llms.llm_model_strategy import LlmModelDriver
 import numpy as np
@@ -38,12 +39,17 @@ class MemoryStorageDriver():
             short_history = "\n".join(short_memory)
 
         # 获取长期记忆
-        long_memory = self.strategy.search(query_text, owner)
+        long_memory = self.strategy.search(
+            query_text, 30, f"owner == '{owner}'")
         long_history = "[]"
         if len(long_memory) > 0:
             long_history = "\n".join(long_memory)
 
         return (short_history, long_history)
+
+    def pageQuery(self, page_num: int, page_size: int, expr: str) -> list[str]:
+        '''分页检索记忆'''
+        return self.strategy.pageQuery(page_num=page_num, page_size=page_size, expr=expr)
 
     def save(self, role_name: str, you_name: str, query_text: str, answer_text: str, llm_model_type: str, llm_model_driver: LlmModelDriver) -> None:
 
@@ -67,7 +73,6 @@ class MemoryStorageDriver():
         memory_summary = MemorySummary(llm_model_driver)
         history = memory_summary.summary(
             llm_model_type=llm_model_type, input=history)
-        print("summary:", history)
         self.strategy.save(pk, history, you_name)
 
     def get_current_entity_id(self) -> int:
@@ -86,14 +91,23 @@ class MemorySummary():
     def __init__(self, llm_model_driver: LlmModelDriver) -> None:
         self.llm_model_driver = llm_model_driver
         self.prompt = '''
-          Common sense questions and answers
-          Question: Please help me summarize this sentence "{input}"
-          Factual answer:
+          <s>[INST] <<SYS>>
+          So to summarize the conversation I provided, just briefly describe what they did. and output it in the 
+          "summary": "you summary"
+          <</SYS>>
+          {input} [/INST]
         '''
 
     def summary(self, llm_model_type: str, input: str) -> str:
-        return self.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
-                                          you_name="", query=input, short_history="", long_history="")
+        result = self.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
+                                            you_name="", query=input, short_history="", long_history="")
+        pattern = r'[Ss]ummary:\s*(.*)'
+        match = re.search(pattern, result)
+
+        if match:
+            result = match.group(1)
+        print("summary:", result)
+        return result
 
 # from typing import Any, Dict, List
 

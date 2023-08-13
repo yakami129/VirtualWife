@@ -4,6 +4,6 @@ from . import views
 
 urlpatterns = [
     path('chat', views.chat, name='chat'),
-    # path('translation',views.translation,name='translation')
+    path('memory/reflection', views.reflection_generation, name='reflection_generation'),
+    path('memory/clear', views.clear_memory, name='clear_memory')
 ]
-

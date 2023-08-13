@@ -1,9 +1,12 @@
+import time
 from django.shortcuts import render
 import asyncio
 import json
 from .chat import chat_service
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from .memory.storage import singleton_memory_storage_driver
+from .memory.reflection.reflection_generation import ReflectionGeneration
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -29,6 +32,30 @@ def chat(request):
     chat = chat_service.chat(
         role_name=role_name, you_name=you_name, query=query)
     return Response({"response": chat, "code": "200"})
+
+
+@api_view(['GET'])
+def reflection_generation(request):
+    '''
+      生成新记忆
+    :return:
+    '''
+    rg = ReflectionGeneration()
+    rg.generation(role_name="Maiko")
+    timestamp = time.time()
+    expr = f'timestamp <= {timestamp}'
+    result = singleton_memory_storage_driver.pageQuery(1, 100, expr=expr)
+    return Response({"response": result, "code": "200"})
+
+
+@api_view(['GET'])
+def clear_memory(request):
+    '''
+      删除测试记忆
+    :return:
+    '''
+    result = singleton_memory_storage_driver.clear("alan")
+    return Response({"response": result, "code": "200"})
 
 
 # @api_view(['POST'])

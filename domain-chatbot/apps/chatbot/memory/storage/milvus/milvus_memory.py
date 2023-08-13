@@ -69,11 +69,12 @@ class MilvusMemory():
         data = [[pk], [text], [owner], [timestamp], [embedding]]
         self.collection.insert(data)
 
-    def compute_relevance(self, query_text: str, owner: str):
+    def compute_relevance(self, query_text: str, limit: int, expr: str):
         '''定义计算相关性分数函数'''
 
         # 搜索表达式
-        search_result = self.search_memory(query_text, owner)
+        search_result = self.search_memory(
+            query_text, limit, expr)
         hits = []
         for hit in search_result:
             memory = {
@@ -87,18 +88,18 @@ class MilvusMemory():
 
         return hits
 
-    def search_memory(self, query_text: str, owner: str):
+    def search_memory(self, query_text: str, limit: int, expr: str):
 
         query_embedding = self.get_embedding_from_language_model(query_text)
         search_params = {"metric_type": "L2", "params": {"nprobe": 30}}
 
-        # 搜索向量关联的最新3条记忆
+        # 搜索向量关联的最新30条记忆
         vector_hits = self.collection.search(
             data=[query_embedding],
             anns_field="embedding",
             param=search_params,
-            limit=30,
-            expr=f"owner=='{owner}'",
+            limit=limit,
+            expr=expr,
             output_fields=["id", "text", "owner", "timestamp"]
         )
 
@@ -122,6 +123,15 @@ class MilvusMemory():
         for memory in memories:
             memory["total_score"] = memory["relevance"] + \
                 memory["importance"] + memory["recency"]
+
+    def pageQuery(self, expr: str, offset: int, limit: int):
+        vector_hits = self.collection.query(
+            expr=expr,
+            offset=offset,
+            limit=limit,
+            output_fields=["id", "text", "owner", "timestamp"]
+        )
+        return vector_hits
 
     def loda(self):
         self.collection.load()

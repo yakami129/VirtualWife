@@ -3,19 +3,18 @@ from .custom_role_model import CustomRoleModel
 
 
 PROMPT = """
-
+<s>[INST] <<SYS>>
 {persona}
 {scenario}
 This is how {role_name} should talk
 {examples_of_dialogue}
 Then the roleplay chat between {you_name} and {role_name} begins.
-{first_message}
 This is the {you_name} and {role_name} memory module.
 {long_history}
 [{personality} {role_name} talks a lot with descriptions You only need to output {role_name}'s dialogue, no need to output {you_name}'s dialogue]
 {short_history}
-{you_name}：{input}
-{role_name}:
+<</SYS>>
+{you_name}：{input} [/INST]
 """
 
 PERSONALITY_PROMPT = "{role_name}'s personality: {personality}"

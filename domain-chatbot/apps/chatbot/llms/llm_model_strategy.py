@@ -48,7 +48,7 @@ class LlmModelDriver():
     def chat(self, prompt: str, type: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
         if type == "openai":
             strategy = OpenAILlmModelStrategy()
-        elif type == "pygmalionai":
+        elif type == "text_generation":
             strategy = TextGenerationLlmModelStrategy()
         else:
             raise ValueError("Unknown type")
