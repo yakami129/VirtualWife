@@ -31,8 +31,6 @@ class TextGenerationModel(LLM):
               run_manager: Optional[CallbackManagerForLLMRun] = None,
               ) -> str:
 
-        print("stop:", stop)
-
         body = {
             'prompt': prompt,
             'max_new_tokens': self.max_new_tokens,
@@ -63,6 +61,7 @@ class TextGenerationModel(LLM):
             'ban_eos_token': False,
             'skip_special_tokens': True,
             'stopping_strings': ['alan:', '<|endoftext|>', '\\end']
+            # 'stopping_strings': []
         }
 
         response = requests.post(self.chat_api_url, json=body)

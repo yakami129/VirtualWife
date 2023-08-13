@@ -44,26 +44,24 @@ class ChatService():
         prompt = self.custom_role_generation.get_prompt(role_name)
 
         # 检索相关记忆
-        history_arr = self.memory_storage_driver.search(
+        short_history, long_history = self.memory_storage_driver.search(
             query_text=query, owner=you_name)
-        history = ""
-        if len(history_arr) > 0:
-            history = "\n".join(history_arr)
-
+        
         # 对话聊天
         answer_text = self.llm_model_driver.chat(prompt=prompt, type=self.llm_model_type, role_name=role_name,
-                                                 you_name=you_name, query=query, history=history)
+                                                 you_name=you_name, query=query, short_history=short_history, long_history=long_history)
         answer_text = self.format_chat_text(
-            role_name=role_name, you_name=you_name, text=answer_text)
-
-        # 保存记忆
-        self.memory_storage_driver.save(
-            role_name=role_name, you_name=you_name, query_text=query, answer_text=answer_text)
-
+            role_name=role_name, you_name=you_name, text=answer_text).strip()
+        
         logging.info(
-            f'[BIZ] # ChatService.chat # role_name：{role_name} you_name：{you_name} query：{query} history：{history} # \n => answer_text：{answer_text}')
+        f'[BIZ] # ChatService.chat # role_name：{role_name} you_name：{you_name} query：{query} short_history：{short_history}  long_history:{long_history}# \n => answer_text：{answer_text}')
 
-        # self.memory_storage_driver.clear(owner=you_name)
+        if answer_text != "":
+            # 保存记忆
+            self.memory_storage_driver.save(
+                role_name=role_name, you_name=you_name, query_text=query, answer_text=answer_text, llm_model_type=self.llm_model_type, llm_model_driver=self.llm_model_driver)
+     
+        #self.memory_storage_driver.clear(owner=you_name)
 
         # 合成语音
         return answer_text

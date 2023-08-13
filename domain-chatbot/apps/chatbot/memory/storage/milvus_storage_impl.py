@@ -31,13 +31,14 @@ class MilvusStorage(BaseStorage):
 
         if len(memories) > 0:
             memories_text = [item['text'] for item in memories]
-            return memories_text
+            memories_text = memories_text[0]
+            return [memories_text]
         else:
-            return [""]
+            return []
 
-    def save(self, quer_text: str, owner: str) -> None:
+    def save(self, pk: int,  quer_text: str, owner: str) -> None:
         self.milvus_memory.loda()
-        self.milvus_memory.insert_memory(text=quer_text, owner=owner)
+        self.milvus_memory.insert_memory(pk=pk, text=quer_text, owner=owner)
         self.milvus_memory.release()
 
     def clear(self, owner: str) -> None:

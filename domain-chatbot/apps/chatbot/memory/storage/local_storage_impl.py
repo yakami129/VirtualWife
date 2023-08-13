@@ -7,7 +7,7 @@ class LocalStorage(BaseStorage):
     def search(self, query_text: str, owner: str) -> list[str]:
         return ["TODO"]
 
-    def save(self, quer_text: str, owner: str) -> None:
+    def save(self, pk: int,  quer_text: str, owner: str) -> None:
         return "TODO"
 
     def clear(self, owner: str) -> None:

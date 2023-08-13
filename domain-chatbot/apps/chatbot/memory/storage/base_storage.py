@@ -11,7 +11,7 @@ class BaseStorage(ABC):
         pass
 
     @abstractmethod
-    def save(self, query_text: str, owner: str) -> None:
+    def save(self, pk: int, query_text: str, owner: str) -> None:
         '''保存记忆'''
         pass
 

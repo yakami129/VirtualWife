@@ -3,14 +3,17 @@ from .custom_role_model import CustomRoleModel
 
 
 PROMPT = """
+
 {persona}
 {scenario}
-This is how {role_name} should talk\n
+This is how {role_name} should talk
 {examples_of_dialogue}
-Then the roleplay chat between {you_name} and {role_name} begins.\n
+Then the roleplay chat between {you_name} and {role_name} begins.
 {first_message}
-[{personality} {role_name} talks a lot with descriptions]
-{history}
+This is the {you_name} and {role_name} memory module.
+{long_history}
+[{personality} {role_name} talks a lot with descriptions You only need to output {role_name}'s dialogue, no need to output {you_name}'s dialogue]
+{short_history}
 {you_name}：{input}
 {role_name}:
 """
@@ -29,7 +32,8 @@ class CustomRoleTemplate():
         persona = custom_role_model.persona
         examples_of_dialogue = custom_role_model.examples_of_dialogue
         you_name = "{you_name}"
-        history = "{history}"
+        long_history = "{long_history}"
+        short_history = "{short_history}"
         input = "{input}"
 
         # 如果没有来自角色的第一段对话则填充为空
@@ -56,7 +60,7 @@ class CustomRoleTemplate():
         prompt = PROMPT.format(
             role_name=role_name, persona=persona, first_message=first_message, personality=personality,
             scenario=scenario, examples_of_dialogue=examples_of_dialogue, you_name=you_name,
-            history=history, input=input
+            long_history=long_history, short_history=short_history, input=input
         )
 
         return prompt

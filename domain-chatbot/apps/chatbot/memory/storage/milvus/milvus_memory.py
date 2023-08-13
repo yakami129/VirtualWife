@@ -49,9 +49,6 @@ class MilvusMemory():
         self.model = SentenceTransformer(
             'sentence-transformers/all-MiniLM-L6-v2')
 
-        # 初始化雪花算法
-        self.snow_flake = SnowFlake(data_center_id=5, worker_id=5)
-
     def get_embedding_from_language_model(self, text: str):
         embedding = self.model.encode(text)
         return embedding
@@ -63,18 +60,13 @@ class MilvusMemory():
             importance_score = chat_fun.chat(str)
         return importance_score
 
-    def get_current_entity_id(self) -> int:
-        '''生成唯一标识'''
-        return self.snow_flake.task()
-
-    def insert_memory(self, text: str, owner: str):
+    def insert_memory(self, pk: int,  text: str, owner: str):
         '''定义插入记忆对象函数'''
-        id = self.get_current_entity_id()  # auto increment id
         timestamp = time.time()
 
         # 使用语言模型获得文本embedding向量
         embedding = self.get_embedding_from_language_model(text)
-        data = [[id], [text], [owner], [timestamp], [embedding]]
+        data = [[pk], [text], [owner], [timestamp], [embedding]]
         self.collection.insert(data)
 
     def compute_relevance(self, query_text: str, owner: str):
@@ -105,7 +97,7 @@ class MilvusMemory():
             data=[query_embedding],
             anns_field="embedding",
             param=search_params,
-            limit=3,
+            limit=30,
             expr=f"owner=='{owner}'",
             output_fields=["id", "text", "owner", "timestamp"]
         )
