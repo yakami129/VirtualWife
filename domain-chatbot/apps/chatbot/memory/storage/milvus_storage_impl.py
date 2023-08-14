@@ -32,8 +32,9 @@ class MilvusStorage(BaseStorage):
 
         if len(memories) > 0:
             memories_text = [item['text'] for item in memories]
-            memories_text = memories_text[0]
-            return [memories_text]
+            memories_size = 5
+            memories_text = memories_text[:memories_size] if len(memories_text) >= memories_size else memories_text
+            return memories_text
         else:
             return []
 

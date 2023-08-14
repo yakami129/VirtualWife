@@ -11,10 +11,10 @@ PROMPT = """
 {examples_of_dialogue}
 你扮演的是{role_name}，只站在{role_name}角度，输出{role_name}的对话。
 你的回答应该简短，最多包含三句话，每句话不超过40个单词。
-这是{role_name}和{you_name}回忆，你需要根据回忆做出不同的反馈
-{long_history}
-[这个是{role_name}的性格简述：{personality} 下面是 {you_name}和{role_name}的对话历史]
+[这个是{role_name}的性格简述：{personality} 下面是 {you_name}和{role_name}的对话历史]：
 {short_history}
+[这个是{role_name}最近的回忆，你可以根据回忆，对{you_name}做出不同的反馈，比如讽刺、幽默、开玩笑、鼓励等反馈]：
+{long_history}
 <</SYS>>
 {you_name}：{input}[/INST]
 """

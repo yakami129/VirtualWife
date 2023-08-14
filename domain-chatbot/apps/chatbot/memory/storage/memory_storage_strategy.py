@@ -1,4 +1,5 @@
 import re
+import json
 from typing import Tuple
 from ...llms.llm_model_strategy import LlmModelDriver
 import numpy as np
@@ -42,9 +43,16 @@ class MemoryStorageDriver():
         long_memory = self.strategy.search(
             query_text, 30, f"owner == '{owner}'")
         long_history = "[]"
+        summary_historys = []
         if len(long_memory) > 0:
-            long_history = "\n".join(long_memory)
-
+            # 将json字符串转换为字典
+            for mem in long_memory:
+                # 每个元素mem才是json字符串
+                mem_dict = json.loads(mem)
+                # 提取所有summary_history字段
+                summary_history = mem_dict['summary_history']
+                summary_historys.append(summary_history)
+            long_history = "\n".join(summary_historys)
         return (short_history, long_history)
 
     def pageQuery(self, page_num: int, page_size: int, expr: str) -> list[str]:
@@ -69,11 +77,16 @@ class MemoryStorageDriver():
         # 将当前对话语句生成摘要，存储为长期记忆
         you_history = f"{you_name}：{query_text}"
         role_history = f"{role_name}：{answer_text}"
-        history = you_history + '\n' + role_history
+        chat_history = you_history + '\n' + role_history
         memory_summary = MemorySummary(llm_model_driver)
-        history = memory_summary.summary(
-            llm_model_type=llm_model_type, input=history)
-        self.strategy.save(pk, history, you_name)
+        summary_history = memory_summary.summary(
+            llm_model_type=llm_model_type, input=chat_history)
+        history = {
+            "chat_history": chat_history,
+            "summary_history": summary_history
+        }
+        history_json = json.dumps(history)
+        self.strategy.save(pk, history_json, you_name)
 
     def get_current_entity_id(self) -> int:
         '''生成唯一标识'''
@@ -92,7 +105,7 @@ class MemorySummary():
         self.llm_model_driver = llm_model_driver
         self.prompt = '''
           <s>[INST] <<SYS>>
-          请帮我提取对话内容的关键信息，详细的总结一下，至少要有3个观点，并且按照以下格式输出
+          请帮我提取对话内容的关键信息(需要包含两个角色的名称)，详细的总结一下，至少要有3个观点，并且按照以下格式输出
           摘要: "你总结的对话内容"
           <</SYS>>
           {input} [/INST]

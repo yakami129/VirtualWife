@@ -1,10 +1,7 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-# from .openai.aili_anchor_chat_robot import Aili
-# from .openai.cat_lady_chat_robot import CatLady
-# from .openai.enice_chat_robot import Enice
+from .openai.openai_chat_robot import OpenAIGeneration
 from .text_generation.text_generation_chat_robot import TextGeneration
-# 定义llm_model的抽象类
 
 
 class LlmModelStrategy(ABC):
@@ -16,14 +13,7 @@ class LlmModelStrategy(ABC):
 # 定义策略类实现
 class OpenAILlmModelStrategy(LlmModelStrategy):
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
-        result = ""
-        # if role_name == "aili":
-        #     result = Aili.chat(query=query)
-        # elif role_name == "catLady":
-        #     result = CatLady.chat(query=query)
-        # elif role_name == 'enice':
-        #     result = Enice.chat(query=query)
-        return result
+        return OpenAIGeneration.chat(prompt=prompt, role_name=role_name, you_name=you_name, query=query, short_history=short_history, long_history=long_history)
 
 
 class TextGenerationLlmModelStrategy(LlmModelStrategy):
