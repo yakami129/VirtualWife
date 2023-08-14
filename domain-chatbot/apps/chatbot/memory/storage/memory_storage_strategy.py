@@ -92,8 +92,8 @@ class MemorySummary():
         self.llm_model_driver = llm_model_driver
         self.prompt = '''
           <s>[INST] <<SYS>>
-          So to summarize the conversation I provided, just briefly describe what they did. and output it in the 
-          "summary": "you summary"
+          请帮我提取对话内容的关键信息，详细的总结一下，至少要有3个观点，并且按照以下格式输出
+          摘要: "你总结的对话内容"
           <</SYS>>
           {input} [/INST]
         '''
@@ -101,7 +101,7 @@ class MemorySummary():
     def summary(self, llm_model_type: str, input: str) -> str:
         result = self.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
                                             you_name="", query=input, short_history="", long_history="")
-        pattern = r'[Ss]ummary:\s*(.*)'
+        pattern = r'摘要:\s*(.*)'
         match = re.search(pattern, result)
 
         if match:

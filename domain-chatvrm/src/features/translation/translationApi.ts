@@ -13,11 +13,11 @@ export async function translation(
         "text": text,
         "target_language": target_language
     };
-    const chatRes = await postRequest("/speech/translation", headers, body);
-    if (chatRes.code !== '200') {
-        throw new Error("Something went wrong");
-    }
+    // const chatRes = await postRequest("/speech/translation", headers, body);
+    // if (chatRes.code !== '200') {
+    //     throw new Error("Something went wrong");
+    // }
 
-    return chatRes.response;
-    // return text;
+    // return chatRes.response;
+    return text;
 }

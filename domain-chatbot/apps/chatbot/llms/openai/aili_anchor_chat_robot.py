@@ -74,7 +74,7 @@
 
 
 #  ## 初始化聊天模型、添加聊天记忆
-# llm = ChatOpenAI(temperature=0.8,model_name="gpt-3.5-turbo")
+# llm = ChatOpenAI(temperature=0.8,model_name="gpt-3.5-turbo",openai_api_base="xxxx")
 # memory = ConversationBufferWindowMemory(k=1,return_messages=True)
 # conversation = ConversationChain(
 #     memory=memory,

@@ -1,4 +1,5 @@
 
+from .base_custom_role_template import BaseCustomRoleTemplate
 from .custom_role_model import CustomRoleModel
 
 
@@ -6,15 +7,16 @@ PROMPT = """
 <s>[INST] <<SYS>>
 {persona}
 {scenario}
-This is how {role_name} should talk
+{role_name}的对话风格如下:
 {examples_of_dialogue}
-Then the roleplay chat between {you_name} and {role_name} begins.
-This is the {you_name} and {role_name} memory module.
+你扮演的是{role_name}，只站在{role_name}角度，输出{role_name}的对话。
+你的回答应该简短，最多包含三句话，每句话不超过40个单词。
+这是{role_name}和{you_name}回忆，你需要根据回忆做出不同的反馈
 {long_history}
-[{personality} {role_name} talks a lot with descriptions You only need to output {role_name}'s dialogue, no need to output {you_name}'s dialogue]
+[这个是{role_name}的性格简述：{personality} 下面是 {you_name}和{role_name}的对话历史]
 {short_history}
 <</SYS>>
-{you_name}：{input} [/INST]
+{you_name}：{input}[/INST]
 """
 
 PERSONALITY_PROMPT = "{role_name}'s personality: {personality}"
@@ -22,7 +24,7 @@ PERSONALITY_PROMPT = "{role_name}'s personality: {personality}"
 SCENARIO_PROMPT = "Circumstances and context of the dialogue: {scenario}"
 
 
-class CustomRoleTemplate():
+class ChineseCustomRoleTemplate(BaseCustomRoleTemplate):
 
     def format(self, custom_role_model: CustomRoleModel) -> str:
 
@@ -34,11 +36,6 @@ class CustomRoleTemplate():
         long_history = "{long_history}"
         short_history = "{short_history}"
         input = "{input}"
-
-        # 如果没有来自角色的第一段对话则填充为空
-        first_message = custom_role_model.first_message
-        if first_message == None:
-            first_message = ''
 
         # 格式化性格简述
         personality = custom_role_model.personality
@@ -57,7 +54,7 @@ class CustomRoleTemplate():
 
         # Generate the prompt to be sent to the language model
         prompt = PROMPT.format(
-            role_name=role_name, persona=persona, first_message=first_message, personality=personality,
+            role_name=role_name, persona=persona, personality=personality,
             scenario=scenario, examples_of_dialogue=examples_of_dialogue, you_name=you_name,
             long_history=long_history, short_history=short_history, input=input
         )
