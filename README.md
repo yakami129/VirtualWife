@@ -66,7 +66,7 @@ cd installer
 
 - 更改境变量配置模版文件名为.env
 ```
-mv env_example .evn
+mv env_example .env
 ```
 - 设置环境变量
 ```
