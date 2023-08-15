@@ -151,5 +151,5 @@ class BiliHandler(BaseHandler):
             "content": message_str,
             'cmd': cmd_str
         }
-        put_chat_message(MessagePriority.ENTER_THE_ROOM_MESSAGE,message_body)
+        #put_chat_message(MessagePriority.ENTER_THE_ROOM_MESSAGE,message_body)
 
