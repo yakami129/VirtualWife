@@ -4,7 +4,7 @@ from .base_storage import BaseStorage
 class LocalStorage(BaseStorage):
     '''本地存储记忆模块'''
 
-    def search(self, query_text: str, limit: int, expr: str) -> list[str]:
+    def search(self, query_text: str, limit: int, expr: str == None) -> list[str]:
         return ["TODO"]
 
     def pageQuery(self, page_num: int, page_size: int, expr: str) -> list[str]:

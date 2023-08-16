@@ -40,19 +40,19 @@ class MemoryStorageDriver():
             short_history = "\n".join(short_memory)
 
         # 获取长期记忆
-        long_memory = self.strategy.search(
-            query_text, 30, f"owner == '{owner}'")
-        long_history = "[]"
+        memory_query = f"{owner}：{query_text}"
+        long_memory = self.strategy.search(memory_query, 30,expr=None)
+        long_history = "[暂无长期记忆]"
         summary_historys = []
         if len(long_memory) > 0:
             # 将json字符串转换为字典
-            for mem in long_memory:
+            for i in range(len(long_memory)):
                 # 每个元素mem才是json字符串
+                mem = long_memory[i]
                 mem_dict = json.loads(mem)
                 # 提取所有summary_history字段
-                summary_history = mem_dict['summary_history']
-                summary_historys.append(summary_history)
-            long_history = "\n".join(summary_historys)
+                summary_historys.append(mem_dict['summary'])
+            long_history = ";".join(summary_historys)
         return (short_history, long_history)
 
     def pageQuery(self, page_num: int, page_size: int, expr: str) -> list[str]:
@@ -79,11 +79,11 @@ class MemoryStorageDriver():
         role_history = f"{role_name}：{answer_text}"
         chat_history = you_history + '\n' + role_history
         memory_summary = MemorySummary(llm_model_driver)
-        summary_history = memory_summary.summary(
+        summary= memory_summary.summary(
             llm_model_type=llm_model_type, input=chat_history)
         history = {
-            "chat_history": chat_history,
-            "summary_history": summary_history
+            "summary": summary["summary"],
+            "information": summary["information"]
         }
         history_json = json.dumps(history)
         self.strategy.save(pk, history_json, you_name)
@@ -104,23 +104,32 @@ class MemorySummary():
     def __init__(self, llm_model_driver: LlmModelDriver) -> None:
         self.llm_model_driver = llm_model_driver
         self.prompt = '''
-          <s>[INST] <<SYS>>
-          请帮我提取对话内容的关键信息(需要包含两个角色的名称)，详细的总结一下，至少要有3个观点，并且按照以下格式输出
-          摘要: "你总结的对话内容"
-          <</SYS>>
-          {input} [/INST]
+               <s>[INST] <<SYS>>          
+                请帮我提取对话内容的关键信息，下面是一个提取关键信息的示例:
+                ```
+                input: "alan：你好，爱莉，很高兴认识你，我是一名程序员，我喜欢吃川菜，也喜欢打篮球，我是水瓶座，生日是1月29日
+                output: {"summary"："alan向爱莉表示自己是一名程序员，爱莉表达对程序员的兴趣并希望了解更多","information":["alan是一名程序员","alan喜欢川菜","alan喜欢打篮球","alan是水瓶座","alan的生日是1月29日"]}
+                ```
+                输出格式请使用以下方式：
+                ```
+                {"summary"："对话摘要","information":["关键信息"]}
+                ```
         '''
 
     def summary(self, llm_model_type: str, input: str) -> str:
-        result = self.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
-                                            you_name="", query=input, short_history="", long_history="")
-        pattern = r'摘要:\s*(.*)'
+        prompt = self.prompt + f"input: {input} [/INST]"
+        result = self.llm_model_driver.chat(prompt=prompt, type=llm_model_type, role_name="",
+                                            you_name="", query=input, short_history="", long_history="").strip()
+        # 使用正则表达式匹配JSON字符串
+        pattern = r'{\s*"summary":[^}]+}'
         match = re.search(pattern, result)
-
         if match:
-            result = match.group(1)
-        print("summary:", result)
-        return result
+            result = match.group()
+        else:
+            result = "{}"
+            print("未找到匹配的JSON字符串")
+        print("=> summary:", result)
+        return json.loads(result)
 
 # from typing import Any, Dict, List
 

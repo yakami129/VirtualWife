@@ -15,7 +15,7 @@ class MilvusStorage(BaseStorage):
         self.milvus_memory = MilvusMemory(
             host=host, port=port, user=user, password=password, db_name=db_name)
 
-    def search(self, query_text: str, limit: int, expr: str) -> list[str]:
+    def search(self, query_text: str, limit: int, expr: str == None) -> list[str]:
 
         self.milvus_memory.loda()
         # 查询记忆，并且使用 关联性 + 重要性 + 最近性 算法进行评分

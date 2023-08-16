@@ -17,8 +17,15 @@ class OpenAILlmModelStrategy(LlmModelStrategy):
 
 
 class TextGenerationLlmModelStrategy(LlmModelStrategy):
+
+    generation : TextGeneration
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.generation = TextGeneration()
+
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
-        return TextGeneration.chat(prompt=prompt, role_name=role_name, you_name=you_name, query=query, short_history=short_history, long_history=long_history)
+        return self.generation.chat(prompt=prompt, role_name=role_name, you_name=you_name, query=query, short_history=short_history, long_history=long_history)
 
 
 # 定义驱动类

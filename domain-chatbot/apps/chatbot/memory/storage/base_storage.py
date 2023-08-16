@@ -6,7 +6,7 @@ class BaseStorage(ABC):
     '''统一记忆存储抽象类,基于当前抽象类扩展其他的存储模块'''
 
     @abstractmethod
-    def search(self, query_text: str, limit: int, expr: str) -> list[str]:
+    def search(self, query_text: str, limit: int, expr: str == None) -> list[str]:
         '''检索记忆,只返回关联性最强的记忆'''
         pass
 
