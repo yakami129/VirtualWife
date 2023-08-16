@@ -21,7 +21,7 @@ class OpenAIGeneration():
             self.llm = ChatOpenAI(temperature=0.9,model_name="gpt-3.5-turbo",openai_api_key=OPENAI_API_KEY,openai_api_base=OPENAI_BASE_URL)
 
     def chat(self,prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
-        logging.info(f"prompt:{prompt}")
+        print(f"prompt:{prompt}")
         llm_result = self.llm.generate(messages=[[HumanMessage(content=prompt)]])
         llm_result_text = llm_result.generations[0][0].text
         return llm_result_text;

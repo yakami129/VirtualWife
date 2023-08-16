@@ -87,7 +87,7 @@ class MemoryStorageDriver():
         enable_summary = self.sysConfig.enable_summary
         history = {}
         if enable_summary :
-            memory_summary = MemorySummary(self.sysConfig.llm_model_driver)
+            memory_summary = MemorySummary(self.sysConfig)
             summary= memory_summary.summary(
                 llm_model_type=self.sysConfig.summary_llm_model_driver_type, input=chat_history)
             history = {
@@ -113,11 +113,11 @@ class MemoryStorageDriver():
 
 class MemorySummary():
 
-    llm_model_driver: LlmModelDriver
+    sysConfig: SysConfig
     prompt: str
 
-    def __init__(self, llm_model_driver: LlmModelDriver) -> None:
-        self.llm_model_driver = llm_model_driver
+    def __init__(self, sysConfig: SysConfig) -> None:
+        self.sysConfig = sysConfig
         self.prompt = '''
                <s>[INST] <<SYS>>          
                 请帮我提取对话内容的关键信息，下面是一个提取关键信息的示例:
@@ -133,8 +133,9 @@ class MemorySummary():
 
     def summary(self, llm_model_type: str, input: str) -> str:
         prompt = self.prompt + f"input: {input} [/INST]"
-        result = self.llm_model_driver.chat(prompt=prompt, type=llm_model_type, role_name="",
-                                            you_name="", query=input, short_history="", long_history="").strip()
+        result = self.sysConfig.llm_model_driver.chat(prompt=prompt, type=llm_model_type, role_name="",
+                                            you_name="", query=input, short_history="", long_history="")
+        print("=> summary:", result)
         # 使用正则表达式匹配JSON字符串
         pattern = r'{\s*"summary":[^}]+}'
         match = re.search(pattern, result)
@@ -143,7 +144,7 @@ class MemorySummary():
         else:
             result = "{}"
             print("未找到匹配的JSON字符串")
-        print("=> summary:", result)
+       
         return json.loads(result)
 
 # from typing import Any, Dict, List

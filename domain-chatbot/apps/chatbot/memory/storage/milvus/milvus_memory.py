@@ -1,4 +1,5 @@
 # 导入所需模块
+import os
 from ....utils.snowflake_utils import SnowFlake
 from pymilvus import DataType, FieldSchema, CollectionSchema, Collection, connections
 from sentence_transformers import SentenceTransformer
@@ -6,6 +7,7 @@ import time
 
 
 _COLLECTION_NAME = "virtual_wife_memory"
+os.environ["TOKENIZERS_PARALLELISM"] = "false" 
 
 
 class MilvusMemory():

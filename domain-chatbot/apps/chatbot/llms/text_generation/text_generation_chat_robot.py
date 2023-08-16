@@ -64,4 +64,4 @@ class TextGeneration():
             result = response.json()['results'][0]['text']
             return result
         else:
-            logging.error(f"text_generation error response is ",response,json.dumps(body))
+            print(f"text_generation error response is ",response,json.dumps(body))

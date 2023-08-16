@@ -8,7 +8,7 @@
     "socks5Proxy": "socks5://127.0.0.1:7890",
     "languageModelConfig": {
         "openai": {
-            "OPENAI_API_KEY": "sk-xxxx",
+            "OPENAI_API_KEY": "sk-",
             "OPENAI_BASE_URL": ""
         },
         "textGeneration": {
@@ -36,8 +36,8 @@
         },
         "longTermMemoryType": "milvus",
         "enableSummary": false,
-        "languageModelForSummary": "openai",
+        "languageModelForSummary": "text_generation",
         "enableReflection": false,
-        "languageModelForReflection": "openai"
+        "languageModelForReflection": "text_generation"
     }
 }
