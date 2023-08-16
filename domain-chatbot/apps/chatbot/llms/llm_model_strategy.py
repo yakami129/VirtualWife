@@ -12,8 +12,15 @@ class LlmModelStrategy(ABC):
 
 # 定义策略类实现
 class OpenAILlmModelStrategy(LlmModelStrategy):
+
+    openai_generation: OpenAIGeneration
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.openai_generation = OpenAIGeneration()
+
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
-        return OpenAIGeneration.chat(prompt=prompt, role_name=role_name, you_name=you_name, query=query, short_history=short_history, long_history=long_history)
+        return self.openai_generation.chat(prompt=prompt, role_name=role_name, you_name=you_name, query=query, short_history=short_history, long_history=long_history)
 
 
 class TextGenerationLlmModelStrategy(LlmModelStrategy):
@@ -42,11 +49,18 @@ class LlmModel:
 
 class LlmModelDriver():
 
+    openai: OpenAILlmModelStrategy
+    textGeneration: TextGenerationLlmModelStrategy
+
+    def __init__(self) -> None:
+        self.openai = OpenAIGeneration()
+        self.textGeneration = TextGenerationLlmModelStrategy()
+
     def chat(self, prompt: str, type: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
         if type == "openai":
-            strategy = OpenAILlmModelStrategy()
+            strategy = self.openai
         elif type == "text_generation":
-            strategy = TextGenerationLlmModelStrategy()
+            strategy = self.textGeneration
         else:
             raise ValueError("Unknown type")
 

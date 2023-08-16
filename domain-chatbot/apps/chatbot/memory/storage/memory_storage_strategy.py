@@ -1,6 +1,8 @@
 import re
 import json
 from typing import Tuple
+
+from ...config.sys_config import SysConfig
 from ...llms.llm_model_strategy import LlmModelDriver
 import numpy as np
 from typing import List
@@ -13,12 +15,14 @@ from ...utils.snowflake_utils import SnowFlake
 
 class MemoryStorageDriver():
 
+    sysConfig: SysConfig
     strategy: BaseStorage
     short_memory_dict: dict[str, ConversationBufferWindowMemory] = {}
     tmp_k_num: int = 3
     snow_flake: SnowFlake = SnowFlake(data_center_id=5, worker_id=5)
 
-    def __init__(self, type: str, memory_storage_config: dict[str, str]) -> None:
+    def __init__(self, type: str, memory_storage_config: dict[str, str],sysConfig: SysConfig) -> None:
+        self.sysConfig = sysConfig
         if type == 'local':
             self.strategy = LocalStorage(memory_storage_config)
         elif type == 'milvus':
@@ -59,7 +63,7 @@ class MemoryStorageDriver():
         '''分页检索记忆'''
         return self.strategy.pageQuery(page_num=page_num, page_size=page_size, expr=expr)
 
-    def save(self, role_name: str, you_name: str, query_text: str, answer_text: str, llm_model_type: str, llm_model_driver: LlmModelDriver) -> None:
+    def save(self, role_name: str, you_name: str, query_text: str, answer_text: str) -> None:
 
         pk = self.get_current_entity_id()
 
@@ -78,13 +82,24 @@ class MemoryStorageDriver():
         you_history = f"{you_name}：{query_text}"
         role_history = f"{role_name}：{answer_text}"
         chat_history = you_history + '\n' + role_history
-        memory_summary = MemorySummary(llm_model_driver)
-        summary= memory_summary.summary(
-            llm_model_type=llm_model_type, input=chat_history)
-        history = {
-            "summary": summary["summary"],
-            "information": summary["information"]
-        }
+
+        # 检查是否开启对话摘要
+        enable_summary = self.sysConfig.enable_summary
+        history = {}
+        if enable_summary :
+            memory_summary = MemorySummary(self.sysConfig.llm_model_driver)
+            summary= memory_summary.summary(
+                llm_model_type=self.sysConfig.summary_llm_model_driver_type, input=chat_history)
+            history = {
+                "summary": summary["summary"],
+                "information": summary["information"]
+            }
+        else:
+            history = {
+                "summary": chat_history,
+                "information": []
+            }
+            
         history_json = json.dumps(history)
         self.strategy.save(pk, history_json, you_name)
 

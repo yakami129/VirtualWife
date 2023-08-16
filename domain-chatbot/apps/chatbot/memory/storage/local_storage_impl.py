@@ -4,6 +4,9 @@ from .base_storage import BaseStorage
 class LocalStorage(BaseStorage):
     '''本地存储记忆模块'''
 
+    def __init__(self, memory_storage_config: dict[str, str]):
+        print("")
+
     def search(self, query_text: str, limit: int, expr: str == None) -> list[str]:
         return ["TODO"]
 

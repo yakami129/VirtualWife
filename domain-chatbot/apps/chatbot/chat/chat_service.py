@@ -1,9 +1,6 @@
 
 from ..customrole.custom_role_generation import CustomRoleGeneration
-from ..memory.storage.memory_storage_strategy import MemoryStorageDriver
-from ..llms.llm_model_strategy import LlmModelDriver
-from ..llms import singleton_llm_model_driver, llm_model_type
-from ..memory.storage import singleton_memory_storage_driver
+from ..config import singleton_sys_config
 import logging
 import re
 
@@ -23,12 +20,12 @@ class ChatService():
         prompt = self.custom_role_generation.get_prompt(role_name)
 
         # 检索相关记忆
-        short_history, long_history = singleton_memory_storage_driver.search(
+        short_history, long_history = singleton_sys_config.memory_storage_driver.search(
             query_text=query, owner=you_name)
 
         # 对话聊天
         prompt = prompt.format(input=query,you_name=you_name,short_history=short_history,long_history=long_history)
-        answer_text = singleton_llm_model_driver.chat(prompt=prompt, type=llm_model_type, role_name=role_name,
+        answer_text = singleton_sys_config.llm_model_driver.chat(prompt=prompt, type=singleton_sys_config.conversation_llm_model_driver_type, role_name=role_name,
                                                       you_name=you_name, query=query, short_history=short_history, long_history=long_history)
         
         # 格式化输出结果
@@ -40,10 +37,8 @@ class ChatService():
 
         if answer_text != "":
             # 保存记忆
-            singleton_memory_storage_driver.save(
-                role_name=role_name, you_name=you_name, query_text=query, answer_text=answer_text, llm_model_type=llm_model_type, llm_model_driver=singleton_llm_model_driver)
-
-        # singleton_memory_storage_driver.clear(owner=you_name)
+            singleton_sys_config.memory_storage_driver.save(
+                role_name=role_name, you_name=you_name, query_text=query, answer_text=answer_text)
 
         # 合成语音
         return answer_text
