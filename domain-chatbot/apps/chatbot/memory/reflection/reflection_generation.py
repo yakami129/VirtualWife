@@ -20,7 +20,7 @@ class ReflectionGeneration():
         result = [item['text'] for item in result]
         prompt = self.reflection_template.format(result)
 
-        reflection_result = singleton_sys_config.memory_storage_driver.chat(prompt=prompt, type=llm_model_type,
+        reflection_result = singleton_sys_config.memory_storage_driver.chat(prompt=prompt, type=singleton_sys_config.reflection_llm_model_driver_type,
                                                             role_name=role_name, you_name="", query="", short_history="", long_history="")
         reflection_result_arr = self.reflection_template.output_format(
             reflection_result)

@@ -20,7 +20,7 @@ import { Menu } from "@/components/menu";
 import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
 import { translation } from "@/features/translation/translationApi";
-import { getConfig, FormDataType, initialFormData } from "@/features/config/configApi";
+import { getConfig, FormDataType } from "@/features/config/configApi";
 
 // const m_plus_2 = M_PLUS_2({
 //   variable: "--font-m-plus-2",
@@ -47,9 +47,13 @@ export default function Home() {
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [assistantMessage, setAssistantMessage] = useState("");
   const [imageUrl, setImageUrl] = useState('');
-  const [globalsConfig, setGlobalsConfig] = useState(initialFormData);
+  const [globalsConfig, setGlobalsConfig] = useState<FormDataType | null>(null);
+
 
   useEffect(() => {
+    getConfig().then(data => {
+      setGlobalsConfig(data)
+    })
     if (window.localStorage.getItem("chatVRMParams")) {
       const params = JSON.parse(
         window.localStorage.getItem("chatVRMParams") as string
@@ -58,9 +62,6 @@ export default function Home() {
       setKoeiroParam(params.koeiroParam);
       setChatLog(params.chatLog);
     }
-    getConfig().then(data => {
-      setGlobalsConfig(data)
-    })
   }, []);
 
   useEffect(() => {
@@ -258,33 +259,36 @@ export default function Home() {
 
 
   return (
-    // <div className={`${m_plus_2.variable} ${montserrat.variable}`}>
     <div>
       <Meta />
       <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey} />
-      {/* <div className="photo-app">
-        <PhotoFrame imageUrl={imageUrl} />
-      </div> */}
-      <VrmViewer />
-      <MessageInputContainer
-        isChatProcessing={chatProcessing}
-        onChatProcessStart={handleSendChat}
-      />
-      <Menu
-        globalsConfig={globalsConfig}
-        openAiKey={openAiKey}
-        systemPrompt={systemPrompt}
-        chatLog={chatLog}
-        koeiroParam={koeiroParam}
-        assistantMessage={assistantMessage}
-        onChangeAiKey={setOpenAiKey}
-        onChangeSystemPrompt={setSystemPrompt}
-        onChangeChatLog={handleChangeChatLog}
-        onChangeKoeiromapParam={setKoeiroParam}
-        handleClickResetChatLog={() => setChatLog([])}
-        handleClickResetSystemPrompt={() => setSystemPrompt(SYSTEM_PROMPT)}
-      />
-      <GitHubLink />
+      {/* 在 globalsConfig 不为 null 时渲染以下组件 */}
+      {globalsConfig !== null && (
+        <>
+          <VrmViewer
+            globalsConfig={globalsConfig}
+          />
+          <MessageInputContainer
+            isChatProcessing={chatProcessing}
+            onChatProcessStart={handleSendChat}
+          />
+          <Menu
+            globalsConfig={globalsConfig}
+            openAiKey={openAiKey}
+            systemPrompt={systemPrompt}
+            chatLog={chatLog}
+            koeiroParam={koeiroParam}
+            assistantMessage={assistantMessage}
+            onChangeAiKey={setOpenAiKey}
+            onChangeSystemPrompt={setSystemPrompt}
+            onChangeChatLog={handleChangeChatLog}
+            onChangeKoeiromapParam={setKoeiroParam}
+            handleClickResetChatLog={() => setChatLog([])}
+            handleClickResetSystemPrompt={() => setSystemPrompt(SYSTEM_PROMPT)}
+          />
+          <GitHubLink />
+        </>
+      )}
     </div>
-  );
+  )
 }

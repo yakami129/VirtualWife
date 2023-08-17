@@ -1,8 +1,11 @@
 from .base_storage import BaseStorage
+from langchain.memory import ConversationBufferWindowMemory
 
 
 class LocalStorage(BaseStorage):
+
     '''本地存储记忆模块'''
+    short_memory_dict: dict[str, ConversationBufferWindowMemory] = {}
 
     def __init__(self, memory_storage_config: dict[str, str]):
         print("")
@@ -15,7 +18,8 @@ class LocalStorage(BaseStorage):
         return []
 
     def save(self, pk: int,  quer_text: str, owner: str) -> None:
-        return "TODO"
+        '''保存记忆'''
+        return None
 
     def clear(self, owner: str) -> None:
         t = "TODO"

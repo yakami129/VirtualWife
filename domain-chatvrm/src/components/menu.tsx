@@ -2,7 +2,7 @@ import { IconButton } from "./iconButton";
 import { Message } from "@/features/messages/messages";
 import { KoeiroParam } from "@/features/constants/koeiroParam";
 import { ChatLog } from "./chatLog";
-import React, { useCallback, useContext, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Settings } from "./settings";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
 import { AssistantText } from "./assistantText";
@@ -22,6 +22,7 @@ type Props = {
   handleClickResetChatLog: () => void;
   handleClickResetSystemPrompt: () => void;
 };
+
 export const Menu = ({
   globalsConfig,
   openAiKey,
@@ -77,18 +78,25 @@ export const Menu = ({
       const file = files[0];
       if (!file) return;
 
-      const file_type = file.name.split(".").pop();
-
-      if (file_type === "vrm") {
-        const blob = new Blob([file], { type: "application/octet-stream" });
-        const url = window.URL.createObjectURL(blob);
-        viewer.loadVrm(url);
-      }
+      loadVrmFile(file)
 
       event.target.value = "";
     },
     [viewer]
   );
+
+  function loadVrmFile(file: File) {
+    const file_type = file.name.split(".").pop();
+    if (file_type === "vrm") {
+      const blob = new Blob([file], { type: "application/octet-stream" });
+      const url = window.URL.createObjectURL(blob);
+      viewer.loadVrm(url);
+    }
+  }
+
+  function remoteLoadVrmFile(url: string) {
+    viewer.loadVrm(url);
+  }
 
   return (
     <>
@@ -126,6 +134,7 @@ export const Menu = ({
           chatLog={chatLog}
           systemPrompt={systemPrompt}
           koeiroParam={koeiroParam}
+          remoteLoadVrmFile={remoteLoadVrmFile}
           onClickClose={() => setShowSettings(false)}
           onChangeAiKey={handleAiKeyChange}
           onChangeSystemPrompt={handleChangeSystemPrompt}

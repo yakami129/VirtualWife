@@ -15,9 +15,12 @@ import {
 } from "@/features/constants/koeiroParam";
 import { Link } from "./link";
 import { damp } from 'three/src/math/MathUtils';
+import { join } from 'path';
 
 const tabNames = ['基础设置', '大语言模型设置', '记忆模块设置', '高级设置'];
 const llm_enums = ["openai", "text_generation"]
+
+const publicDir = join(process.cwd(), 'public');
 
 type Props = {
   globalsConfig: FormDataType;
@@ -25,6 +28,7 @@ type Props = {
   systemPrompt: string;
   chatLog: Message[];
   koeiroParam: KoeiroParam;
+  remoteLoadVrmFile: (url: string) => void;
   onClickClose: () => void;
   onChangeAiKey: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeSystemPrompt: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
@@ -41,6 +45,7 @@ export const Settings = ({
   chatLog,
   systemPrompt,
   koeiroParam,
+  remoteLoadVrmFile,
   onClickClose,
   onChangeSystemPrompt,
   onChangeAiKey,
@@ -136,6 +141,7 @@ export const Settings = ({
               onChange={e => {
                 formData.characterConfig.vrmModel = e.target.value;
                 setFormData(formData);
+                remoteLoadVrmFile(formData.characterConfig.vrmModel)
               }}>
               {
                 vrmModels.map(vrm => (

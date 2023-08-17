@@ -1,16 +1,25 @@
 import { useContext, useCallback } from "react";
 import { ViewerContext } from "../features/vrmViewer/viewerContext";
 import { buildUrl } from "@/utils/buildUrl";
+import { FormDataType } from "@/features/config/configApi";
 
-export default function VrmViewer() {
+type Props = {
+  globalsConfig: FormDataType;
+};
+
+export default function VrmViewer({
+  globalsConfig,
+}: Props) {
+
   const { viewer } = useContext(ViewerContext);
 
   const canvasRef = useCallback(
     (canvas: HTMLCanvasElement) => {
       if (canvas) {
         viewer.setup(canvas);
-        viewer.loadVrm(buildUrl("/AvatarSample_B.vrm"));
-
+        const url = globalsConfig.characterConfig.vrmModel;
+        console.log(url)
+        viewer.loadVrm(url);
         // Drag and DropでVRMを差し替え
         canvas.addEventListener("dragover", function (event) {
           event.preventDefault();

@@ -18,7 +18,7 @@ class MemoryStorageDriver():
     sysConfig: SysConfig
     strategy: BaseStorage
     short_memory_dict: dict[str, ConversationBufferWindowMemory] = {}
-    tmp_k_num: int = 3
+    tmp_k_num: int = 5
     snow_flake: SnowFlake = SnowFlake(data_center_id=5, worker_id=5)
 
     def __init__(self, type: str, memory_storage_config: dict[str, str],sysConfig: SysConfig) -> None:

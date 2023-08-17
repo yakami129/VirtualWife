@@ -29,6 +29,8 @@ class SysConfig():
     conversation_llm_model_driver_type : str
     enable_summary: bool
     summary_llm_model_driver_type : str
+    enable_reflection: bool
+    reflection_llm_model_driver_type : str
     memory_storage_driver : any
     character: str
     your_name: str
@@ -100,6 +102,12 @@ class SysConfig():
         if(self.enable_summary):
              self.summary_llm_model_driver_type = sys_config_json["memoryStorageConfig"]["languageModelForSummary"]
              print("summary_llm_model_driver_type："+self.summary_llm_model_driver_type)
+
+        self.enable_reflection = sys_config_json["memoryStorageConfig"]["enableReflection"]
+        print("enableReflection"+str(self.enable_reflection))
+        if(self.enable_reflection):
+             self.reflection_llm_model_driver_type = sys_config_json["memoryStorageConfig"]["languageModelForReflection"]
+             print("reflection_llm_model_driver_type"+self.summary_llm_model_driver_type)
 
         # 懒加载记忆模块
         self.memory_storage_driver = lazy_memory_storage(sys_config_json=sys_config_json,sys_cofnig=self)

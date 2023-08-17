@@ -47,9 +47,9 @@ class MilvusStorage(BaseStorage):
         self.milvus_memory.release()
         return result
 
-    def save(self, pk: int,  quer_text: str, owner: str) -> None:
+    def save(self, pk: int,  query_text: str, owner: str) -> None:
         self.milvus_memory.loda()
-        self.milvus_memory.insert_memory(pk=pk, text=quer_text, owner=owner)
+        self.milvus_memory.insert_memory(pk=pk, text=query_text, owner=owner)
         self.milvus_memory.release()
 
     def clear(self, owner: str) -> None:

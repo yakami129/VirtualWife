@@ -21,7 +21,7 @@ export const initialFormData = {
     "characterConfig": {
         "character": "爱莉",
         "yourName": "alan",
-        "vrmModel": "xxx"
+        "vrmModel": "わたあめ_03.vrm"
     },
     "conversationConfig": {
         "conversationType": "default",
