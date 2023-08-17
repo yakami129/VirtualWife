@@ -10,6 +10,8 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+domain-chatbot/tmp/
+
 # Generated files
 .idea/**/contentModel.xml
 
