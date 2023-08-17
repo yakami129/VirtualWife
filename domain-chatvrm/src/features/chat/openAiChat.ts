@@ -88,15 +88,22 @@ export async function getChatResponseStream(
 
 
 export async function chat(
-  message: string
+  message: string,
+  role_name: string,
+  you_name: string
 ) {
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json"
   };
 
-  const body = {query: message};
-  const chatRes = await postRequest("/chatbot/chat",headers, body);
+  const body = {
+    query: message,
+    role_name: role_name,
+    you_name: you_name
+  };
+  
+  const chatRes = await postRequest("/chatbot/chat", headers, body);
   if (chatRes.code !== '200') {
     throw new Error("Something went wrong");
   }

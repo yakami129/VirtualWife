@@ -8,11 +8,11 @@ class LocalStorage(BaseStorage):
         print("")
 
     def search(self, query_text: str, limit: int, expr: str == None) -> list[str]:
-        return ["TODO"]
+        return []
 
     def pageQuery(self, page_num: int, page_size: int, expr: str) -> list[str]:
         '''分页检索记忆'''
-        return ["TODO"]
+        return []
 
     def save(self, pk: int,  quer_text: str, owner: str) -> None:
         return "TODO"

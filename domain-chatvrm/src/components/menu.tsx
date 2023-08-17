@@ -6,8 +6,10 @@ import React, { useCallback, useContext, useRef, useState } from "react";
 import { Settings } from "./settings";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
 import { AssistantText } from "./assistantText";
+import { FormDataType } from "@/features/config/configApi";
 
 type Props = {
+  globalsConfig: FormDataType;
   openAiKey: string;
   systemPrompt: string;
   chatLog: Message[];
@@ -21,6 +23,7 @@ type Props = {
   handleClickResetSystemPrompt: () => void;
 };
 export const Menu = ({
+  globalsConfig,
   openAiKey,
   systemPrompt,
   chatLog,
@@ -118,6 +121,7 @@ export const Menu = ({
       {showChatLog && <ChatLog messages={chatLog} />}
       {showSettings && (
         <Settings
+          globalsConfig={globalsConfig}
           openAiKey={openAiKey}
           chatLog={chatLog}
           systemPrompt={systemPrompt}

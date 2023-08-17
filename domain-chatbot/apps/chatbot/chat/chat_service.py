@@ -1,5 +1,5 @@
 
-from ..customrole.custom_role_generation import CustomRoleGeneration
+from ..customrole.custom_role_generation import singleton_custom_role_generation
 from ..config import singleton_sys_config
 import logging
 import re
@@ -7,12 +7,11 @@ import re
 
 class ChatService():
 
-    custom_role_generation: CustomRoleGeneration
 
     def __init__(self) -> None:
 
         # 加载自定义角色生成模块
-        self.custom_role_generation = CustomRoleGeneration()
+        self.custom_role_generation = singleton_custom_role_generation
 
     def chat(self, role_name: str, you_name: str, query: str) -> str:
 
@@ -40,7 +39,6 @@ class ChatService():
             singleton_sys_config.memory_storage_driver.save(
                 role_name=role_name, you_name=you_name, query_text=query, answer_text=answer_text)
 
-        # 合成语音
         return answer_text
 
     def format_chat_text(self, role_name: str, you_name: str, text: str):

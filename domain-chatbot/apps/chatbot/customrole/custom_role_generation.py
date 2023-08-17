@@ -39,3 +39,5 @@ class CustomRoleGeneration():
         custom_role_template = self.custom_role_template_dict[
             custom_role_model.custom_role_template_type]
         return custom_role_template.format(custom_role_model)
+
+singleton_custom_role_generation = CustomRoleGeneration()

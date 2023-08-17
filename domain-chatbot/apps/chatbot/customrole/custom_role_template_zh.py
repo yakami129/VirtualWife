@@ -10,7 +10,6 @@ PROMPT = """
 {scenario}
 {role_name}的对话风格如下:
 {examples_of_dialogue}
-你的回答应该简短，最多包含三句话，每句话不超过40个单词。
 [这个是{role_name}的性格简述：{personality} 下面是 {you_name}和{role_name}的对话历史]：
 {long_history}
 {short_history}

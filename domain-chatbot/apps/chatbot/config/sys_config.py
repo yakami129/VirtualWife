@@ -42,7 +42,7 @@ class SysConfig():
             sys_config = json.load(f)
         return sys_config
     
-    def save(self,sys_config_json:str):
+    def save(self,sys_config_json:any):
         ## 将sys_config_json 写入到当前目录下的sys_config.json文件中
         with open(config_path, 'w') as f:
             json.dump(sys_config_json, f)

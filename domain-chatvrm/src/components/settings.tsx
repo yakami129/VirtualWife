@@ -1,7 +1,11 @@
-import React from "react";
+// 引入过渡动画组件
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import React, { useEffect, useState } from "react";
 import { IconButton } from "./iconButton";
 import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
+import { customroleList, vrmModelList } from "@/features/customRole/customRoleApi";
+import { getConfig, saveConfig, FormDataType } from "@/features/config/configApi";
 import {
   KoeiroParam,
   PRESET_A,
@@ -10,8 +14,13 @@ import {
   PRESET_D,
 } from "@/features/constants/koeiroParam";
 import { Link } from "./link";
+import { damp } from 'three/src/math/MathUtils';
+
+const tabNames = ['基础设置', '大语言模型设置', '记忆模块设置', '高级设置'];
+const llm_enums = ["openai", "text_generation"]
 
 type Props = {
+  globalsConfig: FormDataType;
   openAiKey: string;
   systemPrompt: string;
   chatLog: Message[];
@@ -25,7 +34,9 @@ type Props = {
   onClickResetChatLog: () => void;
   onClickResetSystemPrompt: () => void;
 };
+
 export const Settings = ({
+  globalsConfig,
   openAiKey,
   chatLog,
   systemPrompt,
@@ -39,175 +50,497 @@ export const Settings = ({
   onClickResetChatLog,
   onClickResetSystemPrompt,
 }: Props) => {
-  return (
-    <div className="absolute z-40 w-full h-full bg-white/80 backdrop-blur ">
-      <div className="absolute m-24">
-        <IconButton
-          iconName="24/Close"
-          isProcessing={false}
-          onClick={onClickClose}
-        ></IconButton>
-      </div>
-      <div className="max-h-full overflow-auto">
-        <div className="text-text1 max-w-3xl mx-auto px-24 py-64 ">
-          <div className="my-24 typography-32 font-bold">设定</div>
-          {/* <div className="my-24">
-            <div className="my-16 typography-20 font-bold">OpenAI API 配置</div>
-            <input
-              className="text-ellipsis px-16 py-8 w-col-span-2 bg-surface1 hover:bg-surface1-hover rounded-8"
-              type="text"
-              placeholder="sk-..."
-              value={openAiKey}
-              onChange={onChangeAiKey}
-            />
-            <div className="my-16">
-              API密钥可以在
-              <Link
-                url="https://platform.openai.com/account/api-keys"
-                label="OpenAI秘钥"
-              />可以取得。请在表单中输入获取的API键。
-              通过输入的API键，可以从浏览器直接使用OpenAI的API，所以不会保存在服务器上。另外，使用的模型是GPT-3。
-              <br />
-              ※API键和对话文不被发送到pixsib的服务器。
-            </div>
-          </div> */}
-          <div className="my-40">
-            <div className="my-16 typography-20 font-bold">
-              角色模型
-            </div>
-            <div className="my-8">
-              <TextButton onClick={onClickOpenVrmFile}>打开VRM</TextButton>
-            </div>
-          </div>
-          {/* <div className="my-40">
-            <div className="my-8">
-              <div className="my-16 typography-20 font-bold">
-                角色设定(系统提示)
-              </div>
-              <TextButton onClick={onClickResetSystemPrompt}>
-                角色设定重置
-              </TextButton>
-            </div>
 
-            <textarea
-              value={systemPrompt}
-              onChange={onChangeSystemPrompt}
-              className="px-16 py-8  bg-surface1 hover:bg-surface1-hover h-168 rounded-8 w-full"
-            ></textarea>
-          </div> */}
-          {/* <div className="my-40">
-            <div className="my-16 typography-20 font-bold">声音调整</div>
-            <div>
-              使用KoeiroAPI详细说明请查阅
-              <a
-                className="text-primary hover:text-primary-hover"
-                target="_blank"
-                rel="noopener noreferrer"
-                href="http://koeiromap.rinna.jp"
-              >
-                http://koeiromap.rinna.jp
-              </a>
-             
-            </div>
-            <div className="mt-16">预设</div>
-            <div className="my-8 grid grid-cols-2 gap-[8px]">
-              <TextButton
-                onClick={() =>
-                  onChangeKoeiroParam(PRESET_A.speakerX, PRESET_A.speakerY)
-                }
-              >
-                可爱（女）
-              </TextButton>
-              <TextButton
-                onClick={() =>
-                  onChangeKoeiroParam(PRESET_B.speakerX, PRESET_B.speakerY)
-                }
-              >
-                元气（女）
-              </TextButton>
-              <TextButton
-                onClick={() =>
-                  onChangeKoeiroParam(PRESET_C.speakerX, PRESET_C.speakerY)
-                }
-              >
-                帅气（男）
-              </TextButton>
-              <TextButton
-                onClick={() =>
-                  onChangeKoeiroParam(PRESET_D.speakerX, PRESET_D.speakerY)
-                }
-              >
-                沧桑（男）
-              </TextButton>
-            </div>
-            <div className="my-24">
-              <div className="select-none">x : {koeiroParam.speakerX}</div>
-              <input
-                type="range"
-                min={-3}
-                max={3}
-                step={0.001}
-                value={koeiroParam.speakerX}
-                className="mt-8 mb-16 input-range"
-                onChange={(e) => {
-                  onChangeKoeiroParam(
-                    Number(e.target.value),
-                    koeiroParam.speakerY
-                  );
-                }}
-              ></input>
-              <div className="select-none">y : {koeiroParam.speakerY}</div>
-              <input
-                type="range"
-                min={-3}
-                max={3}
-                step={0.001}
-                value={koeiroParam.speakerY}
-                className="mt-8 mb-16 input-range"
-                onChange={(e) => {
-                  onChangeKoeiroParam(
-                    koeiroParam.speakerX,
-                    Number(e.target.value)
-                  );
-                }}
-              ></input>
-            </div>
-          </div> */}
-          {/* {chatLog.length > 0 && (
-            <div className="my-40">
-              <div className="my-8 grid-cols-2">
-                <div className="my-16 typography-20 font-bold">对话记录</div>
-                <TextButton onClick={onClickResetChatLog}>
-                  对话记录重置
-                </TextButton>
+  const [currentTab, setCurrentTab] = useState('基础设置');
+  const [formData, setFormData] = useState(globalsConfig);
+  const [customRoles, setCustomRoles] = useState([]);
+  const [vrmModels, setVrmModels] = useState([]);
+  const [enableProxy, setEnableProxy] = useState(false);
+  const [conversationType, setConversationType] = useState('default');
+  const [longTermMemoryType, setLongTermMemoryType] = useState('local');
+  const [enableSummary, setEnableSummary] = useState(false);
+  const [enableReflection, setEnableReflection] = useState(false);
+
+  useEffect(() => {
+    customroleList().then(data => setCustomRoles(data))
+    vrmModelList().then(data => setVrmModels(data))
+    setFormData(globalsConfig);
+    setConversationType(globalsConfig.conversationConfig.conversationType)
+    setLongTermMemoryType(globalsConfig.memoryStorageConfig.longTermMemoryType)
+    setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
+    setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
+    setEnableProxy(globalsConfig.enableProxy)
+  }, [])
+
+  // 监听变化重新渲染
+  useEffect(() => {
+    // rerender
+  }, [enableProxy, conversationType, longTermMemoryType, enableSummary, enableReflection, formData])
+
+
+  const handleSubmit = () => {
+    saveConfig(formData)
+    onClickClose()
+  }
+
+  // Tab组件添加flex样式  
+  const TabItem = ({ name, isActive, onClick }) => {
+    return (
+      <div
+        className={`tab-item ${isActive ? 'active' : ''}`}
+        onClick={onClick}
+      >
+        {name}
+      </div>
+    )
+  }
+
+  // 基础设置组件
+  const BasicSettings = () => {
+
+    return (
+      <div className="globals-settings">
+
+        <div className="section">
+          <div className="title">角色卡设置</div>
+
+          <div className="field">
+            <label>选择角色</label>
+            <select
+              defaultValue={formData.characterConfig.character}
+              onChange={e => {
+                formData.characterConfig.character = e.target.value;
+                setFormData(formData);
+              }}>
+              {
+                customRoles.map(role => (
+                  <option key={role}>{role}</option>
+                ))
+              }
+            </select >
+          </div>
+
+          <div className="field">
+            <label>你的名字</label>
+            <input type="text" defaultValue={formData.characterConfig.yourName}
+              onChange={e => {
+                formData.characterConfig.yourName = e.target.value
+                setFormData(formData);
+              }} />
+          </div>
+
+          <div className="field">
+            <label>VRM角色模型</label>
+            <select
+              defaultValue={formData.characterConfig.vrmModel}
+              onChange={e => {
+                formData.characterConfig.vrmModel = e.target.value;
+                setFormData(formData);
+              }}>
+              {
+                vrmModels.map(vrm => (
+                  <option key={vrm.id}>{vrm.name}</option>
+                ))
+              }
+            </select>
+          </div>
+        </div>
+
+        <div className="section">
+          <div className="title">自定义角色卡</div>
+          <div className="my-8">
+            <TextButton onClick={onClickOpenVrmFile}>上传VRM</TextButton>
+          </div>
+        </div>
+
+        <div className="section">
+          <div className="title">对话设置</div>
+          <div className="checkbot-field">
+            <label>对话模式:</label>
+            <input className='checkbot-input' type="radio" name="chatType" value="default"
+              onChange={() => {
+                formData.conversationConfig.conversationType = 'default';
+                setFormData(formData);
+                setConversationType(formData.conversationConfig.conversationType);
+              }}
+              checked={conversationType === 'default'} /> 默认（直接生成对话）
+            <input className='checkbot-input' type="radio" name="chatType" value="thought-chain"
+              onChange={() => {
+                formData.conversationConfig.conversationType = 'thought_chain';
+                setFormData(formData);
+                setConversationType(formData.conversationConfig.conversationType);
+              }}
+              checked={conversationType === 'thought_chain'}
+            /> 思维链(先推理，再生成对话)
+          </div>
+          <div className="field">
+            <label>选择大语言模型:</label>
+            <select
+              defaultValue={formData.conversationConfig.languageModel}
+              onChange={e => {
+                formData.conversationConfig.languageModel = e.target.value;
+                setFormData(formData);
+              }}>
+              {
+                llm_enums.map(llm => (
+                  <option key={llm}>{llm}</option>
+                ))
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const LlmSettings = () => {
+    // 大语言模型设置
+    return (
+      <div className="globals-settings">
+        <div className="section">
+          <div className="title">OpenAI配置</div>
+          <div className="field">
+            <label>OPENAI_API_KEY</label>
+            <input type="text" defaultValue={formData.languageModelConfig.openai.OPENAI_API_KEY}
+              onChange={e => {
+                formData.languageModelConfig.openai.OPENAI_API_KEY = e.target.value
+                setFormData(formData);
+              }}
+            />
+          </div>
+          <div className="field">
+            <label>OPENAI_BASE_URL</label>
+            <input type="text" defaultValue={formData.languageModelConfig.openai.OPENAI_BASE_URL}
+              onChange={e => {
+                formData.languageModelConfig.openai.OPENAI_BASE_URL = e.target.value
+                setFormData(formData);
+              }}
+            />
+          </div>
+        </div>
+        <div className="section">
+          <div className="title">text-generation-webui配置</div>
+          <div className="field">
+            <label>TEXT_GENERATION_API_URL</label>
+            <input type="text" defaultValue={formData.languageModelConfig.textGeneration.TEXT_GENERATION_API_URL}
+              onChange={e => {
+                formData.languageModelConfig.textGeneration.TEXT_GENERATION_API_URL = e.target.value
+                setFormData(formData);
+              }}
+            />
+          </div>
+        </div>
+      </div >
+    )
+  }
+
+  const LocalMemory = () => {
+    // 本地存储设置  
+    return (
+      <div className="section">
+        <div className="title">local记忆存储配置</div>
+        <div className="field">
+          <label>最大记忆条数</label>
+          <input type="number" defaultValue={formData.memoryStorageConfig.localMemory.maxMemoryLoads}
+            onChange={e => {
+              formData.memoryStorageConfig.localMemory.maxMemoryLoads = Number(e.target.value)
+              setFormData(formData);
+            }}
+          />
+        </div>
+      </div>)
+  };
+
+  const MilvusMemory = () => {
+    // Milvus存储设置
+    return (
+      <div className="section">
+        <div className="title">milvus记忆存储配置</div>
+        <div className="field">
+          <label>host</label>
+          <input type="text" defaultValue={formData.memoryStorageConfig.milvusMemory.host}
+            onChange={e => {
+              formData.memoryStorageConfig.milvusMemory.host = e.target.value
+              setFormData(formData);
+            }} />
+          <label>port</label>
+          <input type="text" defaultValue={formData.memoryStorageConfig.milvusMemory.port}
+            onChange={e => {
+              formData.memoryStorageConfig.milvusMemory.port = e.target.value
+              setFormData(formData);
+            }} />
+          <label>user</label>
+          <input type="text" defaultValue={formData.memoryStorageConfig.milvusMemory.user}
+            onChange={e => {
+              formData.memoryStorageConfig.milvusMemory.user = e.target.value
+              setFormData(formData);
+            }} />
+          <label>password</label>
+          <input type="text" defaultValue={formData.memoryStorageConfig.milvusMemory.password}
+            onChange={e => {
+              formData.memoryStorageConfig.milvusMemory.password = e.target.value
+              setFormData(formData);
+            }} />
+          <label>dbName</label>
+          <input type="text" defaultValue={formData.memoryStorageConfig.milvusMemory.dbName}
+            onChange={e => {
+              formData.memoryStorageConfig.milvusMemory.dbName = e.target.value
+              setFormData(formData);
+            }} />
+        </div>
+      </div>
+    )
+  };
+
+  const SummaryLLM = () => {
+    return (
+      <div className="field">
+        <label>选择大语言模型:</label>
+        <select
+          defaultValue={formData.memoryStorageConfig.languageModelForSummary}
+          onChange={e => {
+            formData.memoryStorageConfig.languageModelForSummary = e.target.value;
+            setFormData(formData);
+          }}>
+          {
+            llm_enums.map(llm => (
+              <option key={llm}>{llm}</option>
+            ))
+          }
+        </select>
+      </div>)
+  }
+
+  const ReflectionLLM = () => {
+    return (
+      <div className="field">
+        <label>选择大语言模型:</label>
+        <select
+          defaultValue={formData.memoryStorageConfig.languageModelForReflection}
+          onChange={e => {
+            formData.memoryStorageConfig.languageModelForReflection = e.target.value;
+            setFormData(formData);
+          }}>
+          {
+            llm_enums.map(llm => (
+              <option key={llm}>{llm}</option>
+            ))
+          }
+        </select>
+      </div>)
+  }
+
+  const MemorySettings = () => {
+    // 记忆模块设置
+    return (
+      <div className="globals-settings">
+        <div className="section">
+          <div className="title">基础功能</div>
+          <div className="checkbot-field">
+            <label>长期记忆存储类型:</label>
+            <input className='checkbot-input' type="radio" name="longTermMemoryType" value="locol"
+              onChange={() => {
+                formData.memoryStorageConfig.longTermMemoryType = "local";
+                setFormData(formData)
+                setLongTermMemoryType(formData.memoryStorageConfig.longTermMemoryType)
+              }}
+              checked={longTermMemoryType === 'local'} /> local
+            <input className='checkbot-input' type="radio" name="longTermMemoryType" value="milvus"
+              onChange={() => {
+                formData.memoryStorageConfig.longTermMemoryType = "milvus";
+                setFormData(formData)
+                setLongTermMemoryType(formData.memoryStorageConfig.longTermMemoryType)
+              }}
+              checked={longTermMemoryType === 'milvus'}
+            /> milvus
+          </div>
+          {
+            longTermMemoryType === 'local' ? (
+              <div>
+                <LocalMemory />
               </div>
-              <div className="my-8">
-                {chatLog.map((value, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="my-8 grid grid-flow-col  grid-cols-[min-content_1fr] gap-x-fixed"
-                    >
-                      <div className="w-[64px] py-8">
-                        {value.role === "assistant" ? "Character" : "You"}
-                      </div>
-                      <input
-                        key={index}
-                        className="bg-surface1 hover:bg-surface1-hover rounded-8 w-full px-16 py-8"
-                        type="text"
-                        value={value.content}
-                        onChange={(event) => {
-                          onChangeChatLog(index, event.target.value);
-                        }}
-                      ></input>
-                    </div>
-                  );
-                })}
+            ) : (
+              <div>
+                <MilvusMemory />
               </div>
+            )
+          }
+        </div>
+        <div className="section">
+          <div className="title">高级功能</div>
+          <div className="section">
+            <div className="checkbot-field">
+              <label>是否开启对话摘要:</label>
+              <input className='checkbot-input' type="radio" name="enableSummary" value="true"
+                onChange={() => {
+                  formData.memoryStorageConfig.enableSummary = true;
+                  setFormData(formData);
+                  setEnableSummary(formData.memoryStorageConfig.enableSummary);
+                }}
+                checked={enableSummary === true} /> 是
+              <input className='checkbot-input' type="radio" name="enableSummary" value="false"
+                onChange={() => {
+                  formData.memoryStorageConfig.enableSummary = false;
+                  setFormData(formData)
+                  setEnableSummary(formData.memoryStorageConfig.enableSummary);
+                }}
+                checked={enableSummary === false} /> 否
             </div>
-          )} */}
+            {
+              enableSummary === true ? (
+                <div>
+                  <SummaryLLM />
+                </div>
+              ) : (
+                <div></div>
+              )
+            }
+          </div>
+          <div className="section">
+            <div className="checkbot-field">
+              <label>是否开启记忆反思:</label>
+              <input className='checkbot-input' type="radio" name="enableReflection" value="true"
+                onChange={() => {
+                  formData.memoryStorageConfig.enableReflection = true;
+                  setFormData(formData);
+                  setEnableReflection(formData.memoryStorageConfig.enableReflection);
+                }}
+                checked={enableReflection === true} /> 是
+              <input className='checkbot-input' type="radio" name="enableReflection" value="false"
+                onChange={() => {
+                  formData.memoryStorageConfig.enableReflection = false;
+                  setFormData(formData);
+                  setEnableReflection(formData.memoryStorageConfig.enableReflection);
+                }}
+                checked={enableReflection === false} /> 否
+            </div>
+            {
+              enableReflection === true ? (
+                <div>
+                  <ReflectionLLM />
+                </div>
+              ) : (
+                <div></div>
+              )
+            }
+          </div>
+        </div >
+      </div>
+    )
+  }
+
+  const AdvancedSettings = () => {
+    // 高级设置
+    return (
+      <div className="globals-settings">
+        <div className="section">
+          <div className="title">http-proxy设置</div>
+          <div className="checkbot-field">
+            <input className='checkbot-input' type="radio" name="enableProxy" value="true"
+              onChange={() => {
+                formData.enableProxy = true;
+                setFormData(formData);
+                setEnableProxy(formData.enableProxy);
+              }}
+              checked={enableProxy === true} /> 开启
+            <input className='checkbot-input' type="radio" name="enableProxy" value="false"
+              onChange={() => {
+                formData.enableProxy = false;
+                setFormData(formData);
+                setEnableProxy(formData.enableProxy);
+              }}
+              checked={enableProxy === false} /> 关闭
+          </div>
+          {
+            enableProxy === true ? (
+              <div className="field">
+                <label>httpProxy</label>
+                <input type="text" defaultValue={formData.httpProxy}
+                  onChange={e => {
+                    formData.httpProxy = e.target.value
+                    setFormData(formData);
+                  }} />
+                <label>httpsProxy</label>
+                <input type="text" defaultValue={formData.httpsProxy}
+                  onChange={e => {
+                    formData.httpsProxy = e.target.value
+                    setFormData(formData);
+                  }} />
+                <label>socks5Proxy</label>
+                <input type="text" defaultValue={formData.socks5Proxy}
+                  onChange={e => {
+                    formData.socks5Proxy = e.target.value
+                    setFormData(formData);
+                  }} />
+              </div>
+            ) : (
+              <div></div>
+            )
+          }
+        </div>
+        <div className="section">
+          <div className="title">B站直播配置</div>
+          <div className="field">
+            <label>直播ID:</label>
+            <input type="text" defaultValue={formData.liveStreamingConfig.B_STATION_ID}
+              onChange={e => {
+                formData.liveStreamingConfig.B_STATION_ID = e.target.value
+                setFormData(formData);
+              }} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Tab内容使用过渡动画
+  <TransitionGroup>
+    <CSSTransition
+      timeout={500}
+      classNames="fade"
+      key={currentTab}
+    >
+      <div className="tab-content">
+        {/* 当前tab内容 */}
+      </div>
+    </CSSTransition>
+  </TransitionGroup>
+
+  return (
+    <div className="container">
+      <div className="absolute z-40 w-full h-full bg-white/80 backdrop-blur ">
+        <div className="absolute m-24">
+          <IconButton
+            iconName="24/Close"
+            isProcessing={false}
+            onClick={onClickClose}
+          ></IconButton>
+          <IconButton
+            iconName="24/Projects"
+            isProcessing={false}
+            onClick={handleSubmit}
+          ></IconButton>
+        </div>
+        <div className="settings">
+          {/* 添加Tab菜单 */}
+          <div className="tab-menu">
+            {tabNames.map(name => (
+              <TabItem
+                key={name}
+                name={name}
+                isActive={name === currentTab}
+                onClick={() => setCurrentTab(name)}
+              />
+            ))}
+          </div>
+          {/* 根据currentTab渲染对应的内容 */}
+          {currentTab === '基础设置' && <BasicSettings />}
+          {currentTab === '大语言模型设置' && <LlmSettings />}
+          {currentTab === '记忆模块设置' && <MemorySettings />}
+          {currentTab === '高级设置' && <AdvancedSettings />}
         </div>
       </div>
     </div>
-  );
+  )
 };
+

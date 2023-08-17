@@ -17,8 +17,8 @@ if (environment === "development") {
 
 // 定义一个发送POST请求的函数
 export async function postRequest(endpoint: string, headers: Record<string, string>, data: object): Promise<any> {
-    const response = await axios.post(`${baseUrl}${endpoint}`, data, { headers });
-    return response.data; // 返回解析后的数据
+  const response = await axios.post(`${baseUrl}${endpoint}`, data, { headers });
+  return response.data; // 返回解析后的数据
 }
 
 export async function postRequestArraybuffer(endpoint: string, headers: Record<string, string>, data: object): Promise<any> {
@@ -30,7 +30,7 @@ export async function postRequestArraybuffer(endpoint: string, headers: Record<s
 }
 
 // 定义一个发送Get请求的函数
-export async function getRequest(endpoint: string, headers: Record<string, string>) {
-    const response = await axios.get(`${baseUrl}${endpoint}`, { headers });
-    return response; // 返回响应对象
+export async function getRequest(endpoint: string, headers: Record<string, string>): Promise<any> {
+  const response = await axios.get(`${baseUrl}${endpoint}`, { headers });
+  return response.data; // 返回响应对象
 }

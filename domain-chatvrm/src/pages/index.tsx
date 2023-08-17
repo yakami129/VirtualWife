@@ -20,6 +20,7 @@ import { Menu } from "@/components/menu";
 import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
 import { translation } from "@/features/translation/translationApi";
+import { getConfig, FormDataType, initialFormData } from "@/features/config/configApi";
 
 // const m_plus_2 = M_PLUS_2({
 //   variable: "--font-m-plus-2",
@@ -39,7 +40,6 @@ let bind_message_event = false;
 export default function Home() {
 
   const { viewer } = useContext(ViewerContext);
-
   const [systemPrompt, setSystemPrompt] = useState(SYSTEM_PROMPT);
   const [openAiKey, setOpenAiKey] = useState("");
   const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(DEFAULT_PARAM);
@@ -47,7 +47,7 @@ export default function Home() {
   const [chatLog, setChatLog] = useState<Message[]>([]);
   const [assistantMessage, setAssistantMessage] = useState("");
   const [imageUrl, setImageUrl] = useState('');
-
+  const [globalsConfig, setGlobalsConfig] = useState(initialFormData);
 
   useEffect(() => {
     if (window.localStorage.getItem("chatVRMParams")) {
@@ -58,6 +58,9 @@ export default function Home() {
       setKoeiroParam(params.koeiroParam);
       setChatLog(params.chatLog);
     }
+    getConfig().then(data => {
+      setGlobalsConfig(data)
+    })
   }, []);
 
   useEffect(() => {
@@ -100,10 +103,6 @@ export default function Home() {
    */
   const handleSendChat = useCallback(
     async (text: string, cmd: string, type: string) => {
-      // if (!openAiKey) {
-      //   setAssistantMessage("APIキーが入力されていません");
-      //   return;
-      // }
 
       let newMessage = text;
       let oldMessage = text;
@@ -138,12 +137,14 @@ export default function Home() {
       let tag = "";
       const sentences = new Array<string>();
 
-      let receivedMessage = await chat(newMessage).catch(
+      const yourName = globalsConfig.characterConfig.yourName;
+      let receivedMessage = await chat(newMessage, globalsConfig.characterConfig.character, yourName).catch(
         (e) => {
           console.error(e);
           return null;
         }
       );
+
       receivedMessage = await translation(receivedMessage, "zh").catch(
         (e) => {
           console.error(e);
@@ -228,6 +229,7 @@ export default function Home() {
   );
 
 
+
   useEffect(() => {
 
     if (!bind_message_event) {
@@ -269,6 +271,7 @@ export default function Home() {
         onChatProcessStart={handleSendChat}
       />
       <Menu
+        globalsConfig={globalsConfig}
         openAiKey={openAiKey}
         systemPrompt={systemPrompt}
         chatLog={chatLog}
