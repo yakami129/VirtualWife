@@ -1,7 +1,6 @@
 import time
 import traceback
-from django.shortcuts import render
-import asyncio
+from django.shortcuts import render, get_object_or_404
 import json
 from .chat import chat_service
 from rest_framework.decorators import api_view
@@ -9,6 +8,8 @@ from rest_framework.response import Response
 from .config import singleton_sys_config
 from .memory.reflection.reflection_generation import ReflectionGeneration
 from .customrole.custom_role_generation import singleton_custom_role_generation
+from .models import CustomRoleModel
+from .forms import CustomRoleForm
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -34,7 +35,7 @@ def chat(request):
     except Exception as e:
         traceback.print_exc()
         print("chat error: %s" % str(e))
-        chat = '哎呀,系统小哥哥突然打了个呵欠,估计是太辛苦了需要补充能量!等他喝几口咖啡,打个盹儿,很快就会精神抖擞地回来工作的!'
+        chat = '哎呀,系统小哥哥突然打了个呵欠,估计是太辛苦了!需要补充能量!等他喝几口咖啡,打个盹儿,很快就会精神抖擞地回来工作的!'
     return Response({"response": chat, "code": "200"})
 
 
@@ -128,3 +129,38 @@ def clear_memory(request):
     '''
     result = singleton_sys_config.memory_storage_driver.clear("alan")
     return Response({"response": result, "code": "200"})
+
+
+@api_view(['GET'])
+def role_list(request):
+    roles = CustomRoleModel.objects.all()
+    return Response({"response": roles, "code": "200"})
+
+
+@api_view(['GET'])
+def role_detail(request, pk):
+    role = get_object_or_404(CustomRoleModel, pk=pk)
+    return Response({"response": role, "code": "200"})
+
+
+@api_view(['POST'])
+def role_create(request):
+    form = CustomRoleForm(request.POST)
+    if form.is_valid():
+        form.save()
+        return Response({"response": form, "code": "200"})
+
+@api_view(['POST'])
+def role_edit(request, pk):
+    role = get_object_or_404(CustomRoleModel, pk=pk)
+    form = CustomRoleForm(request.POST, instance=role)
+    if form.is_valid():
+        form.save()
+        return Response({"response": form, "code": "200"})
+
+
+@api_view(['POST'])
+def role_delete(request, pk):
+    role = get_object_or_404(CustomRoleModel, pk=pk)
+    role.delete()
+    return Response({"response": "", "code": "200"})

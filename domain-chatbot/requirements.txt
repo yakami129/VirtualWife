@@ -5,7 +5,6 @@ langchain==0.0.176
 Django==4.2.1
 aiohttp==3.8.3
 Brotli==1.0.9
-urllib3==1.24.3
 flask
 gunicorn
 gevent

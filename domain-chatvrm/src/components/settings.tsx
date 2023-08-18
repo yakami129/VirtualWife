@@ -17,7 +17,7 @@ import { Link } from "./link";
 import { damp } from 'three/src/math/MathUtils';
 import { join } from 'path';
 
-const tabNames = ['基础设置', '大语言模型设置', '记忆模块设置', '高级设置'];
+const tabNames = ['基础设置', '自定义角色设置', '大语言模型设置', '记忆模块设置', '高级设置'];
 const llm_enums = ["openai", "text_generation"]
 
 const publicDir = join(process.cwd(), 'public');
@@ -65,6 +65,15 @@ export const Settings = ({
   const [longTermMemoryType, setLongTermMemoryType] = useState('local');
   const [enableSummary, setEnableSummary] = useState(false);
   const [enableReflection, setEnableReflection] = useState(false);
+  const [customRole, setCustomRole] = useState({
+    role_name: "",
+    persona: "",
+    personality: "",
+    scenario: "",
+    examples_of_dialogue: "",
+    custom_role_template_type: "",
+  });
+
 
   useEffect(() => {
     customroleList().then(data => setCustomRoles(data))
@@ -153,13 +162,6 @@ export const Settings = ({
         </div>
 
         <div className="section">
-          <div className="title">自定义角色卡</div>
-          <div className="my-8">
-            <TextButton onClick={onClickOpenVrmFile}>上传VRM</TextButton>
-          </div>
-        </div>
-
-        <div className="section">
           <div className="title">对话设置</div>
           <div className="checkbot-field">
             <label>对话模式:</label>
@@ -169,15 +171,15 @@ export const Settings = ({
                 setFormData(formData);
                 setConversationType(formData.conversationConfig.conversationType);
               }}
-              checked={conversationType === 'default'} /> 默认（直接生成对话）
-            <input className='checkbot-input' type="radio" name="chatType" value="thought-chain"
+              checked={conversationType === 'default'} /> 普通对话模式
+            {/* <input className='checkbot-input' type="radio" name="chatType" value="thought-chain"
               onChange={() => {
                 formData.conversationConfig.conversationType = 'thought_chain';
                 setFormData(formData);
                 setConversationType(formData.conversationConfig.conversationType);
               }}
               checked={conversationType === 'thought_chain'}
-            /> 思维链(先推理，再生成对话)
+            /> 推理+生成对话模式 */}
           </div>
           <div className="field">
             <label>选择大语言模型:</label>
@@ -402,7 +404,7 @@ export const Settings = ({
               )
             }
           </div>
-          <div className="section">
+          {/* <div className="section">
             <div className="checkbot-field">
               <label>是否开启记忆反思:</label>
               <input className='checkbot-input' type="radio" name="enableReflection" value="true"
@@ -429,7 +431,7 @@ export const Settings = ({
                 <div></div>
               )
             }
-          </div>
+          </div> */}
         </div >
       </div>
     )
@@ -484,7 +486,7 @@ export const Settings = ({
             )
           }
         </div>
-        <div className="section">
+        {/* <div className="section">
           <div className="title">B站直播配置</div>
           <div className="field">
             <label>直播ID:</label>
@@ -493,6 +495,139 @@ export const Settings = ({
                 formData.liveStreamingConfig.B_STATION_ID = e.target.value
                 setFormData(formData);
               }} />
+          </div>
+        </div> */}
+      </div>
+    )
+  }
+
+  const CustomRoleSettings = () => {
+    // 高级设置
+    return (
+      <div className="globals-settings">
+        <div className="section">
+          <div className="field">
+            <label>选择角色</label>
+            <div className="flex items-center justify-center space-x-4">
+              <select
+                defaultValue={formData.characterConfig.character}
+                onChange={e => {
+                  formData.characterConfig.character = e.target.value;
+                  setFormData(formData);
+                }}>
+                {
+                  customRoles.map(role => (
+                    <option key={role}>{role}</option>
+                  ))
+                }
+              </select >
+              <IconButton
+                iconName="16/Add"
+                isProcessing={false}
+                onClick={onClickClose}
+              ></IconButton>
+              <IconButton
+                iconName="16/Remove"
+                isProcessing={false}
+                onClick={onClickClose}
+              ></IconButton>
+            </div>
+            <EditCustomRole />
+          </div>
+        </div>
+        <div className="section">
+          <div className="title">自定义VRM模型</div>
+          <div className="my-8">
+            <TextButton onClick={onClickOpenVrmFile}>上传VRM</TextButton>
+          </div>
+        </div>
+      </div>)
+  }
+
+  const EditCustomRole = () => {
+    // 编辑角色
+    return (
+      <div className="globals-settings">
+        <div className="section">
+          <div className="field-"></div>
+          <label>编辑角色</label>
+          <label>角色名称</label>
+          <input
+            type="text"
+            name="role_name"
+            defaultValue={customRole.role_name}
+            onChange={e => {
+              customRole.role_name = e.target.value
+              setCustomRole(customRole)
+            }}
+          />
+          <div className="input-group">
+            <label>角色基本信息定义</label>
+            <textarea
+              className="resize-y w-full p-2"
+              name="persona"
+              defaultValue={customRole.persona}
+              onChange={e => {
+                customRole.persona = e.target.value
+                setCustomRole(customRole)
+              }}
+            />
+          </div>
+          <div className="input-group">
+            <label>角色的性格简短描述</label>
+            <textarea
+              className="resize-y w-full p-2"
+              name="personality"
+              defaultValue={customRole.personality}
+              onChange={e => {
+                customRole.personality = e.target.value
+                setCustomRole(customRole)
+              }}
+            />
+          </div>
+          <div className="input-group">
+            <label>角色的对话的情况和背景</label>
+            <textarea
+              className="resize-y w-full p-2"
+              name="scenario"
+              defaultValue={customRole.scenario}
+              onChange={e => {
+                customRole.scenario = e.target.value
+                setCustomRole(customRole)
+              }}
+            />
+          </div>
+          <div className="input-group">
+            <label>角色的对话样例</label>
+            <textarea
+              className="resize-y w-full p-2"
+              name="examples_of_dialogue"
+              defaultValue={customRole.examples_of_dialogue}
+              onChange={e => {
+                customRole.examples_of_dialogue = e.target.value
+                setCustomRole(customRole)
+              }}
+            />
+          </div>
+          <label>角色propmt模版</label>
+          <select
+            name="custom_role_template_type"
+            defaultValue={customRole.custom_role_template_type}
+            onChange={e => {
+              customRole.custom_role_template_type = e.target.value
+              setCustomRole(customRole)
+            }}
+          >
+            <option value="template1">zh</option>
+            <option value="template2">en</option>
+            {/* 可以继续添加更多选项 */}
+          </select>
+          <div className="flex justify-end mt-4">
+            <IconButton
+              iconName="24/Save"
+              label='提交'
+              isProcessing={false}
+              onClick={handleSubmit}></IconButton>
           </div>
         </div>
       </div>
@@ -515,14 +650,17 @@ export const Settings = ({
   return (
     <div className="container">
       <div className="absolute z-40 w-full h-full bg-white/80 backdrop-blur ">
-        <div className="absolute m-24">
+        <div className="absolute m-24 flex gap-[8px]">
           <IconButton
+            label='关闭'
             iconName="24/Close"
             isProcessing={false}
             onClick={onClickClose}
+            className="mr-2" // 添加右边间距
           ></IconButton>
           <IconButton
-            iconName="24/Projects"
+            label='保存'
+            iconName="24/Save"
             isProcessing={false}
             onClick={handleSubmit}
           ></IconButton>
@@ -541,6 +679,7 @@ export const Settings = ({
           </div>
           {/* 根据currentTab渲染对应的内容 */}
           {currentTab === '基础设置' && <BasicSettings />}
+          {currentTab === '自定义角色设置' && <CustomRoleSettings />}
           {currentTab === '大语言模型设置' && <LlmSettings />}
           {currentTab === '记忆模块设置' && <MemorySettings />}
           {currentTab === '高级设置' && <AdvancedSettings />}

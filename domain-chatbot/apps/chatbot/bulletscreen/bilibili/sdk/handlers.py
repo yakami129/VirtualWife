@@ -13,6 +13,8 @@ __all__ = (
 logger = logging.getLogger('blivedm')
 
 IGNORED_CMDS = (
+    'INTERACT_WORD',
+    'WATCHED_CHANGE',
     'COMBO_SEND',
     'HOT_RANK_CHANGED',
     'HOT_RANK_CHANGED_V2',

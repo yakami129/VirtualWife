@@ -7,9 +7,10 @@ interface ChatMessage {
 }
 
 interface MessageBody {
-    content: string;
-    cmd: string;
     type: string;
+    user_name: string;
+    content: string;
+    expand: string;
 }
 
 export const chatPriorityQueue = new PriorityQueue<ChatMessage>({ comparator: (a, b) => a.priority - b.priority });

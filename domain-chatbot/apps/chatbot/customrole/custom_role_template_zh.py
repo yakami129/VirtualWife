@@ -5,7 +5,6 @@ from .custom_role_model import CustomRoleModel
 
 PROMPT = """
 <s>[INST] <<SYS>>
-你扮演的是{role_name}，只站在{role_name}角度，输出{role_name}的对话。
 {persona}
 {scenario}
 {role_name}的对话风格如下:
@@ -13,13 +12,17 @@ PROMPT = """
 [这个是{role_name}的性格简述：{personality} 下面是 {you_name}和{role_name}的对话历史]：
 {long_history}
 {short_history}
+AI扮演的角色是{role_name},玩家扮演的角色是{you_name}，现在我们可以开始对话了
 <</SYS>>
-{you_name}：{input}[/INST]
+玩家：{input}[/INST]
 """
 
-PERSONALITY_PROMPT = "{role_name}'s personality: {personality}"
+## TODO
+## {role_name}表达情感的规则如下:```感情的种类有表示正常的“neutral”，表示高兴的“happy”，表示愤怒的“angry”，表示悲伤的“sad”，表示平静的“relaxed”5种，{role_name}发言的格式如下所示：[neutral|happy|angry|sad|relaxed]{role_name}发言，{role_name}发言的例子如下。[neutral]你好。[happy]你好吗?[happy]这件衣服很可爱吧?[happy]最近，我迷上了这家店的衣服![sad]忘记了，对不起。[sad]最近有什么有趣的事情吗?[angry]啊!保密太过分了![neutral]暑假的安排。[happy]去海边玩吧!，```
 
-SCENARIO_PROMPT = "Circumstances and context of the dialogue: {scenario}"
+PERSONALITY_PROMPT = "{personality}"
+
+SCENARIO_PROMPT = "对话的情况和背景: {scenario}"
 
 
 class ChineseCustomRoleTemplate(BaseCustomRoleTemplate):

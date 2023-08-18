@@ -102,13 +102,12 @@ export default function Home() {
    * アシスタントとの会話を行う
    */
   const handleSendChat = useCallback(
-    async (text: string, cmd: string, type: string) => {
+    async (type: string, user_name: string, content: string) => {
 
-      let newMessage = text;
-      let oldMessage = text;
-
+      let newMessage = content;
+      let oldMessage = content;
       if (newMessage == null) return;
-
+      console.log("newMessage:" + newMessage)
       newMessage = await translation(newMessage, "en").catch(
         (e) => {
           console.error(e);
@@ -137,7 +136,7 @@ export default function Home() {
       let tag = "";
       const sentences = new Array<string>();
 
-      const yourName = globalsConfig?.characterConfig?.yourName;
+      const yourName = user_name == null || user_name == '' ? globalsConfig?.characterConfig?.yourName : user_name
       const character = globalsConfig?.characterConfig?.character;
       let receivedMessage = await chat(newMessage, character, yourName).catch(
         (e) => {
@@ -247,7 +246,7 @@ export default function Home() {
       setInterval(() => {
         if (chatPriorityQueue.length > 0) {
           const chatMessage = chatPriorityQueue.dequeue();
-          handleSendChat(chatMessage.message.content, chatMessage.message.cmd, chatMessage.message.type).catch(e => {
+          handleSendChat(chatMessage.message.type, chatMessage.message.user_name, chatMessage.message.content).catch(e => {
             console.log(e);
           });
           console.log('run handleSendChat chatMessage:', chatMessage);

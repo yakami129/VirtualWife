@@ -9,20 +9,19 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 
 
 import os
-import apps.chatbot.bulletscreen.core.bili_schedule
 from apps.chatbot.bulletscreen.routing import websocket_urlpatterns
-from apps.chatbot.bulletscreen.core.zblivedm_main import start_handle
+from apps.chatbot.bulletscreen.bilibili.chat_queue import QueryJobTask
+from apps.chatbot.bulletscreen.bilibili.bili_live_client import bili_live_client_main
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from django.core.asgi import get_asgi_application
 from django.urls import path
 
-
-
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VirtualWife.settings')
 
-start_handle();
+bili_live_client_main();
+QueryJobTask.start()
 
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.
