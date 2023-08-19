@@ -1,5 +1,5 @@
 
-class CustomRoleModel():
+class CustomRole():
     '''统一自定义角色定义数据结构
 
     role_name: 角色名称

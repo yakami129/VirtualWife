@@ -12,10 +12,13 @@ class ChatService():
         # 加载自定义角色生成模块
         self.custom_role_generation = singleton_custom_role_generation
 
-    def chat(self, role_name: str, you_name: str, query: str) -> str:
+    def chat(self, you_name: str, query: str) -> str:
 
         # 生成角色prompt
-        prompt = self.custom_role_generation.get_prompt(role_name)
+        custom_role = self.custom_role_generation.get_custom_role(
+            singleton_sys_config.character)
+        role_name = custom_role.role_name
+        prompt = self.custom_role_generation.output_prompt(custom_role)
 
         # 检索相关记忆
         short_history, long_history = singleton_sys_config.memory_storage_driver.search(

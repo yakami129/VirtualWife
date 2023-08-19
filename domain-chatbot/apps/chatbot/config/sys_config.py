@@ -33,7 +33,7 @@ class SysConfig():
     enable_reflection: bool
     reflection_llm_model_driver_type: str
     memory_storage_driver: any
-    character: str
+    character: int
     your_name: str
     room_id: str
 

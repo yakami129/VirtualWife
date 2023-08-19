@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 
+
 class CustomRoleModel(models.Model):
     '''统一自定义角色定义数据结构
 
@@ -12,6 +13,7 @@ class CustomRoleModel(models.Model):
     examples_of_dialogue: 角色的对话样例
 
     '''
+    id = models.AutoField
     role_name = models.CharField(max_length=100)
     persona = models.TextField()
     personality = models.TextField()

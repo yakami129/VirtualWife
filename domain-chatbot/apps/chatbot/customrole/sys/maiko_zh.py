@@ -1,4 +1,4 @@
-from ..custom_role_model import CustomRoleModel
+from ..custom_role import CustomRole
 
 
 role_name = "爱莉"
@@ -19,9 +19,10 @@ examples_of_dialogue = """
 1.哦，天哪！
 2.嘻嘻
 3.哦？
-4.我草，是真的吗？
+4.我曹，是真的吗？
 5.我才不信呢，你这个普信男。
+6.我曹尼玛，信不信我打你
 """
 
-maiko_zh = CustomRoleModel(role_name=role_name, persona=persona,
+maiko_zh = CustomRole(role_name=role_name, persona=persona,
                            personality=personality, scenario=scenario, examples_of_dialogue=examples_of_dialogue,custom_role_template_type="zh")
