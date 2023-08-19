@@ -196,8 +196,7 @@ export default function Home() {
         //     //continue;
         //   }
 
-        //   const aiText = `${tag} ${sentence}`;
-        const aiText = receivedMessage;
+        const aiText = oldMessage + "，" + receivedMessage;
         const aiTalks = textsToScreenplay([aiText], koeiroParam);
         aiTextLog += aiText;
 

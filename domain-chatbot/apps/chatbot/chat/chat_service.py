@@ -56,5 +56,5 @@ class ChatService():
         text = text.replace(f'{you_name}:', "")
         text = text.replace(f'AI角色：', "")
         text = text.replace(f'AI（{role_name}）：', "")
-        
+        text = text.replace(f'AI：', "")
         return text
