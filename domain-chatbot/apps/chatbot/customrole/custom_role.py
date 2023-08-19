@@ -11,7 +11,6 @@ class CustomRole():
     '''
     role_name: str
     persona: str
-    first_message: str
     personality: str
     scenario: str
     examples_of_dialogue: str
@@ -24,3 +23,13 @@ class CustomRole():
         self.scenario = scenario
         self.examples_of_dialogue = examples_of_dialogue
         self.custom_role_template_type = custom_role_template_type
+
+    def to_dict(self):
+        return {
+            "role_name": self.role_name,
+            "persona": self.persona,
+            "personality": self.personality,
+            "scenario": self.scenario,
+            "examples_of_dialogue": self.examples_of_dialogue,
+            "custom_role_template_type": self.custom_role_template_type
+        }

@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .config import singleton_sys_config
 from .memory.reflection.reflection_generation import ReflectionGeneration
-from .customrole.custom_role_generation import singleton_custom_role_generation
+from .customrole.sys.maiko_zh import maiko_zh
 from .models import CustomRoleModel
 from .forms import CustomRoleForm
 import logging
@@ -122,10 +122,11 @@ def clear_memory(request):
 
 @api_view(['GET'])
 def custom_role_list(request):
-    roles = CustomRoleModel.objects.all()
-    serializer = CustomRoleSerializer(data=roles, many=True)
+    result = CustomRoleModel.objects.all()
+    serializer = CustomRoleSerializer(data=result, many=True)
     serializer.is_valid()
-    return Response({"response": serializer.data, "code": "200"})
+    result = serializer.data
+    return Response({"response": result, "code": "200"})
 
 
 @api_view(['GET'])
@@ -182,7 +183,7 @@ def custom_role_edit(request, pk):
     examples_of_dialogue = data.get('examples_of_dialogue')
     custom_role_template_type = data.get('custom_role_template_type')
 
-    #更新 CustomRoleModel 实例并保存到数据库
+    # 更新 CustomRoleModel 实例并保存到数据库
     custom_role = CustomRoleModel(
         id=id,
         role_name=role_name,
