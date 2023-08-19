@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { IconButton } from "./iconButton";
 import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
-import { customroleList, vrmModelList } from "@/features/customRole/customRoleApi";
+import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList, vrmModelList } from "@/features/customRole/customRoleApi";
 import { getConfig, saveConfig, FormDataType } from "@/features/config/configApi";
 import {
   KoeiroParam,
@@ -58,38 +58,42 @@ export const Settings = ({
 
   const [currentTab, setCurrentTab] = useState('基础设置');
   const [formData, setFormData] = useState(globalsConfig);
-  const [customRoles, setCustomRoles] = useState([]);
+  const [customRoles, setCustomRoles] = useState([custoRoleFormData]);
   const [vrmModels, setVrmModels] = useState([]);
   const [enableProxy, setEnableProxy] = useState(false);
   const [conversationType, setConversationType] = useState('default');
   const [longTermMemoryType, setLongTermMemoryType] = useState('local');
   const [enableSummary, setEnableSummary] = useState(false);
   const [enableReflection, setEnableReflection] = useState(false);
-  const [customRole, setCustomRole] = useState({
-    role_name: "",
-    persona: "",
-    personality: "",
-    scenario: "",
-    examples_of_dialogue: "",
-    custom_role_template_type: "",
-  });
-
+  const [customRole, setCustomRole] = useState(custoRoleFormData);
+  const [enableCreateRole, setEnableCreateRole] = useState(true);
+  const [customRoleLog, setCustomRoleLog] = useState("");
+  const [deleteCustomRoleLog, setDeleteCustomRoleLog] = useState("");
+  const [selectedRoleId, setSelectedRoleId] = useState(-1);
 
   useEffect(() => {
-    customroleList().then(data => setCustomRoles(data))
-    vrmModelList().then(data => setVrmModels(data))
+    customroleList().then(data => {
+      setCustomRoles(data)
+    })
     setFormData(globalsConfig);
+    vrmModelList().then(data => setVrmModels(data))
     setConversationType(globalsConfig.conversationConfig.conversationType)
     setLongTermMemoryType(globalsConfig.memoryStorageConfig.longTermMemoryType)
     setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableProxy(globalsConfig.enableProxy)
+    // console.log("re",customRoles)
+    // const selectedRole = customRoles.find(role => role.id === globalsConfig.characterConfig.character);
+    // console.log("xx",selectedRole)
+    // if (selectedRole) {
+    //   setCustomRole(selectedRole);
+    // }
   }, [])
 
   // 监听变化重新渲染
   useEffect(() => {
     // rerender
-  }, [enableProxy, conversationType, longTermMemoryType, enableSummary, enableReflection, formData])
+  }, [enableProxy, conversationType, longTermMemoryType, enableSummary, enableReflection, formData, customRoles])
 
 
   const handleSubmit = () => {
@@ -123,14 +127,15 @@ export const Settings = ({
             <select
               defaultValue={formData.characterConfig.character}
               onChange={e => {
-                formData.characterConfig.character = e.target.value;
+                const selectedRoleId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                formData.characterConfig.character = Number(selectedRoleId);
                 setFormData(formData);
               }}>
-              {
-                customRoles.map(role => (
-                  <option key={role}>{role}</option>
-                ))
-              }
+              {customRoles.map(role => (
+                <option value={role.id} data-key={role.id}>
+                  {role.role_name}
+                </option>
+              ))}
             </select >
           </div>
 
@@ -154,7 +159,7 @@ export const Settings = ({
               }}>
               {
                 vrmModels.map(vrm => (
-                  <option key={vrm.id}>{vrm.name}</option>
+                  <option value={vrm.name}>{vrm.name}</option>
                 ))
               }
             </select>
@@ -191,7 +196,7 @@ export const Settings = ({
               }}>
               {
                 llm_enums.map(llm => (
-                  <option key={llm}>{llm}</option>
+                  <option value={llm}>{llm}</option>
                 ))
               }
             </select>
@@ -312,7 +317,7 @@ export const Settings = ({
           }}>
           {
             llm_enums.map(llm => (
-              <option key={llm}>{llm}</option>
+              <option value={llm}>{llm}</option>
             ))
           }
         </select>
@@ -331,7 +336,7 @@ export const Settings = ({
           }}>
           {
             llm_enums.map(llm => (
-              <option key={llm}>{llm}</option>
+              <option value={llm}>{llm}</option>
             ))
           }
         </select>
@@ -501,36 +506,58 @@ export const Settings = ({
     )
   }
 
+
+
   const CustomRoleSettings = () => {
-    // 高级设置
+    // 自定义角色设置
     return (
       <div className="globals-settings">
         <div className="section">
           <div className="field">
-            <label>选择角色</label>
+            <label>添加或编辑角色</label>
             <div className="flex items-center justify-center space-x-4">
               <select
-                defaultValue={formData.characterConfig.character}
+                value={selectedRoleId}
                 onChange={e => {
-                  formData.characterConfig.character = e.target.value;
+                  const selectedRoleId = Number(e.target.options[e.target.selectedIndex].getAttribute('data-key'));
+                  formData.characterConfig.character = selectedRoleId;
+                  setSelectedRoleId(selectedRoleId)
+                  setEnableCreateRole(false);
                   setFormData(formData);
+                  setCustomRoleLog("")
+                  setDeleteCustomRoleLog("")
+                  const selectedRole = customRoles.find(role => role.id === selectedRoleId);
+                  if (selectedRole) {
+                    setCustomRole(selectedRole);
+                  }
                 }}>
-                {
-                  customRoles.map(role => (
-                    <option key={role}>{role}</option>
-                  ))
-                }
+                <option value="-1" data-key="-1">请选择</option>
+                {customRoles.map(role => (
+                  <option value={role.id} data-key={role.id}>
+                    {role.role_name}
+                  </option>
+                ))}
               </select >
               <IconButton
                 iconName="16/Add"
                 isProcessing={false}
-                onClick={onClickClose}
+                onClick={e => {
+                  setEnableCreateRole(true)
+                  setCustomRole(custoRoleFormData)
+                }}
               ></IconButton>
               <IconButton
                 iconName="16/Remove"
                 isProcessing={false}
-                onClick={onClickClose}
+                onClick={e => {
+                  if (selectedRoleId !== -1) {
+                    handleCustomRoleDelete(selectedRoleId)
+                  }
+                }}
               ></IconButton>
+              <div className="flex justify-end mt-4">
+                {deleteCustomRoleLog}
+              </div>
             </div>
             <EditCustomRole />
           </div>
@@ -544,13 +571,46 @@ export const Settings = ({
       </div>)
   }
 
+  const handleCustomRole = () => {
+    if (enableCreateRole) {
+      customroleCreate(customRole)
+        .then(data => {
+          customroleList().then(data => setCustomRoles(data))
+          setCustomRoleLog("OK")
+        }).catch(e => {
+          setCustomRoleLog("ERROR")
+        })
+
+    } else {
+      customrolEdit(customRole.id, customRole).then(data => {
+        customroleList()
+          .then(data => setCustomRoles(data))
+        setCustomRoleLog("OK")
+      }).catch(e => {
+        setCustomRoleLog("ERROR")
+      })
+    }
+  }
+
+  const handleCustomRoleDelete = (selectedRoleId: number) => {
+    customroleDelete(selectedRoleId)
+      .then(data => {
+        customroleList()
+          .then(data => setCustomRoles(data))
+        setDeleteCustomRoleLog("OK")
+      }).catch(e => {
+        setDeleteCustomRoleLog("ERROR")
+      })
+  }
+
   const EditCustomRole = () => {
     // 编辑角色
     return (
       <div className="globals-settings">
         <div className="section">
           <div className="field-"></div>
-          <label>编辑角色</label>
+          {enableCreateRole == true ? (
+            <label>创建角色</label>) : (<label>编辑角色</label>)}
           <label>角色名称</label>
           <input
             type="text"
@@ -612,14 +672,14 @@ export const Settings = ({
           <label>角色propmt模版</label>
           <select
             name="custom_role_template_type"
-            defaultValue={customRole.custom_role_template_type}
+            defaultValue={customRole.custom_role_template_type === '' ? 'zh' : customRole.custom_role_template_type}
             onChange={e => {
               customRole.custom_role_template_type = e.target.value
               setCustomRole(customRole)
             }}
           >
-            <option value="template1">zh</option>
-            <option value="template2">en</option>
+            <option value="zh">zh</option>
+            <option value="en">en</option>
             {/* 可以继续添加更多选项 */}
           </select>
           <div className="flex justify-end mt-4">
@@ -627,7 +687,10 @@ export const Settings = ({
               iconName="24/Save"
               label='提交'
               isProcessing={false}
-              onClick={handleSubmit}></IconButton>
+              onClick={handleCustomRole}></IconButton>
+          </div>
+          <div className="flex justify-end mt-4">
+            {customRoleLog}
           </div>
         </div>
       </div>

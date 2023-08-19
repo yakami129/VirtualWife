@@ -19,7 +19,7 @@ export const initialFormData = {
         }
     },
     "characterConfig": {
-        "character": "爱莉",
+        "character": 1,
         "yourName": "alan",
         "vrmModel": "わたあめ_03.vrm"
     },

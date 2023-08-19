@@ -1,17 +1,7 @@
 # 注意：当前文件是配置模版，使用时请将文件名称改为.env
 
-# OpenAI Key
-OPENAI_API_KEY=sk-XXXXX
-
-# text-generation-webui
-TEXT_GENERATION_API_URL=http://127.0.0.1:5000
-
 # B站直播间ID
 B_STATION_ID=27892212
-
-# 火山引擎key
-HUO_SHAN_ACCESS_KEY=xxxx
-HUO_SHAN_SECRET_KEY=xxxx
 
 # 时区
 TIMEZONE=Asia/Shanghai
