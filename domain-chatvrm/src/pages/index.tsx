@@ -107,7 +107,7 @@ export default function Home() {
       let newMessage = content;
       let oldMessage = content;
       if (newMessage == null) return;
-      console.log("newMessage:" + newMessage)
+      console.log("UserMessage:" + newMessage)
       newMessage = await translation(newMessage, "en").catch(
         (e) => {
           console.error(e);
@@ -137,8 +137,7 @@ export default function Home() {
       const sentences = new Array<string>();
 
       const yourName = user_name == null || user_name == '' ? globalsConfig?.characterConfig?.yourName : user_name
-      const character = globalsConfig?.characterConfig?.character;
-      let receivedMessage = await chat(newMessage, character, yourName).catch(
+      let receivedMessage = await chat(newMessage, yourName).catch(
         (e) => {
           console.error(e);
           return null;
@@ -151,7 +150,7 @@ export default function Home() {
           return oldMessage;
         }
       );
-      console.log("message:" + receivedMessage)
+      console.log("ChatbotMessage:" + receivedMessage)
 
       try {
 

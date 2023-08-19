@@ -89,7 +89,6 @@ export async function getChatResponseStream(
 
 export async function chat(
   message: string,
-  role_name: string,
   you_name: string
 ) {
 
@@ -99,7 +98,6 @@ export async function chat(
 
   const body = {
     query: message,
-    role_name: role_name,
     you_name: you_name
   };
   
