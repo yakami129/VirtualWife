@@ -1,8 +1,5 @@
 # 注意：当前文件是配置模版，使用时请将文件名称改为.env
 
-# OpenAI Key
-OPENAI_API_KEY=sk-XXXXX
-
 # B站直播间ID
 B_STATION_ID=27892212
 

@@ -10,8 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,11 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'channels',
-    'app',
-    'blivedm',
-    'tts',
-    # 'game',
-    'utils'
+    'apps',
 ]
 
 MIDDLEWARE = [
@@ -61,17 +60,16 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware'
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True # 允许所有来源
-CORS_ALLOW_HEADERS = ['*'] # 允许所有请求头
-CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE'] # 允许的请求方法
+CORS_ALLOW_ALL_ORIGINS = True  # 允许所有来源
+CORS_ALLOW_HEADERS = ['*']  # 允许所有请求头
+CORS_ALLOW_METHODS = ['GET', 'POST', 'PUT', 'DELETE']  # 允许的请求方法
 
 ROOT_URLCONF = 'VirtualWife.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,16 +88,12 @@ WSGI_APPLICATION = 'VirtualWife.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#      'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'virtual_wife',
-#         'USER': 'root',
-#         'PASSWORD': '123456',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db', 'db.sqlite3'),  # 指定数据库文件在 db 子目录下
+    }
+}
 
 
 # Password validation
@@ -151,3 +145,22 @@ CHANNEL_LAYERS = {
     }
 }
 
+# logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/info.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

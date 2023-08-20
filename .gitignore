@@ -9,6 +9,11 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/*
+
+.vscode
+
+domain-chatbot/tmp/
 
 .DS_Store
 

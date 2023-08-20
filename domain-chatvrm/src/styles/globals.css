@@ -18,10 +18,12 @@ body {
     width: 100%;
     border-radius: 4px;
   }
+
   .input-range:focus,
   .input-range:active {
     outline: none;
   }
+
   .input-range::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -49,7 +51,7 @@ body {
 }
 
 .photo-frame {
-  width: 650px; 
+  width: 650px;
   height: 650px;
   border: 10px solid #333;
   border-radius: 20px;
@@ -75,4 +77,114 @@ body {
   top: 50%;
   left: 60%;
   transform: translate(-50%, -50%);
+}
+
+.tab-menu {
+  display: flex;
+  border-bottom: 1px solid #ccc; 
+}
+
+.tab-item {
+  flex: 1; 
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.tab-item.active {
+  background-color: #1890ff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.settings {
+  margin-top: 80px;
+}
+
+.fade-enter,
+.fade-exit {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-exit-active {
+  opacity: 1;
+  transition: opacity 500ms;
+}
+
+
+/* 页面布局样式 */
+.globals-settings {
+  max-width: 800px; 
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 组件通用样式 */
+.section {
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  padding-left: 20px;
+  margin-bottom: 10px;
+}
+
+label {
+  font-size: 10px;
+  display: block;
+  text-align: left;
+  margin-bottom: 5px; 
+}
+
+/* 输入框 */
+input, 
+select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 0;
+  margin: 0;
+}
+
+/* 单选按钮 */  
+.radio {
+  margin-bottom: 10px; 
+}
+
+.radio label {
+  font-size: 14px; 
+  margin-right: 20px;
+}
+
+/* 下拉选择框 */
+select {
+  height: 35px;
+}
+
+.checkbot-field {
+  display: -webkit-flex; 
+  display: flex;
+
+  flex-direction: row; 
+  align-items: center;
+}
+
+.checkbot-input{
+  width: 15%;
+}
+
+/* 单选按钮样式 */
+input[type="radio"] {
+  margin-right: 10px; 
 }

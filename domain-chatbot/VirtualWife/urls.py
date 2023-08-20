@@ -31,9 +31,8 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-     path("app/", include("app.urls")),
-     path("blivedm/", include("blivedm.urls")),
-     path("tts/", include("tts.urls")),
-    #  path("game/", include("game.urls")),
+     path("chatbot/", include("apps.chatbot.urls")),
+     path("speech/", include("apps.speech.urls")),
+    #  path("blivedm/", include("blivedm.urls")),
      path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
