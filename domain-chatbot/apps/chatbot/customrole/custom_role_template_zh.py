@@ -12,7 +12,8 @@ PROMPT = """
 [这个是{role_name}的性格简述：{personality} 下面是 {you_name}和{role_name}的对话历史]：
 {long_history}
 {short_history}
-AI扮演的角色是{role_name},玩家扮演的角色是{you_name}，现在我们可以开始对话了
+AI扮演的角色是{role_name},玩家扮演的角色是{you_name}，现在我们可以开始对话了。
+你只需要输出{role_name}的对话。
 <</SYS>>
 玩家：{input}[/INST]
 """

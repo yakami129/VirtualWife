@@ -8,6 +8,7 @@ WORKDIR /app
 COPY ../domain-chatvrm .
 
 # 安装Node.js依赖项
+RUN npm install --save-dev @types/react-transition-group
 RUN npm install
 
 # 编译程序

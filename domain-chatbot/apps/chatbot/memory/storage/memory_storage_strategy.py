@@ -106,7 +106,7 @@ class MemoryStorageDriver():
         # 获取长期记忆
         memory_query = f"{owner}：{query_text}"
         long_memory = self.strategy.search(memory_query, 30, expr=None)
-        long_history = "[暂无长期记忆]"
+        long_history = ""
         summary_historys = []
         if len(long_memory) > 0:
             # 将json字符串转换为字典
