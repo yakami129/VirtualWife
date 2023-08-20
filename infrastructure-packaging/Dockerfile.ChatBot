@@ -10,6 +10,12 @@ COPY ../domain-chatbot .
 # 安装项目依赖框架
 RUN pip install -r requirements.txt
 
+# 初始化数据库
+RUN python manage.py makemigrations 
+
+# 执行数据库迁移
+RUN python manage.py migrate 
+
 # 暴露应用程序监听的端口
 EXPOSE 8000
 

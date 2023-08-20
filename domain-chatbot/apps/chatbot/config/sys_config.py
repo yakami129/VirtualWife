@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 from ..llms.llm_model_strategy import LlmModelDriver
 from ..models import CustomRoleModel
 from ..customrole.sys.maiko_zh import maiko_zh
@@ -61,19 +62,22 @@ class SysConfig():
         sys_config_json = self.get()
 
         # 初始化默认角色
-        result = CustomRoleModel.objects.all()
-        if len(result) == 0:
-            print("=> load default character")
-            custom_role = CustomRoleModel(
-                role_name=maiko_zh.role_name,
-                persona=maiko_zh.persona,
-                personality=maiko_zh.personality,
-                scenario=maiko_zh.scenario,
-                examples_of_dialogue=maiko_zh.examples_of_dialogue,
-                custom_role_template_type=maiko_zh.custom_role_template_type
-            )
-            custom_role.save()
-
+        try:
+            result = CustomRoleModel.objects.all()
+            if len(result) == 0:
+                print("=> load default character")
+                custom_role = CustomRoleModel(
+                    role_name=maiko_zh.role_name,
+                    persona=maiko_zh.persona,
+                    personality=maiko_zh.personality,
+                    scenario=maiko_zh.scenario,
+                    examples_of_dialogue=maiko_zh.examples_of_dialogue,
+                    custom_role_template_type=maiko_zh.custom_role_template_type
+                )
+                custom_role.save()
+        except Exception as e:
+            print("=> load default character ERROR: %s" % str(e))
+        
         # 加载角色配置
         character = sys_config_json["characterConfig"]["character"]
         yourName = sys_config_json["characterConfig"]["yourName"]
