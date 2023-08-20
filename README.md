@@ -66,7 +66,7 @@ cd installer
 
 - 更改境变量配置模版文件名为.env
 ```
-mv env_example .en
+mv env_example .env
 ```
 - 设置环境变量
 ```
@@ -202,7 +202,7 @@ http://localhost:3000/
 
 ## 技术交流群
 
-![IMG_4116](assets/IMG_4116.JPG)
+![IMG_4116](docs/IMG_4116.JPG)
 
 
 

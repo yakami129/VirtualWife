@@ -15,6 +15,8 @@
 
 domain-chatbot/tmp/
 
+.DS_Store
+
 # Generated files
 .idea/**/contentModel.xml
 
