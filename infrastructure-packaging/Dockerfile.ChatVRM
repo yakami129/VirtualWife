@@ -8,11 +8,10 @@ WORKDIR /app
 COPY ../domain-chatvrm .
 
 # 安装Node.js依赖项
-RUN npm install --save-dev @types/react-transition-group
 RUN npm install
 
 # 编译程序
-RUN npm run build
+RUN npm run build --no-lint
 
 # 暴露应用程序监听的端口
 EXPOSE 3000

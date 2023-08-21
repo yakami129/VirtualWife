@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 定义版本号变量
-VERSION="latest"
+VERSION="v2.0.0"
 
 # 打标签并推送镜像
 docker tag okapi0129/virtualwife-chatbot:latest okapi0129/virtualwife-chatbot:$VERSION

@@ -10,8 +10,15 @@ export const custoRoleFormData = {
     custom_role_template_type: "",
 }
 
-
 export type CustomRoleFormData = typeof custoRoleFormData;
+
+export const vrmModelData = {
+    name: ""
+}
+export type VrmModel = typeof custoRoleFormData;
+
+
+
 
 
 export async function customroleDelete(id: number) {
