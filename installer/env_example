@@ -5,7 +5,6 @@ B_STATION_ID=27892212
 # 时区
 TIMEZONE=Asia/Shanghai
 
-
 # 程序版本号，程序版本号可以查阅项目的release发布版本号，latest代表最新版本
 CHATBOT_TAG=latest
 CHATVRM_TAG=latest
