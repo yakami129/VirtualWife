@@ -672,12 +672,14 @@ export const Settings = ({
           <label>角色propmt模版</label>
           <select
             name="custom_role_template_type"
-            defaultValue={customRole.custom_role_template_type === '' ? 'zh' : customRole.custom_role_template_type}
+            defaultValue={customRole.custom_role_template_type}
             onChange={e => {
               customRole.custom_role_template_type = e.target.value
+              console.log(customRole.custom_role_template_type)
               setCustomRole(customRole)
             }}
           >
+            <option key="-1" value="-1" data-key="-1">请选择</option>
             <option key="zh" value="zh">zh</option>
             <option key="en" value="en">en</option>
             {/* 可以继续添加更多选项 */}
