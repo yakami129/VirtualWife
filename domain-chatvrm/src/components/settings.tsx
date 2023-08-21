@@ -125,14 +125,14 @@ export const Settings = ({
           <div className="field">
             <label>选择角色</label>
             <select
-              defaultValue={formData.characterConfig.character}
+              defaultValue={formData.characterConfig.character+''}
               onChange={e => {
                 const selectedRoleId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
                 formData.characterConfig.character = Number(selectedRoleId);
                 setFormData(formData);
               }}>
               {customRoles.map(role => (
-                <option key={role.id}  data-key={role.id}>
+                <option key={role.id} value={role.id} data-key={role.id}>
                   {role.role_name}
                 </option>
               ))}
@@ -672,12 +672,14 @@ export const Settings = ({
           <label>角色propmt模版</label>
           <select
             name="custom_role_template_type"
-            defaultValue={customRole.custom_role_template_type === '' ? 'zh' : customRole.custom_role_template_type}
+            defaultValue={customRole.custom_role_template_type}
             onChange={e => {
               customRole.custom_role_template_type = e.target.value
+              console.log(customRole.custom_role_template_type)
               setCustomRole(customRole)
             }}
           >
+            <option key="-1" value="-1" data-key="-1">请选择</option>
             <option key="zh" value="zh">zh</option>
             <option key="en" value="en">en</option>
             {/* 可以继续添加更多选项 */}
