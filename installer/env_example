@@ -1,10 +1,10 @@
 # 注意：当前文件是配置模版，使用时请将文件名称改为.env
-
 # B站直播间ID
 B_STATION_ID=27892212
 
 # 时区
 TIMEZONE=Asia/Shanghai
+
 
 # 程序版本号，程序版本号可以查阅项目的release发布版本号，latest代表最新版本
 CHATBOT_TAG=latest

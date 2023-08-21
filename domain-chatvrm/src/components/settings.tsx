@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { IconButton } from "./iconButton";
 import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
-import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList, vrmModelList } from "@/features/customRole/customRoleApi";
+import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList, vrmModelData, vrmModelList } from "@/features/customRole/customRoleApi";
 import { getConfig, saveConfig, FormDataType } from "@/features/config/configApi";
 import {
   KoeiroParam,
@@ -21,6 +21,12 @@ const tabNames = ['基础设置', '自定义角色设置', '大语言模型设�
 const llm_enums = ["openai", "text_generation"]
 
 const publicDir = join(process.cwd(), 'public');
+
+interface TabItemProps {
+  name: string;
+  isActive: boolean;
+  onClick: () => void;
+}
 
 type Props = {
   globalsConfig: FormDataType;
@@ -59,7 +65,7 @@ export const Settings = ({
   const [currentTab, setCurrentTab] = useState('基础设置');
   const [formData, setFormData] = useState(globalsConfig);
   const [customRoles, setCustomRoles] = useState([custoRoleFormData]);
-  const [vrmModels, setVrmModels] = useState([]);
+  const [vrmModels, setVrmModels] = useState([vrmModelData]);
   const [enableProxy, setEnableProxy] = useState(false);
   const [conversationType, setConversationType] = useState('default');
   const [longTermMemoryType, setLongTermMemoryType] = useState('local');
@@ -82,12 +88,6 @@ export const Settings = ({
     setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableProxy(globalsConfig.enableProxy)
-    // console.log("re",customRoles)
-    // const selectedRole = customRoles.find(role => role.id === globalsConfig.characterConfig.character);
-    // console.log("xx",selectedRole)
-    // if (selectedRole) {
-    //   setCustomRole(selectedRole);
-    // }
   }, [])
 
   // 监听变化重新渲染
@@ -102,7 +102,7 @@ export const Settings = ({
   }
 
   // Tab组件添加flex样式  
-  const TabItem = ({ name, isActive, onClick }) => {
+  const TabItem: React.FC<TabItemProps> = ({ name, isActive, onClick }) => {
     return (
       <div
         className={`tab-item ${isActive ? 'active' : ''}`}
@@ -110,8 +110,8 @@ export const Settings = ({
       >
         {name}
       </div>
-    )
-  }
+    );
+  };
 
   // 基础设置组件
   const BasicSettings = () => {
@@ -132,7 +132,7 @@ export const Settings = ({
                 setFormData(formData);
               }}>
               {customRoles.map(role => (
-                <option value={role.id} data-key={role.id}>
+                <option key={role.id}  data-key={role.id}>
                   {role.role_name}
                 </option>
               ))}
@@ -159,7 +159,7 @@ export const Settings = ({
               }}>
               {
                 vrmModels.map(vrm => (
-                  <option value={vrm.name}>{vrm.name}</option>
+                  <option key={vrm.name} value={vrm.name}>{vrm.name}</option>
                 ))
               }
             </select>
@@ -196,7 +196,7 @@ export const Settings = ({
               }}>
               {
                 llm_enums.map(llm => (
-                  <option value={llm}>{llm}</option>
+                  <option key={llm} value={llm}>{llm}</option>
                 ))
               }
             </select>
@@ -317,7 +317,7 @@ export const Settings = ({
           }}>
           {
             llm_enums.map(llm => (
-              <option value={llm}>{llm}</option>
+              <option key={llm} value={llm}>{llm}</option>
             ))
           }
         </select>
@@ -336,7 +336,7 @@ export const Settings = ({
           }}>
           {
             llm_enums.map(llm => (
-              <option value={llm}>{llm}</option>
+              <option  key={llm} value={llm}>{llm}</option>
             ))
           }
         </select>
@@ -531,9 +531,9 @@ export const Settings = ({
                     setCustomRole(selectedRole);
                   }
                 }}>
-                <option value="-1" data-key="-1">请选择</option>
+                <option key="-1" value="-1" data-key="-1">请选择</option>
                 {customRoles.map(role => (
-                  <option value={role.id} data-key={role.id}>
+                  <option key={role.id} value={role.id} data-key={role.id}>
                     {role.role_name}
                   </option>
                 ))}
@@ -678,8 +678,8 @@ export const Settings = ({
               setCustomRole(customRole)
             }}
           >
-            <option value="zh">zh</option>
-            <option value="en">en</option>
+            <option key="zh" value="zh">zh</option>
+            <option key="en" value="en">en</option>
             {/* 可以继续添加更多选项 */}
           </select>
           <div className="flex justify-end mt-4">

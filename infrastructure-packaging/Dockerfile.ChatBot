@@ -8,7 +8,7 @@ WORKDIR /app
 COPY ../domain-chatbot .
 
 # 安装项目依赖框架
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt  -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 
 # 初始化数据库
 RUN python manage.py makemigrations 

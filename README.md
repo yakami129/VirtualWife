@@ -1,6 +1,6 @@
 # VirtualWife
 
-VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，会有很多需要优化的地方，作者想打造一个拥有自己“灵魂”的虚拟数字人，你可以像朋友一样和她相识，作者希望虚拟数字人融入人类生活，作为恋爱导师，心理咨询师，解决人类的情感需求。
+VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很多需要优化的地方，作者想打造一个拥有自己“灵魂”的虚拟数字人，你可以像朋友一样和她相识，作者希望虚拟数字人融入人类生活，作为恋爱导师，心理咨询师，解决人类的情感需求。
 
 > 一期项目的功能，暂时还没有完整开发完，在项目中遇到问题可以在群里@Alan或者提issue，欢迎大佬贡献自己想法和代码
 
@@ -66,7 +66,7 @@ cd installer
 
 - 更改境变量配置模版文件名为.env
 ```
-mv env_example .env
+mv env_example .en
 ```
 - 设置环境变量
 ```
@@ -200,9 +200,14 @@ http://localhost:3000/
 - 本系统已经内置了很多中文语音包
 ![](docs/16925247438437.jpg)
 
+### 如何安装text-generation-webui?
+
+- [text-generation-webui官网](https://github.com/oobabooga/text-generation-webui)
+- [text-generation-webui详细安装教程](https://www.bilibili.com/video/BV1gM4y1J7dD/?spm_id_from=333.788&vd_source=11f40bfaa73ba3e80ac4ad36fb18f359)
+> 注意整个安装过程中，一定需要挂梯子
+
 ## 技术交流群
 
 ![IMG_4116](docs/IMG_4116.JPG)
-
 
 
