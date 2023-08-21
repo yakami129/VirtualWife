@@ -125,14 +125,14 @@ export const Settings = ({
           <div className="field">
             <label>选择角色</label>
             <select
-              defaultValue={formData.characterConfig.character}
+              defaultValue={formData.characterConfig.character+''}
               onChange={e => {
                 const selectedRoleId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
                 formData.characterConfig.character = Number(selectedRoleId);
                 setFormData(formData);
               }}>
               {customRoles.map(role => (
-                <option key={role.id}  data-key={role.id}>
+                <option key={role.id} value={role.id} data-key={role.id}>
                   {role.role_name}
                 </option>
               ))}
