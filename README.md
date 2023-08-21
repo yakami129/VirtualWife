@@ -66,7 +66,7 @@ cd installer
 
 - 更改境变量配置模版文件名为.env
 ```
-mv env_example .en
+mv env_example .env
 ```
 - 设置环境变量
 ```
@@ -118,7 +118,7 @@ http://localhost/
 
 #### 高级设置
 ```
-如果没有OPENAI_BASE_URL，你需要配置http-proxy
+如果没有OPENAI_BASE_URL，你需要配置http-proxy，如果是使用docker启动的程序，需要使用docker的dns，例如这样HTTP_PROXY=http://host.docker.internal:23457
 ```
 ![](docs/16925239975597.jpg)
 
