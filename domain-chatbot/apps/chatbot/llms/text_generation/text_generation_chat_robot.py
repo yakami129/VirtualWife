@@ -5,6 +5,7 @@ import os
 import logging
 import json
 
+
 class TextGeneration():
 
     max_new_tokens: int = 2048
@@ -24,7 +25,7 @@ class TextGeneration():
         print('temperature:', self.temperature)
         print('top_p:', self.top_p)
 
-    def chat(self,prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
         logging.info(f"prompt:{prompt}")
         body = {
             'prompt': prompt,
@@ -41,7 +42,7 @@ class TextGeneration():
             'top_a': 0,
             'repetition_penalty': 1.15,
             'repetition_penalty_range': 0,
-            'encoder_repetition_penalty':1,
+            'encoder_repetition_penalty': 1,
             'no_repeat_ngram_size': 0,
             'min_length': 0,
             'num_beams': 1,
@@ -64,4 +65,16 @@ class TextGeneration():
             result = response.json()['results'][0]['text']
             return result
         else:
-            print(f"text_generation error response is ",response,json.dumps(body))
+            print(f"text_generation error response is ",
+                  response, json.dumps(body))
+
+    async def chatStream(self,
+                         prompt: str,
+                         role_name: str,
+                         you_name: str,
+                         query: str,
+                         history: list[dict[str, str]],
+                         realtime_callback=None,
+                         conversation_end_callback=None
+                         ) -> None:
+        print(f"prompt:{prompt}")

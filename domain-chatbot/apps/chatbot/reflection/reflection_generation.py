@@ -1,7 +1,7 @@
 
 import time
 from .reflection_template import ReflectionTemplate
-from ...config import singleton_sys_config
+from ..config import singleton_sys_config
 
 class ReflectionGeneration():
 

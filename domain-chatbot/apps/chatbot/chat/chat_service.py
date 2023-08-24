@@ -1,5 +1,5 @@
 
-from ..customrole.custom_role_generation import singleton_custom_role_generation
+from ..character.character_generation import singleton_character_generation
 from ..config import singleton_sys_config
 import logging
 import re
@@ -10,19 +10,19 @@ class ChatService():
     def __init__(self) -> None:
 
         # 加载自定义角色生成模块
-        self.custom_role_generation = singleton_custom_role_generation
+        self.singleton_character_generation = singleton_character_generation
 
     def chat(self, you_name: str, query: str) -> str:
 
         # 生成角色prompt
-        custom_role = self.custom_role_generation.get_custom_role(
+        custom_role = self.singleton_character_generation.get_custom_role(
             singleton_sys_config.character)
         role_name = custom_role.role_name
-        prompt = self.custom_role_generation.output_prompt(custom_role)
+        prompt = self.singleton_character_generation.output_prompt(custom_role)
 
         # 检索相关记忆
         short_history, long_history = singleton_sys_config.memory_storage_driver.search(
-            query_text=query, owner=you_name)
+            query_text=query, you_name=you_name, role_name=role_name)
 
         # 对话聊天
         prompt = prompt.format(input=query, you_name=you_name,

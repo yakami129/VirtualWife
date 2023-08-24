@@ -1,6 +1,6 @@
 
-from .base_custom_role_template import BaseCustomRoleTemplate
-from .custom_role import CustomRole
+from .base_character_template import BaseCharacterTemplate
+from .character import Character
 
 
 PROMPT = """
@@ -9,7 +9,8 @@ PROMPT = """
 {scenario}
 {role_name}的对话风格如下:
 {examples_of_dialogue}
-[这个是{role_name}的性格简述：{personality} 下面是 {you_name}和{role_name}的对话历史]：
+[这个是{role_name}的性格简述：{personality}
+下面是对话关联的上下文:
 {long_history}
 {short_history}
 AI扮演的角色是{role_name},玩家扮演的角色是{you_name}，现在我们可以开始对话了。
@@ -26,21 +27,21 @@ PERSONALITY_PROMPT = "{personality}"
 SCENARIO_PROMPT = "对话的情况和背景: {scenario}"
 
 
-class ChineseCustomRoleTemplate(BaseCustomRoleTemplate):
+class ChineseCharacterTemplate(BaseCharacterTemplate):
 
-    def format(self, custom_role: CustomRole) -> str:
+    def format(self, character: Character) -> str:
 
         # 获取prompt参数
-        role_name = custom_role.role_name
-        persona = custom_role.persona
-        examples_of_dialogue = custom_role.examples_of_dialogue
+        role_name = character.role_name
+        persona = character.persona
+        examples_of_dialogue = character.examples_of_dialogue
         you_name = "{you_name}"
         long_history = "{long_history}"
         short_history = "{short_history}"
         input = "{input}"
 
         # 格式化性格简述
-        personality = custom_role.personality
+        personality = character.personality
         if personality != None and personality != '':
             personality = PERSONALITY_PROMPT.format(
                 role_name=role_name, personality=personality)
@@ -48,7 +49,7 @@ class ChineseCustomRoleTemplate(BaseCustomRoleTemplate):
             personality = ""
 
         # 格式化情景简述
-        scenario = custom_role.scenario
+        scenario = character.scenario
         if scenario != None and scenario != '':
             scenario = SCENARIO_PROMPT.format(scenario=scenario)
         else:

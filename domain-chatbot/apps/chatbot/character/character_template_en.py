@@ -1,6 +1,6 @@
 
-from .base_custom_role_template import BaseCustomRoleTemplate
-from .custom_role import CustomRole
+from .base_character_template import BaseCharacterTemplate
+from .character import Character
 
 
 PROMPT = """
@@ -24,21 +24,21 @@ PERSONALITY_PROMPT = "{role_name}'s personality: {personality}"
 SCENARIO_PROMPT = "Circumstances and context of the dialogue: {scenario}"
 
 
-class EnglishCustomRoleTemplate(BaseCustomRoleTemplate):
+class EnglishCharacterTemplate(BaseCharacterTemplate):
 
-    def format(self, custom_role: CustomRole) -> str:
+    def format(self, character: Character) -> str:
 
         # 获取prompt参数
-        role_name = custom_role.role_name
-        persona = custom_role.persona
-        examples_of_dialogue = custom_role.examples_of_dialogue
+        role_name = character.role_name
+        persona = character.persona
+        examples_of_dialogue = character.examples_of_dialogue
         you_name = "{you_name}"
         long_history = "{long_history}"
         short_history = "{short_history}"
         input = "{input}"
 
         # 格式化性格简述
-        personality = custom_role.personality
+        personality = character.personality
         if personality != None and personality != '':
             personality = PERSONALITY_PROMPT.format(
                 role_name=role_name, personality=personality)
@@ -46,7 +46,7 @@ class EnglishCustomRoleTemplate(BaseCustomRoleTemplate):
             personality = ""
 
         # 格式化情景简述
-        scenario = custom_role.scenario
+        scenario = character.scenario
         if scenario != None and scenario != '':
             scenario = SCENARIO_PROMPT.format(scenario=scenario)
         else:

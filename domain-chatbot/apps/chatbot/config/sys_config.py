@@ -1,16 +1,16 @@
 import json
 import os
-import traceback
 from ..llms.llm_model_strategy import LlmModelDriver
-from ..models import CustomRoleModel
-from ..customrole.sys.maiko_zh import maiko_zh
+from ..models import CustomRoleModel,SysConfigModel
+from ..character.sys.maiko_zh import maiko_zh
 
 config_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(config_dir, 'sys_config.json')
+sys_code = "adminSettings"
 
 
 def lazy_memory_storage(sys_config_json: any, sys_cofnig: any):
-    from ..memory.storage.memory_storage_strategy import MemoryStorageDriver
+    from ..memory.memory_storage_strategy import MemoryStorageDriver
     # 加载记忆模块配置
     memory_type = sys_config_json["memoryStorageConfig"]["longTermMemoryType"]
     print(f"memory_type:{memory_type}")
@@ -44,16 +44,29 @@ class SysConfig():
         self.load()
 
     def get(self):
-        # 获取当前目录下的sys_config.json文件,并转成json对象
+        sys_config_obj = None;
+        sys_config_json = "{}"
         with open(config_path, 'r') as f:
-            sys_config = json.load(f)
-        return sys_config
+            sys_config_json = json.load(f)
+        try:
+            sys_config_obj = SysConfigModel.objects.filter(code=sys_code).first()
+            if sys_config_obj == None:
+                print("=> save sys config to db")
+                sys_config_model = SysConfigModel(
+                    code = sys_code,
+                    config = json.dumps(sys_config_json)
+                )
+                sys_config_model.save()
+            else:
+                sys_config_json = json.loads(sys_config_obj.config)
+        except Exception as e:
+            print("=> load sys config error: %s" % str(e))
+        return sys_config_json
 
     def save(self, sys_config_json: any):
-        # 将sys_config_json 写入到当前目录下的sys_config.json文件中
-        with open(config_path, 'w') as f:
-            json.dump(sys_config_json, f)
-        return ""
+        sys_config_obj = SysConfigModel.objects.get(code=sys_code)
+        sys_config_obj.config = json.dumps(sys_config_json)
+        sys_config_obj.save()
 
     def load(self):
 

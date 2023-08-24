@@ -1,15 +1,12 @@
-import re
 import json
 from typing import Tuple
 
-from ...config.sys_config import SysConfig
-import numpy as np
+from ..config.sys_config import SysConfig
 from typing import List
-from langchain.memory import ConversationBufferWindowMemory
-from .milvus_storage_impl import MilvusStorage
-from .local_storage_impl import LocalStorage
+from .milvus.milvus_storage_impl import MilvusStorage
+from .local.local_storage_impl import LocalStorage
 from .base_storage import BaseStorage
-from ...utils.snowflake_utils import SnowFlake
+from ..utils.snowflake_utils import SnowFlake
 from typing import Any, Dict, List
 from langchain.memory.chat_memory import BaseChatMemory
 from langchain.schema import BaseMessage
@@ -90,10 +87,10 @@ class MemoryStorageDriver():
         else:
             raise ValueError("Unknown type")
 
-    def search(self, query_text: str, owner: str) -> Tuple[str, str]:
+    def search(self, query_text: str, you_name: str, role_name: str) -> Tuple[str, str]:
 
-        # 获取短期记忆
-        short_memory_dict = self.short_memory_dict.get(owner, None)
+        # 获取短期记忆，按照聊天的用户划分
+        short_memory_dict = self.short_memory_dict.get(you_name, None)
         short_memory = []
         short_history = ""
         if short_memory_dict != None:
@@ -101,27 +98,22 @@ class MemoryStorageDriver():
                 "history"]
             short_memory.append(short_memory_item)
         if len(short_memory) > 0:
-            short_history = "\n".join(short_memory)
+            short_history = ";".join(short_memory)
 
-        # 获取长期记忆
-        memory_query = f"{owner}：{query_text}"
-        long_memory = self.strategy.search(memory_query, 30, expr=None)
+        # 获取长期记忆，按照角色划分
+        long_memory = self.strategy.search(query_text, 3, owner=role_name)
         long_history = ""
         summary_historys = []
         if len(long_memory) > 0:
             # 将json字符串转换为字典
             for i in range(len(long_memory)):
-                # 每个元素mem才是json字符串
-                mem = long_memory[i]
-                mem_dict = json.loads(mem)
-                # 提取所有summary_history字段
-                summary_historys.append(mem_dict['summary'])
+                summary_historys.append(long_memory[i])
             long_history = ";".join(summary_historys)
         return (short_history, long_history)
 
-    def pageQuery(self, page_num: int, page_size: int, expr: str) -> list[str]:
+    def pageQuery(self, page_num: int, page_size: int, role_name: str) -> list[str]:
         '''分页检索记忆'''
-        return self.strategy.pageQuery(page_num=page_num, page_size=page_size, expr=expr)
+        return self.strategy.pageQuery(page_num=page_num, page_size=page_size, owner=role_name)
 
     def save(self, role_name: str, you_name: str, query_text: str, answer_text: str) -> None:
 
@@ -141,7 +133,7 @@ class MemoryStorageDriver():
         # 将当前对话语句生成摘要，存储为长期记忆
         you_history = f"{you_name}说{query_text}"
         role_history = f"{role_name}说{answer_text}"
-        chat_history = you_history + '\n' + role_history
+        chat_history = you_history + ';' + role_history
 
         # 检查是否开启对话摘要
         enable_summary = self.sysConfig.enable_summary
@@ -150,21 +142,15 @@ class MemoryStorageDriver():
             memory_summary = MemorySummary(self.sysConfig)
             summary = memory_summary.summary(
                 llm_model_type=self.sysConfig.summary_llm_model_driver_type, input=chat_history)
-            history = {
-                "summary": summary["summary"]
-            }
+            history = summary["summary"]
         else:
-            history = {
-                "summary": chat_history
-            }
-
-        history_json = json.dumps(history)
-        self.strategy.save(pk, history_json, you_name)
+            history = chat_history
+        self.strategy.save(pk, history, role_name)
 
     def format_history(you_name: str, query_text: str, role_name: str, answer_text: str):
         you_history = f"{you_name}说{query_text}"
         role_history = f"{role_name}说{answer_text}"
-        chat_history = you_history + '\n' + role_history
+        chat_history = you_history + ';' + role_history
         return chat_history
 
     def get_current_entity_id(self) -> int:
@@ -187,7 +173,7 @@ class MemorySummary():
                 请帮我提取对话内容的关键信息，下面是一个提取关键信息的示例:
                 ```
                 input:"alan：你好，爱莉，很高兴认识你，我是一名程序员，我喜欢吃川菜，也喜欢打篮球，我是水瓶座，生日是1月29日
-                output:{"summary"："alan向爱莉表示自己是一名程序员，爱莉表达对程序员的兴趣并希望了解更多","information":["alan是一名程序员","alan喜欢川菜","alan喜欢打篮球","alan是水瓶座","alan的生日是1月29日"]}
+                output:{"summary"："alan向爱莉表示自己是一名程序员，爱莉表达对程序员的兴趣并希望了解更多"}
                 ```
                 输出格式请使用以下方式：
                 ```

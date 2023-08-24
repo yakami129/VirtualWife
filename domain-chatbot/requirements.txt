@@ -22,3 +22,4 @@ sentence-transformers
 easygoogletranslate
 volcengine
 requests
+jieba
