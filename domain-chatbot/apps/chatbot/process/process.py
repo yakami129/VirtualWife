@@ -15,7 +15,7 @@ class ProcessCore():
 
     def chat(self, you_name: str, query: str):
 
-        # try:
+        try:
 
             # 生成角色prompt
             custom_role = self.singleton_character_generation.get_custom_role(
@@ -43,8 +43,8 @@ class ProcessCore():
                                                              realtime_callback=realtime_callback,
                                                              conversation_end_callback=conversation_end_callback)
 
-        # except Exception as e:
-        #     error_message = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
-        #     realtime_callback(role_name=role_name,
-        #                       you_name=you_name, content=error_message)
-        #     print("chat error: %s" % str(e))
+        except Exception as e:
+            error_message = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
+            realtime_callback(role_name=role_name,
+                              you_name=you_name, content=error_message)
+            print("chat error: %s" % str(e))

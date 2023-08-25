@@ -13,7 +13,7 @@ import threading
 # 聊天消息通道
 chat_channel = "chat_channel"
 
-# 创建一个线程安全的优先级队列
+# 创建一个线程安全的队列
 chat_queue = queue.SimpleQueue()
 
 
@@ -64,7 +64,7 @@ def realtime_callback(role_name: str, you_name: str, content: str):
     realtime_callback.message_buffer += content
     # 如果 content 以结束标点符号结尾，打印并清空缓冲区
     # if content.endswith(("。", "！", "？", "\n")):
-    if re.match(r"^(.+[。．！？\n]|.{10,}[、,])", realtime_callback.message_buffer):
+    if re.match(r"^(.+[。．！？~\n]|.{10,}[、,])", realtime_callback.message_buffer):
         realtime_callback.message_buffer = format_chat_text(
             role_name, you_name, realtime_callback.message_buffer)
         put_message(RealtimeMessage(

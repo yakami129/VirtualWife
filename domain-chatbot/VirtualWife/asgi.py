@@ -12,6 +12,7 @@ import os
 from apps.chatbot.output.routing import websocket_urlpatterns
 from apps.chatbot.output.realtime_message_queue import RealtimeMessageQueryJobTask
 from apps.chatbot.chat.chat_history_queue import ChatHistoryMessageQueryJobTask
+from apps.chatbot.insight.insight_message_queue import InsightMessageQueryJobTask
 from apps.chatbot.insight.bilibili.bili_live_client import bili_live_client_main
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
@@ -24,6 +25,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VirtualWife.settings')
 bili_live_client_main();
 RealtimeMessageQueryJobTask.start()
 ChatHistoryMessageQueryJobTask.start()
+InsightMessageQueryJobTask.start()
 
 # Initialize Django ASGI application early to ensure the AppRegistry
 # is populated before importing code that may import ORM models.
