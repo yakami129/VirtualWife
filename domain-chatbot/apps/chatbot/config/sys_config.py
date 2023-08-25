@@ -12,19 +12,16 @@ sys_code = "adminSettings"
 def lazy_memory_storage(sys_config_json: any, sys_cofnig: any):
     from ..memory.memory_storage import MemoryStorageDriver
     # 加载记忆模块配置
-    memory_type = sys_config_json["memoryStorageConfig"]["longTermMemoryType"]
-    print(f"memory_type:{memory_type}")
     memory_storage_config = {
         "host": sys_config_json["memoryStorageConfig"]["milvusMemory"]["host"],
         "port": sys_config_json["memoryStorageConfig"]["milvusMemory"]["port"],
         "user": sys_config_json["memoryStorageConfig"]["milvusMemory"]["user"],
         "password": sys_config_json["memoryStorageConfig"]["milvusMemory"]["password"],
         "db_name": sys_config_json["memoryStorageConfig"]["milvusMemory"]["dbName"],
-        "maxMemoryLoads": sys_config_json["memoryStorageConfig"]["localMemory"]["maxMemoryLoads"]
     }
     print(f"memory_storage_config:{memory_storage_config}")
     # 加载记忆模块驱动
-    return MemoryStorageDriver(type=memory_type, memory_storage_config=memory_storage_config, sysConfig=sys_cofnig)
+    return MemoryStorageDriver(memory_storage_config=memory_storage_config, sysConfig=sys_cofnig)
 
 
 class SysConfig():
@@ -32,6 +29,7 @@ class SysConfig():
     llm_model_driver: LlmModelDriver
     conversation_llm_model_driver_type: str
     enable_summary: bool
+    enable_longMemory: bool
     summary_llm_model_driver_type: str
     enable_reflection: bool
     reflection_llm_model_driver_type: str
@@ -40,6 +38,7 @@ class SysConfig():
     your_name: str
     room_id: str
     local_memory_num: int = 5
+
 
     def __init__(self) -> None:
         self.load()
@@ -135,6 +134,8 @@ class SysConfig():
         # 是否开启记忆摘要
         print("=> Memory Config")
         self.enable_summary = sys_config_json["memoryStorageConfig"]["enableSummary"]
+        self.enable_longMemory = sys_config_json["memoryStorageConfig"]["enableLongMemory"]
+        print("enable_longMemory："+str(self.enable_longMemory))
         print("enable_summary："+str(self.enable_summary))
         if (self.enable_summary):
             self.summary_llm_model_driver_type = sys_config_json[
@@ -143,7 +144,7 @@ class SysConfig():
                   self.summary_llm_model_driver_type)
 
         self.enable_reflection = sys_config_json["memoryStorageConfig"]["enableReflection"]
-        print("enableReflection"+str(self.enable_reflection))
+        print("enableReflection："+str(self.enable_reflection))
         if (self.enable_reflection):
             self.reflection_llm_model_driver_type = sys_config_json[
                 "memoryStorageConfig"]["languageModelForReflection"]

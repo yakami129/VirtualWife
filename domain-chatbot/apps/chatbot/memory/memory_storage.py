@@ -17,7 +17,7 @@ class MemoryStorageDriver():
     long_memory_storage: MilvusStorage
     snow_flake: SnowFlake = SnowFlake(data_center_id=5, worker_id=5)
 
-    def __init__(self, type: str, memory_storage_config: dict[str, str], sysConfig: SysConfig) -> None:
+    def __init__(self, memory_storage_config: dict[str, str], sysConfig: SysConfig) -> None:
         self.sys_config = sysConfig
         self.short_memory_storage = LocalStorage(memory_storage_config)
         self.long_memory_storage = MilvusStorage(memory_storage_config)
@@ -28,17 +28,20 @@ class MemoryStorageDriver():
         return local_memory
 
     def search_lang_memory(self, query_text: str, you_name: str, role_name: str) -> str:
-        # 获取长期记忆，按照角色划分
-        long_memory = self.long_memory_storage.search(
-            query_text, 3, owner=role_name)
-        long_history = ""
-        summary_historys = []
-        if len(long_memory) > 0:
-            # 将json字符串转换为字典
-            for i in range(len(long_memory)):
-                summary_historys.append(long_memory[i])
-            long_history = ";".join(summary_historys)
-        return long_history
+        if self.sys_config.enable_longMemory:
+            # 获取长期记忆，按照角色划分
+            long_memory = self.long_memory_storage.search(
+                query_text, 3, owner=role_name)
+            long_history = ""
+            summary_historys = []
+            if len(long_memory) > 0:
+                # 将json字符串转换为字典
+                for i in range(len(long_memory)):
+                    summary_historys.append(long_memory[i])
+                long_history = ";".join(summary_historys)
+            return long_history
+        else:
+            return ""
 
     def save(self,  you_name: str, query_text: str, role_name: str, answer_text: str) -> None:
 
@@ -51,19 +54,23 @@ class MemoryStorageDriver():
         self.short_memory_storage.save(
             pk, json.dumps(local_history), role_name, importance_score=1)
 
-        # 将当前对话语句生成摘要，存储为长期记忆
-        chat_history = self.format_history(
-            you_name=you_name, query_text=query_text, role_name=role_name, answer_text=answer_text)
-        memory_summary = MemorySummary(self.sys_config)
-        summary = memory_summary.summary(
-            llm_model_type=self.sys_config.summary_llm_model_driver_type, input=chat_history)
-        history = summary["summary"]
-
-        # 计算记忆的重要程度
-        memory_importance = MemoryImportance(self.sys_config)
-        importance_score = memory_importance.importance(
-            self.sys_config.summary_llm_model_driver_type, input=history)
-        self.long_memory_storage.save(pk, history, role_name, importance_score)
+        # 是否开启长期记忆
+        if self.sys_config.enable_longMemory:
+            # 将当前对话语句生成摘要
+            history = self.format_history(
+                you_name=you_name, query_text=query_text, role_name=role_name, answer_text=answer_text)
+            importance_score = 3
+            if self.sys_config.enable_summary:
+                memory_summary = MemorySummary(self.sys_config)
+                summary = memory_summary.summary(
+                    llm_model_type=self.sys_config.summary_llm_model_driver_type, input=history)
+                history = summary["summary"]
+                # 计算记忆的重要程度
+                memory_importance = MemoryImportance(self.sys_config)
+                importance_score = memory_importance.importance(
+                    self.sys_config.summary_llm_model_driver_type, input=history)
+            self.long_memory_storage.save(
+                pk, history, role_name, importance_score)
 
     def format_history(self, you_name: str, query_text: str, role_name: str, answer_text: str):
         you_history = f"{you_name}说{query_text}"

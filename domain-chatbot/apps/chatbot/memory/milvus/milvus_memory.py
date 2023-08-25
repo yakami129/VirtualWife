@@ -8,7 +8,7 @@ from sentence_transformers import SentenceTransformer
 import time
 
 
-_COLLECTION_NAME = "virtual_wife_memory_v1_test_01"
+_COLLECTION_NAME = "virtual_wife_memory_v1"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 

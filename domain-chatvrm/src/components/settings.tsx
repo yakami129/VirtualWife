@@ -68,7 +68,7 @@ export const Settings = ({
   const [vrmModels, setVrmModels] = useState([vrmModelData]);
   const [enableProxy, setEnableProxy] = useState(false);
   const [conversationType, setConversationType] = useState('default');
-  const [longTermMemoryType, setLongTermMemoryType] = useState('local');
+  const [enableLongMemory, setEnableLongMemory] = useState(false);
   const [enableSummary, setEnableSummary] = useState(false);
   const [enableReflection, setEnableReflection] = useState(false);
   const [customRole, setCustomRole] = useState(custoRoleFormData);
@@ -84,7 +84,7 @@ export const Settings = ({
     setFormData(globalsConfig);
     vrmModelList().then(data => setVrmModels(data))
     setConversationType(globalsConfig.conversationConfig.conversationType)
-    setLongTermMemoryType(globalsConfig.memoryStorageConfig.longTermMemoryType)
+    setEnableLongMemory(globalsConfig.memoryStorageConfig.enableLongMemory)
     setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableProxy(globalsConfig.enableProxy)
@@ -93,7 +93,7 @@ export const Settings = ({
   // 监听变化重新渲染
   useEffect(() => {
     // rerender
-  }, [enableProxy, conversationType, longTermMemoryType, enableSummary, enableReflection, formData, customRoles])
+  }, [enableProxy, conversationType, enableLongMemory, enableSummary, enableReflection, formData, customRoles])
 
 
   const handleSubmit = () => {
@@ -125,7 +125,7 @@ export const Settings = ({
           <div className="field">
             <label>选择角色</label>
             <select
-              defaultValue={formData.characterConfig.character+''}
+              defaultValue={formData.characterConfig.character + ''}
               onChange={e => {
                 const selectedRoleId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
                 formData.characterConfig.character = Number(selectedRoleId);
@@ -247,22 +247,70 @@ export const Settings = ({
     )
   }
 
-  const LocalMemory = () => {
-    // 本地存储设置  
+  const LongMemoryAdvancedSettings = () => {
+    // 长期记忆高级设置
     return (
       <div className="section">
-        <div className="title">local记忆存储配置</div>
-        <div className="field">
-          <label>最大记忆条数</label>
-          <input type="number" defaultValue={formData.memoryStorageConfig.localMemory.maxMemoryLoads}
-            onChange={e => {
-              formData.memoryStorageConfig.localMemory.maxMemoryLoads = Number(e.target.value)
-              setFormData(formData);
-            }}
-          />
+        <div className="title">高级功能</div>
+        <div className="section">
+          <div className="checkbot-field">
+            <label>是否开启对话摘要:</label>
+            <input className='checkbot-input' type="radio" name="enableSummary" value="true"
+              onChange={() => {
+                formData.memoryStorageConfig.enableSummary = true;
+                setFormData(formData);
+                setEnableSummary(formData.memoryStorageConfig.enableSummary);
+              }}
+              checked={enableSummary === true} /> 是
+            <input className='checkbot-input' type="radio" name="enableSummary" value="false"
+              onChange={() => {
+                formData.memoryStorageConfig.enableSummary = false;
+                setFormData(formData)
+                setEnableSummary(formData.memoryStorageConfig.enableSummary);
+              }}
+              checked={enableSummary === false} /> 否
+          </div>
+          {
+            enableSummary === true ? (
+              <div>
+                <SummaryLLM />
+              </div>
+            ) : (
+              <div></div>
+            )
+          }
         </div>
-      </div>)
-  };
+        {/* <div className="section">
+        <div className="checkbot-field">
+          <label>是否开启记忆反思:</label>
+          <input className='checkbot-input' type="radio" name="enableReflection" value="true"
+            onChange={() => {
+              formData.memoryStorageConfig.enableReflection = true;
+              setFormData(formData);
+              setEnableReflection(formData.memoryStorageConfig.enableReflection);
+            }}
+            checked={enableReflection === true} /> 是
+          <input className='checkbot-input' type="radio" name="enableReflection" value="false"
+            onChange={() => {
+              formData.memoryStorageConfig.enableReflection = false;
+              setFormData(formData);
+              setEnableReflection(formData.memoryStorageConfig.enableReflection);
+            }}
+            checked={enableReflection === false} /> 否
+        </div>
+        {
+          enableReflection === true ? (
+            <div>
+              <ReflectionLLM />
+            </div>
+          ) : (
+            <div></div>
+          )
+        }
+      </div> */}
+      </div >
+    )
+  }
 
   const MilvusMemory = () => {
     // Milvus存储设置
@@ -336,7 +384,7 @@ export const Settings = ({
           }}>
           {
             llm_enums.map(llm => (
-              <option  key={llm} value={llm}>{llm}</option>
+              <option key={llm} value={llm}>{llm}</option>
             ))
           }
         </select>
@@ -348,96 +396,37 @@ export const Settings = ({
     return (
       <div className="globals-settings">
         <div className="section">
-          <div className="title">基础功能</div>
+          <div className="title">长期记忆功能设置</div>
           <div className="checkbot-field">
-            <label>长期记忆存储类型:</label>
-            <input className='checkbot-input' type="radio" name="longTermMemoryType" value="locol"
+            <label>是否开启长期记忆:</label>
+            <input className='checkbot-input' type="radio" name="enableLongMemory" value="true"
               onChange={() => {
-                formData.memoryStorageConfig.longTermMemoryType = "local";
+                formData.memoryStorageConfig.enableLongMemory = true;
                 setFormData(formData)
-                setLongTermMemoryType(formData.memoryStorageConfig.longTermMemoryType)
+                setEnableLongMemory(formData.memoryStorageConfig.enableLongMemory)
               }}
-              checked={longTermMemoryType === 'local'} /> local
-            <input className='checkbot-input' type="radio" name="longTermMemoryType" value="milvus"
+              checked={enableLongMemory === true} /> 开启
+            <input className='checkbot-input' type="radio" name="enableLongMemory" value="false"
               onChange={() => {
-                formData.memoryStorageConfig.longTermMemoryType = "milvus";
+                formData.memoryStorageConfig.enableLongMemory = false;
                 setFormData(formData)
-                setLongTermMemoryType(formData.memoryStorageConfig.longTermMemoryType)
+                setEnableLongMemory(formData.memoryStorageConfig.enableLongMemory)
               }}
-              checked={longTermMemoryType === 'milvus'}
-            /> milvus
+              checked={enableLongMemory === false}
+            /> 关闭
           </div>
           {
-            longTermMemoryType === 'local' ? (
+            enableLongMemory === true ? (
               <div>
-                <LocalMemory />
+                <MilvusMemory />
+                <LongMemoryAdvancedSettings/>
               </div>
             ) : (
               <div>
-                <MilvusMemory />
               </div>
             )
           }
         </div>
-        <div className="section">
-          <div className="title">高级功能</div>
-          <div className="section">
-            <div className="checkbot-field">
-              <label>是否开启对话摘要:</label>
-              <input className='checkbot-input' type="radio" name="enableSummary" value="true"
-                onChange={() => {
-                  formData.memoryStorageConfig.enableSummary = true;
-                  setFormData(formData);
-                  setEnableSummary(formData.memoryStorageConfig.enableSummary);
-                }}
-                checked={enableSummary === true} /> 是
-              <input className='checkbot-input' type="radio" name="enableSummary" value="false"
-                onChange={() => {
-                  formData.memoryStorageConfig.enableSummary = false;
-                  setFormData(formData)
-                  setEnableSummary(formData.memoryStorageConfig.enableSummary);
-                }}
-                checked={enableSummary === false} /> 否
-            </div>
-            {
-              enableSummary === true ? (
-                <div>
-                  <SummaryLLM />
-                </div>
-              ) : (
-                <div></div>
-              )
-            }
-          </div>
-          {/* <div className="section">
-            <div className="checkbot-field">
-              <label>是否开启记忆反思:</label>
-              <input className='checkbot-input' type="radio" name="enableReflection" value="true"
-                onChange={() => {
-                  formData.memoryStorageConfig.enableReflection = true;
-                  setFormData(formData);
-                  setEnableReflection(formData.memoryStorageConfig.enableReflection);
-                }}
-                checked={enableReflection === true} /> 是
-              <input className='checkbot-input' type="radio" name="enableReflection" value="false"
-                onChange={() => {
-                  formData.memoryStorageConfig.enableReflection = false;
-                  setFormData(formData);
-                  setEnableReflection(formData.memoryStorageConfig.enableReflection);
-                }}
-                checked={enableReflection === false} /> 否
-            </div>
-            {
-              enableReflection === true ? (
-                <div>
-                  <ReflectionLLM />
-                </div>
-              ) : (
-                <div></div>
-              )
-            }
-          </div> */}
-        </div >
       </div>
     )
   }
