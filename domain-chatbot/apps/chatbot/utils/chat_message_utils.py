@@ -13,8 +13,9 @@ def format_chat_text(role_name: str, you_name: str, text: str):
     text = text.replace(f'{you_name}:', "")
     text = text.replace(f'AI角色：', "")
     text = text.replace(f'AI（{role_name}）：', "")
-    text = text.replace(f'AI: ', "")
+    text = text.replace(f'AI:', "")
     text = text.replace(f'ai：', "")
     text = text.replace(f'Ai：', "")
     text = text.replace(f'{role_name}说', "")
+    
     return text
