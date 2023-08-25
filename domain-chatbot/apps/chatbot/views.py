@@ -24,20 +24,10 @@ def chat(request):
     :return:
     '''
     data = json.loads(request.body.decode('utf-8'))
-    chat = None
     query = data["query"]
     you_name = data["you_name"]
-    chat = process_core.chat(you_name=you_name, query=query)
-    # try:
-    #     chat = process_core.chat(you_name=you_name, query=query)
-    #     if chat == "":
-    #         print("chat is null")
-    #         chat = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
-    # except Exception as e:
-    #     traceback.print_exc()
-    #     print("chat error: %s" % str(e))
-    #     chat = '哎呀,系统小哥哥突然打了个呵欠,估计是太辛苦了!需要补充能量!等他喝几口咖啡,打个盹儿,很快就会精神抖擞地回来工作的!'
-    return Response({"response": chat, "code": "200"})
+    process_core.chat(you_name=you_name, query=query)
+    return Response({"response": "OK", "code": "200"})
 
 
 @api_view(['GET'])

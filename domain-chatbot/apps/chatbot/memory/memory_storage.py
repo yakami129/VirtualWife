@@ -66,8 +66,8 @@ class MemoryStorageDriver():
         self.long_memory_storage.save(pk, history, role_name, importance_score)
 
     def format_history(self, you_name: str, query_text: str, role_name: str, answer_text: str):
-        you_history = f"{you_name}:{query_text}"
-        role_history = f"{role_name}:{answer_text}"
+        you_history = f"{you_name}说{query_text}"
+        role_history = f"{role_name}说{answer_text}"
         chat_history = you_history + ';' + role_history
         return chat_history
 
@@ -91,8 +91,8 @@ class MemorySummary():
                <s>[INST] <<SYS>>          
                 请帮我提取对话内容的关键信息，下面是一个提取关键信息的示例:
                 ```
-                input:"alan：你好，爱莉，很高兴认识你，我是一名程序员，我喜欢吃川菜，也喜欢打篮球，我是水瓶座，生日是1月29日
-                output:{"summary"："alan向爱莉表示自己是一名程序员，alan喜欢吃川菜和打篮球，alan是水瓶座，生日是1月29日"}
+                input:"alan说你好，爱莉，很高兴认识你，我是一名程序员，我喜欢吃川菜，也喜欢打篮球，我是水瓶座，生日是1月29日;爱莉说我们是兼容的
+                output:{"summary"："alan向爱莉表示自己是一名程序员，alan喜欢吃川菜和打篮球，alan是水瓶座，生日是1月29日，爱莉认为和alan是兼容的"}
                 ```
                 输出格式请使用以下方式：
                 ```
@@ -130,7 +130,7 @@ class MemoryImportance():
                 有一种记忆重要程度的评分机制，在到10的范围内，其中1是平凡的事务（例如，刷牙、铺床），10是极其印象深刻切重要的事务（例如，分手、大学录取），请帮我评估下面一段记忆的重要程度分数
                 输出格式请使用以下方式：
                 ```
-                {"score":"评分"}
+                {"score":"评分整数"}
                 ```
                 <</SYS>>
         '''

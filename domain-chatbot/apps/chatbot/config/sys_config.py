@@ -118,6 +118,11 @@ class SysConfig():
             print(f"HTTP_PROXY:" + os.environ['HTTP_PROXY'])
             print(f"HTTPS_PROXY:"+os.environ['HTTPS_PROXY'])
             print(f"SOCKS5_PROXY:"+os.environ['SOCKS5_PROXY'])
+        else:
+            os.environ['HTTP_PROXY'] = "";
+            os.environ['HTTPS_PROXY'] = "";
+            os.environ['SOCKS5_PROXY'] = "";
+            
 
         # 加载对话模块配置
         print("=> Chat Config")

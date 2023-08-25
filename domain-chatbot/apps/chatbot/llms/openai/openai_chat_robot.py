@@ -36,8 +36,7 @@ class OpenAIGeneration():
                          query: str,
                          history: list[dict[str, str]],
                          realtime_callback=None,
-                         conversation_end_callback=None
-                         ) -> None:
+                         conversation_end_callback=None):
         print(f"prompt:{prompt}")
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',

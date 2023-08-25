@@ -19,8 +19,7 @@ class LlmModelStrategy(ABC):
                          query: str,
                          history: list[dict[str, str]],
                          realtime_callback=None,
-                         conversation_end_callback=None
-                         ) -> None:
+                         conversation_end_callback=None):
         pass
 
 
@@ -44,14 +43,14 @@ class OpenAILlmModelStrategy(LlmModelStrategy):
                          history: list[dict[str, str]],
                          realtime_callback=None,
                          conversation_end_callback=None
-                         ) -> None:
-        return self.openai_generation.chatStream(prompt=prompt,
-                                                 role_name=role_name,
-                                                 you_name=you_name,
-                                                 query=query,
-                                                 history=history,
-                                                 realtime_callback=realtime_callback,
-                                                 conversation_end_callback=conversation_end_callback)
+                         ):
+        return await self.openai_generation.chatStream(prompt=prompt,
+                                                       role_name=role_name,
+                                                       you_name=you_name,
+                                                       query=query,
+                                                       history=history,
+                                                       realtime_callback=realtime_callback,
+                                                       conversation_end_callback=conversation_end_callback)
 
 
 class TextGenerationLlmModelStrategy(LlmModelStrategy):
@@ -69,12 +68,12 @@ class TextGenerationLlmModelStrategy(LlmModelStrategy):
                          prompt: str,
                          role_name: str,
                          you_name: str,
-                          query: str,
+                         query: str,
                          history: list[dict[str, str]],
                          realtime_callback=None,
                          conversation_end_callback=None
-                         ) -> None:
-        return self.generation.chatStream(prompt=prompt,
+                         ):
+        return await self.generation.chatStream(prompt=prompt,
                                           role_name=role_name,
                                           you_name=you_name,
                                           query=query,
@@ -104,7 +103,7 @@ class LlmModelDriver:
                    query: str,
                    history: list[dict[str, str]],
                    realtime_callback=None,
-                   conversation_end_callback=None) -> None:
+                   conversation_end_callback=None):
         strategy = self.get_strategy(type)
         asyncio.run(strategy.chatStream(prompt=prompt,
                                         role_name=role_name,

@@ -69,12 +69,15 @@ class TextGeneration():
                   response, json.dumps(body))
 
     async def chatStream(self,
-                         prompt: str,
-                         role_name: str,
-                         you_name: str,
-                         query: str,
-                         history: list[dict[str, str]],
-                         realtime_callback=None,
-                         conversation_end_callback=None
-                         ) -> None:
-        print(f"prompt:{prompt}")
+                   prompt: str,
+                   role_name: str,
+                   you_name: str,
+                   query: str,
+                   history: list[dict[str, str]],
+                   realtime_callback=None,
+                   conversation_end_callback=None
+                   ):
+        chat = self.chat(prompt=prompt, role_name=role_name, you_name=you_name,
+                         query=query, short_history="", long_history="")
+        realtime_callback(role_name, you_name, chat)
+        conversation_end_callback(role_name, chat, you_name, query)

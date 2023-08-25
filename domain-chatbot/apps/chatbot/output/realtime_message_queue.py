@@ -7,6 +7,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from ..utils.chat_message_utils import format_chat_text
 import threading
 
 # 聊天消息通道
@@ -44,33 +45,17 @@ def put_message(message: RealtimeMessage):
 
 def send_message():
     global chat_queue
-    try:
-        channel_layer = get_channel_layer()
-        send_message_exe = async_to_sync(channel_layer.group_send)
-        while True:
+    channel_layer = get_channel_layer()
+    send_message_exe = async_to_sync(channel_layer.group_send)
+    while True:
+        try:
             message = chat_queue.get()
             if (message != None and message != ''):
                 chat_message = {"type": "chat_message",
                                 "message":  message.to_dict()}
                 send_message_exe(chat_channel, chat_message)
-    except Exception as e:
-        traceback.print_exc()
-
-
-def format_chat_text(role_name: str, you_name: str, text: str):
-    # 去除特殊字符 * 、`role_name：`、`you_name:`
-    # text = text.replace(f'*', "")
-    pattern = r'\*.*?\*'
-    text = text.replace(f'`', "")
-    text = re.sub(pattern, '', text)
-    text = text.replace(f'{role_name}：', "")
-    text = text.replace(f'{you_name}：', "")
-    text = text.replace(f'{role_name}:', "")
-    text = text.replace(f'{you_name}:', "")
-    text = text.replace(f'AI角色：', "")
-    text = text.replace(f'AI（{role_name}）：', "")
-    text = text.replace(f'AI：', "")
-    return text
+        except Exception as e:
+            traceback.print_exc()
 
 
 def realtime_callback(role_name: str, you_name: str, content: str):

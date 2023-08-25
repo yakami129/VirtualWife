@@ -38,14 +38,14 @@ def put_message(message: ChatHistoryMessage):
 
 def send_message():
     global chat_history_queue
-    try:
-        while True:
+    while True:
+        try:
             message = chat_history_queue.get()
             if (message != None and message != ''):
                 singleton_sys_config.memory_storage_driver.save(
                     message.you_name, message.you_message, message.role_name, message.role_message)
-    except Exception as e:
-        traceback.print_exc()
+        except Exception as e:
+            traceback.print_exc()
 
 
 def conversation_end_callback(role_name: str,  role_message: str, you_name: str, you_message: str):
@@ -55,6 +55,7 @@ def conversation_end_callback(role_name: str,  role_message: str, you_name: str,
         you_name=you_name,
         you_message=you_message
     ))
+
 
 class ChatHistoryMessageQueryJobTask():
     @staticmethod
