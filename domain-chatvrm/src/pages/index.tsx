@@ -158,11 +158,8 @@ export default function Home() {
       socketInstance.onmessage = handleWebSocketMessage; // Set onmessage listener
       socketInstance.onclose = (event) => {
         console.log('WebSocket connection closed:', event);
-        // 重新连接，每隔1秒尝试一次
-        setTimeout(() => {
-          console.log('Reconnecting...');
-          setupWebSocket(); // 重新调用connect()函数进行连接
-        }, 1000);
+        console.log('Reconnecting...');
+        setupWebSocket(); // 重新调用connect()函数进行连接
       };
     });
   }
