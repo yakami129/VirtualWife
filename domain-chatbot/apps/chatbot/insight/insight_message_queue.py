@@ -1,7 +1,7 @@
 import queue
 import threading
 import traceback
-from ..utils.chat_message_utils import format_chat_text
+from ..utils.chat_message_utils import format_user_chat_text
 from ..process import process_core
 from ..output import realtime_message_queue
 
@@ -42,10 +42,11 @@ def send_message():
             message = insight_message_queue.get()
             if (message != None and message != ''):
                 if (message.type == "chat"):
+                    content = format_user_chat_text(text=message.content)
                     realtime_message_queue.put_message(realtime_message_queue.RealtimeMessage(
                         type=message.type,
                         user_name=message.user_name,
-                        content=message.content
+                        content=content
                     ))
                     process_core.chat(
                         you_name=message.user_name, query=message.content)

@@ -25,12 +25,17 @@ def getVoiceById(voiceId):
     return voiceMap.get(voiceId)
 
 # 删除html标签
-def remove_html(string):
-    regex = re.compile(r'<[^>]+>')
-    return regex.sub('', string)
+
+
+def remove_html(text: str):
+    # TODO 待改成正则
+    new_text = text.replace('[', "")
+    new_text = new_text.replace(']', "")
+    return new_text
+
 
 def create_audio(text, voiceId):
-    new_text = text
+    new_text = remove_html(text)
     print(f"Text without html tags: {new_text}")
     voice = getVoiceById(voiceId)
     if not voice:
@@ -46,6 +51,7 @@ def create_audio(text, voiceId):
         # 用open创建文件 兼容mac
         open(filePath, 'a').close()
 
-    script = 'edge-tts --voice ' + voice + ' --text "' + new_text + '" --write-media ' + filePath
+    script = 'edge-tts --voice ' + voice + ' --text "' + \
+        new_text + '" --write-media ' + filePath
     os.system(script)
     return file_name

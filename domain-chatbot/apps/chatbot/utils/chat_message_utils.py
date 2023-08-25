@@ -17,5 +17,11 @@ def format_chat_text(role_name: str, you_name: str, text: str):
     text = text.replace(f'ai：', "")
     text = text.replace(f'Ai：', "")
     text = text.replace(f'{role_name}说', "")
-    
+    text = text.replace('[', "")
+    text = text.replace(']', "")
+    return text
+
+def format_user_chat_text(text: str):
+    text = text.replace('[', "")
+    text = text.replace(']', "")
     return text
