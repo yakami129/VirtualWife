@@ -39,7 +39,7 @@ class LocalStorage(BaseStorage):
             'text', flat=True)[offset:offset + page_size]
         return list(results)
 
-    def save(self, pk: int, query_text: str, owner: str) -> None:
+    def save(self, pk: int, query_text: str, owner: str, importance_score: int) -> None:
         query_words = jieba.cut(query_text, cut_all=False)
         query_tags = list(query_words)
         keywords = jieba.analyse.extract_tags(" ".join(query_tags), topK=20)

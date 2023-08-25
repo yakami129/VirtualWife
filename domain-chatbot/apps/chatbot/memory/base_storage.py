@@ -11,12 +11,12 @@ class BaseStorage(ABC):
         pass
 
     @abstractmethod
-    def pageQuery(self,page_num:int,page_size:int, owner: str) -> list[str]:
+    def pageQuery(self, page_num: int, page_size: int, owner: str) -> list[str]:
         '''分页检索记忆'''
         pass
 
     @abstractmethod
-    def save(self, pk: int, query_text: str, owner: str) -> None:
+    def save(self, pk: int, query_text: str, owner: str, importance_score: int) -> None:
         '''保存记忆'''
         pass
 

@@ -60,6 +60,6 @@ class OpenAIGeneration():
                                       content)  # 调用实时消息推送的回调函数
             elif finish_reason:
                 if conversation_end_callback:
-                    conversation_end_callback(role_name, you_name,
-                                              query, answer)  # 调用对话结束消息的回调函数
+                    conversation_end_callback(role_name, answer, you_name,
+                                              query)  # 调用对话结束消息的回调函数
                 break  # 停止循环，对话已经结束

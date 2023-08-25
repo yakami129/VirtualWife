@@ -10,10 +10,8 @@ PROMPT = """
 This is how {role_name} should talk
 {examples_of_dialogue}
 Then the roleplay chat between {you_name} and {role_name} begins.
-This is the {you_name} and {role_name} memory module.
-{long_history}
 [{personality} {role_name} talks a lot with descriptions You only need to output {role_name}'s dialogue, no need to output {you_name}'s dialogue]
-{short_history}
+{long_history}
 Your response should be short and contain up to three sentences of no more than 20 words each.
 <</SYS>>
 {you_name}：{input} [/INST]

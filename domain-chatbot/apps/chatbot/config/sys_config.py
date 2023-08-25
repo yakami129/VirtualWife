@@ -1,7 +1,7 @@
 import json
 import os
 from ..llms.llm_model_strategy import LlmModelDriver
-from ..models import CustomRoleModel,SysConfigModel
+from ..models import CustomRoleModel, SysConfigModel
 from ..character.sys.maiko_zh import maiko_zh
 
 config_dir = os.path.dirname(os.path.abspath(__file__))
@@ -10,7 +10,7 @@ sys_code = "adminSettings"
 
 
 def lazy_memory_storage(sys_config_json: any, sys_cofnig: any):
-    from ..memory.memory_storage_strategy import MemoryStorageDriver
+    from ..memory.memory_storage import MemoryStorageDriver
     # 加载记忆模块配置
     memory_type = sys_config_json["memoryStorageConfig"]["longTermMemoryType"]
     print(f"memory_type:{memory_type}")
@@ -39,22 +39,24 @@ class SysConfig():
     character: int
     your_name: str
     room_id: str
+    local_memory_num: int = 5
 
     def __init__(self) -> None:
         self.load()
 
     def get(self):
-        sys_config_obj = None;
+        sys_config_obj = None
         sys_config_json = "{}"
         with open(config_path, 'r') as f:
             sys_config_json = json.load(f)
         try:
-            sys_config_obj = SysConfigModel.objects.filter(code=sys_code).first()
+            sys_config_obj = SysConfigModel.objects.filter(
+                code=sys_code).first()
             if sys_config_obj == None:
                 print("=> save sys config to db")
                 sys_config_model = SysConfigModel(
-                    code = sys_code,
-                    config = json.dumps(sys_config_json)
+                    code=sys_code,
+                    config=json.dumps(sys_config_json)
                 )
                 sys_config_model.save()
             else:
@@ -90,7 +92,7 @@ class SysConfig():
                 custom_role.save()
         except Exception as e:
             print("=> load default character ERROR: %s" % str(e))
-        
+
         # 加载角色配置
         character = sys_config_json["characterConfig"]["character"]
         yourName = sys_config_json["characterConfig"]["yourName"]

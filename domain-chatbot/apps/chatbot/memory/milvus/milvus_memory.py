@@ -1,20 +1,22 @@
 # 导入所需模块
 import os
+
+from ...memory.embedding import Embedding
 from ...utils.snowflake_utils import SnowFlake
 from pymilvus import DataType, FieldSchema, CollectionSchema, Collection, connections
 from sentence_transformers import SentenceTransformer
 import time
 
 
-_COLLECTION_NAME = "virtual_wife_memory"
-os.environ["TOKENIZERS_PARALLELISM"] = "false" 
+_COLLECTION_NAME = "virtual_wife_memory_v1_test_01"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 class MilvusMemory():
 
     collection: Collection
     schema: CollectionSchema
-    model: SentenceTransformer
+    embedding: Embedding
     snow_flake: SnowFlake
 
     def __init__(self, host: str, port: str, user: str, password: str, db_name: str):
@@ -33,8 +35,9 @@ class MilvusMemory():
             FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=2000),
             FieldSchema(name="owner", dtype=DataType.VARCHAR, max_length=50),
             FieldSchema(name="timestamp", dtype=DataType.DOUBLE),
+            FieldSchema(name="importance_score", dtype=DataType.INT64),
             FieldSchema(name="embedding", dtype=DataType.FLOAT_VECTOR,
-                        dim=384),  # 文本embedding向量
+                        dim=768),  # 文本embedding向量
         ]
         self.schema = CollectionSchema(fields, _COLLECTION_NAME)
         self.collection = Collection(_COLLECTION_NAME, self.schema)
@@ -43,32 +46,21 @@ class MilvusMemory():
         index = {
             "index_type": "IVF_SQ8",
             "metric_type": "L2",
-            "params": {"nlist": 384},
+            "params": {"nlist": 768},
         }
         self.collection.create_index("embedding", index)
 
         # 初始化向量化模型
-        self.model = SentenceTransformer(
-            'sentence-transformers/all-MiniLM-L6-v2')
+        self.embedding = Embedding()
 
-    def get_embedding_from_language_model(self, text: str):
-        embedding = self.model.encode(text)
-        return embedding
-
-    def get_importance_score_from_language_model(self, text: str, chat_fun=None):
-        '''通过大语言模型计算记忆重要程度'''
-        importance_score = 1
-        if chat_fun != None:
-            importance_score = chat_fun.chat(str)
-        return importance_score
-
-    def insert_memory(self, pk: int,  text: str, owner: str):
+    def insert_memory(self, pk: int,  text: str, owner: str, importance_score: int):
         '''定义插入记忆对象函数'''
         timestamp = time.time()
 
         # 使用语言模型获得文本embedding向量
-        embedding = self.get_embedding_from_language_model(text)
-        data = [[pk], [text], [owner], [timestamp], [embedding]]
+        embedding = self.embedding.get_embedding_from_language_model(text)
+        data = [[pk], [text], [owner], [timestamp],
+                [importance_score], [embedding]]
         self.collection.insert(data)
 
     def compute_relevance(self, query_text: str, limit: int, expr: str == None):
@@ -83,7 +75,8 @@ class MilvusMemory():
                 "id": hit.entity.id,
                 "text": hit.entity.text,
                 "timestamp": hit.entity.timestamp,
-                "owner": hit.entity.owner
+                "owner": hit.entity.owner,
+                "importance_score":  hit.entity.importance_score
             }
             memory["relevance"] = 1 - hit.distance
             hits.append(memory)
@@ -92,7 +85,8 @@ class MilvusMemory():
 
     def search_memory(self, query_text: str, limit: int, expr: str == None):
 
-        query_embedding = self.get_embedding_from_language_model(query_text)
+        query_embedding = self.embedding.get_embedding_from_language_model(
+            query_text)
         search_params = {"metric_type": "L2", "params": {"nprobe": 30}}
 
         # 搜索向量关联的最新30条记忆
@@ -104,7 +98,8 @@ class MilvusMemory():
                 param=search_params,
                 limit=limit,
                 expr=expr,
-                output_fields=["id", "text", "owner", "timestamp"]
+                output_fields=["id", "text", "owner",
+                               "timestamp", "importance_score"]
             )
         else:
             vector_hits = self.collection.search(
@@ -112,17 +107,11 @@ class MilvusMemory():
                 anns_field="embedding",
                 param=search_params,
                 limit=limit,
-                output_fields=["id", "text", "owner", "timestamp"]
+                output_fields=["id", "text", "owner",
+                               "timestamp", "importance_score"]
             )
 
         return vector_hits[0]
-
-    def compute_importance(self, memories):
-        '''定义计算重要性分数函数'''
-        for memory in memories:
-            # 使用语言模型评分文本的重要性
-            memory["importance"] = self.get_importance_score_from_language_model(
-                memory["text"])
 
     def compute_recency(self, memories):
         '''定义计算最近性分数函数'''
@@ -134,14 +123,15 @@ class MilvusMemory():
     def normalize_scores(self, memories):
         for memory in memories:
             memory["total_score"] = memory["relevance"] + \
-                memory["importance"] + memory["recency"]
+                memory["importance_score"] + memory["recency"]
 
     def pageQuery(self, expr: str, offset: int, limit: int):
         vector_hits = self.collection.query(
             expr=expr,
             offset=offset,
             limit=limit,
-            output_fields=["id", "text", "owner", "timestamp"]
+            output_fields=["id", "text", "owner",
+                           "timestamp", "importance_score"]
         )
         return vector_hits
 
