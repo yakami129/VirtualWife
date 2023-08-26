@@ -2,48 +2,47 @@ import { getRequest, postRequest } from "../httpclient/httpclient";
 
 // 定义formData初始状态 shape
 export const initialFormData = {
-    "liveStreamingConfig": {
-        "B_STATION_ID": "27892212"
-    },
-    "enableProxy": false,
-    "httpProxy": "http://127.0.0.1:7890",
-    "httpsProxy": "https://127.0.0.1:7890",
-    "socks5Proxy": "socks5://127.0.0.1:7890",
-    "languageModelConfig": {
-        "openai": {
-            "OPENAI_API_KEY": "sk-",
-            "OPENAI_BASE_URL": ""
-        },
-        "textGeneration": {
-            "TEXT_GENERATION_API_URL": "http://127.0.0.1:5000"
-        }
-    },
-    "characterConfig": {
-        "character": 1,
-        "yourName": "alan",
-        "vrmModel": "わたあめ_03.vrm"
-    },
-    "conversationConfig": {
-        "conversationType": "default",
-        "languageModel": "text_generation"
-    },
-    "memoryStorageConfig": {
-        "localMemory": {
-            "maxMemoryLoads": 5
-        },
-        "milvusMemory": {
-            "host": "127.0.0.1",
-            "port": "19530",
-            "user": "user",
-            "password": "Milvus",
-            "dbName": "default"
-        },
-        "longTermMemoryType": "local",
-        "enableSummary": false,
-        "languageModelForSummary": "text_generation",
-        "enableReflection": false,
-        "languageModelForReflection": "text_generation"
-    }
+	"liveStreamingConfig": {
+		"B_STATION_ID": "622909"
+	},
+	"enableProxy": false,
+	"httpProxy": "http://host.docker.internal:23457",
+	"httpsProxy": "https://host.docker.internal:23457",
+	"socks5Proxy": "socks5://host.docker.internal:23457",
+	"languageModelConfig": {
+		"openai": {
+			"OPENAI_API_KEY": "sk-",
+			"OPENAI_BASE_URL": ""
+		},
+		"textGeneration": {
+			"TEXT_GENERATION_API_URL": "http://127.0.0.1:5000"
+		}
+	},
+	"characterConfig": {
+		"character": 1,
+		"yourName": "yuki129",
+		"vrmModel": "\u308f\u305f\u3042\u3081_03.vrm"
+	},
+	"conversationConfig": {
+		"conversationType": "default",
+		"languageModel": "openai"
+	},
+	"memoryStorageConfig": {
+		"milvusMemory": {
+			"host": "127.0.0.1",
+			"port": "19530",
+			"user": "user",
+			"password": "Milvus",
+			"dbName": "default"
+		},
+		"enableLongMemory": false,
+		"enableSummary": false,
+		"languageModelForSummary": "openai",
+		"enableReflection": false,
+		"languageModelForReflection": "openai"
+	},
+	"custom_role_template_type": "zh",
+	"role_name": "1"
 }
 
 // 定义类型别名

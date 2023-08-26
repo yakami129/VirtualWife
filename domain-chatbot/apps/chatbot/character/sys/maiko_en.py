@@ -1,4 +1,4 @@
-from ..custom_role import CustomRole
+from ..character import Character
 
 
 role_name = "Maiko"
@@ -29,5 +29,5 @@ Maiko: So when their lights reaches us when we're born, we, like, take in their 
 Maiko: So astrology is REAL. Deal with it!
 """
 
-maiko_en = CustomRole(role_name=role_name, persona=persona,
+maiko_en = Character(role_name=role_name, persona=persona,
                            personality=personality, scenario=scenario, examples_of_dialogue=examples_of_dialogue, custom_role_template_type="en")

@@ -4,14 +4,14 @@ from django.shortcuts import render, get_object_or_404
 import json
 
 from .serializers import CustomRoleSerializer
-from .chat import chat_service
+# from .chat import chat_service
+from .process import process_core
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .config import singleton_sys_config
-from .memory.reflection.reflection_generation import ReflectionGeneration
-from .customrole.sys.maiko_zh import maiko_zh
+from .reflection.reflection_generation import ReflectionGeneration
+from .character.sys.maiko_zh import maiko_zh
 from .models import CustomRoleModel
-from .forms import CustomRoleForm
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -24,19 +24,10 @@ def chat(request):
     :return:
     '''
     data = json.loads(request.body.decode('utf-8'))
-    chat = None
     query = data["query"]
     you_name = data["you_name"]
-    try:
-        chat = chat_service.chat(you_name=you_name, query=query).strip()
-        if chat == "":
-            print("chat is null")
-            chat = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
-    except Exception as e:
-        traceback.print_exc()
-        print("chat error: %s" % str(e))
-        chat = '哎呀,系统小哥哥突然打了个呵欠,估计是太辛苦了!需要补充能量!等他喝几口咖啡,打个盹儿,很快就会精神抖擞地回来工作的!'
-    return Response({"response": chat, "code": "200"})
+    process_core.chat(you_name=you_name, query=query)
+    return Response({"response": "OK", "code": "200"})
 
 
 @api_view(['GET'])

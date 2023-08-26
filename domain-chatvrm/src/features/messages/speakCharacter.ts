@@ -30,13 +30,16 @@ const createSpeakCharacter = () => {
     });
 
     prevFetchPromise = fetchPromise;
-    prevSpeakPromise = Promise.all([fetchPromise, prevSpeakPromise]).then(([audioBuffer]) => {
-      onStart?.();
-      if (!audioBuffer) {
-        return;
-      }
-      return viewer.model?.speak(audioBuffer, screenplay);
-    });
+    prevSpeakPromise = Promise.all([fetchPromise, prevSpeakPromise])
+      .then(([audioBuffer]) => {
+        onStart?.();
+        if (!audioBuffer) {
+          return;
+        }
+        return viewer.model?.speak(audioBuffer, screenplay);
+      }).catch(e => {
+        onComplete?.();
+      })
     prevSpeakPromise.then(() => {
       onComplete?.();
     });
@@ -61,15 +64,15 @@ export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
   // const buffer = await resAudio.arrayBuffer();
   // return buffer;
 
-    const requestBody = {
-      text: talk.message,
-      voice: "xiaoyi",
-    };
+  const requestBody = {
+    text: talk.message,
+    voice: "xiaoyi",
+  };
 
-    const headers = {
-      'Content-Type': 'application/json',
-    }
+  const headers = {
+    'Content-Type': 'application/json',
+  }
 
-    const data = await postRequestArraybuffer("/speech/tts/generate",headers, requestBody);
-    return data;
+  const data = await postRequestArraybuffer("/speech/tts/generate", headers, requestBody);
+  return data;
 };

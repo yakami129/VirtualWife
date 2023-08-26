@@ -23,3 +23,32 @@ class CustomRoleModel(models.Model):
 
     def __str__(self):
         return self.role_name
+
+class SysConfigModel(models.Model):
+    '''系统配置数据结构
+    id: 主键id
+    code: 配置code
+    config: 配置json
+    '''
+    id = models.AutoField
+    code = models.CharField(max_length=20)
+    config = models.TextField()
+
+    def __str__(self):
+        return self.id
+    
+class LocalMemoryModel(models.Model):
+    '''记忆数据存储数据结构
+    id: 主键ID
+    text: 记忆文本
+    owner: 记忆的所有人
+    timestamp: 创建时间
+    '''
+    id = models.AutoField
+    text = models.TextField()
+    tags = models.TextField()
+    owner = models.CharField(max_length=40)
+    timestamp = models.DateTimeField()
+
+    def __str__(self):
+        return self.id

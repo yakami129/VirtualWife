@@ -34,7 +34,7 @@ import { getConfig, FormDataType, initialFormData } from "@/features/config/conf
 //   subsets: ["latin"],
 // });
 
-let socketInstance: WebSocket | null = null;
+const socket = connect()
 let bind_message_event = false;
 
 export default function Home() {
@@ -106,12 +106,12 @@ export default function Home() {
 
     // 文ごとに音声を生成 & 再生、返答を表示
     const currentAssistantMessage = sentences.join(" ");
-    console.log("RobotMessage:" + aiTextLog)
     handleSpeakAi(aiTalks[0], () => {
       setAssistantMessage(currentAssistantMessage);
     });
 
   }
+
 
   /**
    * アシスタントとの会話を行う
@@ -119,58 +119,152 @@ export default function Home() {
   const handleSendChat = useCallback(
     async (type: string, user_name: string, content: string) => {
 
-      console.log("UserMessage:" + content)
+      let newMessage = content;
+      let oldMessage = content;
+      if (newMessage == null) return;
+      console.log("UserMessage:" + newMessage)
+      newMessage = await translation(newMessage, "en").catch(
+        (e) => {
+          console.error(e);
+          return oldMessage;
+        }
+      );
 
       setChatProcessing(true);
       // ユーザーの発言を追加して表示
       const messageLog: Message[] = [
         ...chatLog,
-        { role: "user", content: content },
+        { role: "user", content: newMessage },
       ];
       setChatLog(messageLog);
 
+      // Chat GPTへ
+      const messages: Message[] = [
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+        ...messageLog,
+      ];
+
+      let aiTextLog = "";
+      let tag = "";
+      const sentences = new Array<string>();
+
       const yourName = user_name == null || user_name == '' ? globalsConfig?.characterConfig?.yourName : user_name
-      await chat(content, yourName).catch(
+      let receivedMessage = await chat(newMessage, yourName).catch(
         (e) => {
           console.error(e);
           return null;
         }
       );
 
+      receivedMessage = await translation(receivedMessage, "zh").catch(
+        (e) => {
+          console.error(e);
+          return oldMessage;
+        }
+      );
+
+      try {
+
+        // let done = false;
+        // let w_index = 0;
+
+        // while (true) {
+
+        //   if (w_index === 5) {
+        //     console.log("done");
+        //     break;
+        //   }
+
+
+        //   w_index = w_index + 1;
+
+        // const tagMatch = receivedMessage.match(/^\[(.*?)\]/);
+        // if (tagMatch && tagMatch[0]) {
+        //   tag = tagMatch[0];
+        //   receivedMessage = receivedMessage.slice(tag.length);
+        // }
+
+        // // 返答を一文単位で切り出して処理する
+        // const sentenceMatch = receivedMessage.match(
+        //   /^(.+[。．！？\n]|.{10,}[、,])/
+        // );
+        // if (sentenceMatch && sentenceMatch[0]) {
+        //   const sentence = sentenceMatch[0];
+        //   sentences.push(sentence);
+        //   receivedMessage = receivedMessage
+        //     .slice(sentence.length)
+        //     .trimStart();
+
+        //   console.log("a:" + receivedMessage)
+
+        //   // 発話不要/不可能な文字列だった場合はスキップ
+        //   if (
+        //     !sentence.replace(
+        //       /^[\s\[\(\{「［（【『〈《〔｛«‹〘〚〛〙›»〕》〉』】）］」\}\)\]]+$/g,
+        //       ""
+        //     )
+        //   ) {
+        //     //continue;
+        //   }
+
+        const aiText = oldMessage + "，" + receivedMessage;
+        const aiTalks = textsToScreenplay([aiText], koeiroParam);
+        aiTextLog += aiText;
+
+        // 文ごとに音声を生成 & 再生、返答を表示
+        const currentAssistantMessage = sentences.join(" ");
+        handleSpeakAi(aiTalks[0], () => {
+          setAssistantMessage(currentAssistantMessage);
+        });
+
+        //}
+        // }
+      } catch (e) {
+        setChatProcessing(false);
+        console.error(e);
+      } finally {
+        // reader.releaseLock();
+      }
+
+      // アシスタントの返答をログに追加
+      const messageLogAssistant: Message[] = [
+        ...messageLog,
+        { role: "assistant", content: aiTextLog },
+      ];
+      setChatLog(messageLogAssistant);
       setChatProcessing(false);
     },
     [systemPrompt, chatLog, setChatLog, handleSpeakAi, setImageUrl, openAiKey, koeiroParam]
   );
 
-  const handleWebSocketMessage = (event: MessageEvent) => {
-    const data = event.data;
-    const chatMessage = JSON.parse(data);
-    handleChatMessage(
-      chatMessage.message.type,
-      chatMessage.message.user_name,
-      chatMessage.message.content
-    );
-  };
 
-  const setupWebSocket = () => {
-    connect().then((webSocket) => {
-      socketInstance = webSocket;
-      socketInstance.onmessage = handleWebSocketMessage; // Set onmessage listener
-      socketInstance.onclose = (event) => {
-        console.log('WebSocket connection closed:', event);
-        console.log('Reconnecting...');
-        setupWebSocket(); // 重新调用connect()函数进行连接
-      };
-    });
-  }
 
   useEffect(() => {
-    if(!bind_message_event){
-      console.log(">>>> setupWebSocket")
-      setupWebSocket(); // Set up WebSocket when component mounts
+
+    if (!bind_message_event) {
+
+      socket.then(webSocket => {
+        webSocket.onmessage = (event) => {
+          const data = event.data;
+          var chatMessage = JSON.parse(data);
+          chatPriorityQueue.queue({ message: chatMessage.message, priority: 1 });
+          console.log('Received WebSocket data:', chatMessage);
+        };
+      })
+
+      setInterval(() => {
+        if (chatPriorityQueue.length > 0) {
+          const chatMessage = chatPriorityQueue.dequeue();
+          handleChatMessage(chatMessage.message.type, chatMessage.message.user_name, chatMessage.message.content);
+        }
+      }, 1000);
       bind_message_event = true;
     }
-  }, []);
+  }, [handleSendChat]);
+
 
   return (
     <div>
