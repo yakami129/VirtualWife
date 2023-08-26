@@ -21,11 +21,6 @@ VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很
 - domain-chatvrm: VRM聊天客户端
 - infrastructure-gateway: 基础设施-网关
 
-### 环境要求
-
-- python: 3.9.6
-- node: 14.21.3
-
 ## 快速开始
 
 ### 安装[Docker](https://www.docker.com/)环境
@@ -106,19 +101,23 @@ http://localhost/
 
 #### 基础配置
 ```
-选择自己喜欢的角色和人物模型，并且选择大语言模型，如果是使用openai请将语言模型设置为openai
+选择自己喜欢的角色和人物模型，并且选择大语言模型
+如果是使用openai请将语言模型设置为openai
 ```
 ![](docs/16925233912142.jpg)
 
 #### 大语言模型配置
 ```
-这以openai模型为例，你只需要将OPENAI_API_KEY填写好即可，如果有API代理可以将地址填写到OPENAI_BASE_URL
+这以openai模型为例，你只需要将OPENAI_API_KEY填写好即可
+如果有API代理可以将地址填写到OPENAI_BASE_URL
 ```
 ![](docs/16925238212736.jpg)
 
 #### 高级设置
 ```
-如果没有OPENAI_BASE_URL，你需要配置http-proxy，如果是使用docker启动的程序，需要使用docker的dns，例如这样HTTP_PROXY=http://host.docker.internal:23457
+如果没有OPENAI_BASE_URL，你需要配置http-proxy，
+如果是使用docker启动的程序，需要使用docker的dns，
+例如这样HTTP_PROXY=http://host.docker.internal:23457
 ```
 ![](docs/16925239975597.jpg)
 
@@ -129,6 +128,11 @@ http://localhost/
 > 保存成功后，无需重启服务，可以开始聊天了
 
 ## 本地开发
+
+### 环境要求
+
+- python: 3.9.6
+- node: 14.21.3
 
 ### 如何启动domain-chatbot？
 
@@ -180,31 +184,8 @@ npm run dev
 http://localhost:3000/
 ```
 
-### 如何在B站上进行直播呢？
-
-作者是Mac系统，使用OBS进行直播，具体直播布置教程，可以参考以下视频
-- [新手MacBook直播OBS教程](https://www.bilibili.com/video/BV1aB4y1P7BK/?spm_id_from=333.999.0.0)
-
-### 如何更换VRM模型呢？
-
-- VRM模型市场：[Vroid](https://hub.vroid.com/)
-- 点击设置后，点击打开VRM模型按钮，上传VRM（这块作者还没优化，刷新页面会加载默认模型）
-![](docs/16925246168293.jpg)
-
-### 如何更换虚拟AI的prompt？
-
-- 新增角色，提交后可以在基础设置中选择你的角色
-![](docs/16925246793101.jpg)
-
-### 如何更换中文语音包？
-- 本系统已经内置了很多中文语音包
-![](docs/16925247438437.jpg)
-
-### 如何安装text-generation-webui?
-
-- [text-generation-webui官网](https://github.com/oobabooga/text-generation-webui)
-- [text-generation-webui详细安装教程](https://www.bilibili.com/video/BV1gM4y1J7dD/?spm_id_from=333.788&vd_source=11f40bfaa73ba3e80ac4ad36fb18f359)
-> 注意整个安装过程中，一定需要挂梯子
+## FAQ
+其他帮助请查阅[FAQ](FAQ.md)
 
 ## 技术交流群
 
