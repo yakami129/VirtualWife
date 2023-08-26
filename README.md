@@ -185,7 +185,7 @@ http://localhost:3000/
 ```
 
 ## FAQ
-其他帮助请查阅[FAQ](FAQ.md)
+- 其他帮助请查阅[FAQ](FAQ.md)
 
 ## 技术交流群
 

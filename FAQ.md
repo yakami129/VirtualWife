@@ -23,3 +23,8 @@
 - [text-generation-webui官网](https://github.com/oobabooga/text-generation-webui)
 - [text-generation-webui详细安装教程](https://www.bilibili.com/video/BV1gM4y1J7dD/?spm_id_from=333.788&vd_source=11f40bfaa73ba3e80ac4ad36fb18f359)
 > 注意整个安装过程中，一定需要挂梯子
+
+### 目前支持的llam2模型
+
+- ziqingyang_chinese-alpaca-2-13b
+- ziqingyang_chinese-alpaca-2-7b
