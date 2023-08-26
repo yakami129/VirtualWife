@@ -14,7 +14,6 @@ Then the roleplay chat between {you_name} and {role_name} begins.
 {long_history}
 Your response should be short and contain up to three sentences of no more than 20 words each.
 <</SYS>>
-{you_name}：{input} [/INST]
 """
 
 PERSONALITY_PROMPT = "{role_name}'s personality: {personality}"

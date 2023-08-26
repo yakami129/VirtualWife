@@ -26,6 +26,8 @@ class TextGeneration():
         print('top_p:', self.top_p)
 
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
+        input_prompt = "玩家:"+query+"[/INST]"
+        prompt = prompt + input_prompt
         logging.info(f"prompt:{prompt}")
         body = {
             'prompt': prompt,
@@ -69,14 +71,14 @@ class TextGeneration():
                   response, json.dumps(body))
 
     async def chatStream(self,
-                   prompt: str,
-                   role_name: str,
-                   you_name: str,
-                   query: str,
-                   history: list[dict[str, str]],
-                   realtime_callback=None,
-                   conversation_end_callback=None
-                   ):
+                         prompt: str,
+                         role_name: str,
+                         you_name: str,
+                         query: str,
+                         history: list[dict[str, str]],
+                         realtime_callback=None,
+                         conversation_end_callback=None
+                         ):
         chat = self.chat(prompt=prompt, role_name=role_name, you_name=you_name,
                          query=query, short_history="", long_history="")
         realtime_callback(role_name, you_name, chat)

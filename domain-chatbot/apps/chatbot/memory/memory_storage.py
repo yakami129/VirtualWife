@@ -17,15 +17,20 @@ class MemoryStorageDriver():
     long_memory_storage: MilvusStorage
     snow_flake: SnowFlake = SnowFlake(data_center_id=5, worker_id=5)
 
-    def __init__(self, memory_storage_config: dict[str, str], sysConfig: SysConfig) -> None:
-        self.sys_config = sysConfig
+    def __init__(self, memory_storage_config: dict[str, str], sys_config: SysConfig) -> None:
+        self.sys_config = sys_config
         self.short_memory_storage = LocalStorage(memory_storage_config)
-        self.long_memory_storage = MilvusStorage(memory_storage_config)
+        if sys_config.enable_longMemory:
+            self.long_memory_storage = MilvusStorage(memory_storage_config)
 
     def search_short_memory(self, query_text: str, you_name: str, role_name: str) -> list[Dict[str, str]]:
         local_memory = self.short_memory_storage.pageQuery(
             page_num=1, page_size=self.sys_config.local_memory_num, owner=role_name)
-        return local_memory
+        dict_list = []
+        for json_string in local_memory:
+            json_dict = json.loads(json_string)
+            dict_list.append(json_dict)
+        return dict_list
 
     def search_lang_memory(self, query_text: str, you_name: str, role_name: str) -> str:
         if self.sys_config.enable_longMemory:
@@ -48,8 +53,8 @@ class MemoryStorageDriver():
         # 存储短期记忆
         pk = self.get_current_entity_id()
         local_history = {
-            you_name: query_text,
-            role_name: answer_text
+            "ai": self.format_role_history(role_name=role_name, answer_text=answer_text),
+            "human": self.format_you_history(you_name=you_name, query_text=query_text)
         }
         self.short_memory_storage.save(
             pk, json.dumps(local_history), role_name, importance_score=1)
@@ -73,10 +78,20 @@ class MemoryStorageDriver():
                 pk, history, role_name, importance_score)
 
     def format_history(self, you_name: str, query_text: str, role_name: str, answer_text: str):
-        you_history = f"{you_name}说{query_text}"
-        role_history = f"{role_name}说{answer_text}"
+        you_history = self.format_you_history(
+            you_name=you_name, query_text=query_text)
+        role_history = self.format_role_history(
+            role_name=role_name, answer_text=answer_text)
         chat_history = you_history + ';' + role_history
         return chat_history
+
+    def format_you_history(self, you_name: str, query_text: str):
+        you_history = f"{you_name}说{query_text}"
+        return you_history
+
+    def format_role_history(self, role_name: str, answer_text: str):
+        role_history = f"{role_name}说{answer_text}"
+        return role_history
 
     def get_current_entity_id(self) -> int:
         '''生成唯一标识'''

@@ -14,10 +14,9 @@ PROMPT = """
 AI扮演的角色是{role_name},玩家扮演的角色是{you_name}，现在我们可以开始对话了。
 你只需要输出{role_name}的对话。
 <</SYS>>
-玩家:{input}[/INST]
 """
 
-# TODO
+# TODO 
 # {role_name}表达情感的规则如下:```感情的种类有表示正常的“neutral”，表示高兴的“happy”，表示愤怒的“angry”，表示悲伤的“sad”，表示平静的“relaxed”5种，{role_name}发言的格式如下所示：[neutral|happy|angry|sad|relaxed]{role_name}发言，{role_name}发言的例子如下。[neutral]你好。[happy]你好吗?[happy]这件衣服很可爱吧?[happy]最近，我迷上了这家店的衣服![sad]忘记了，对不起。[sad]最近有什么有趣的事情吗?[angry]啊!保密太过分了![neutral]暑假的安排。[happy]去海边玩吧!，```
 
 PERSONALITY_PROMPT = "{personality}"

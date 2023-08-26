@@ -5,22 +5,15 @@ from django.db.models import Q
 from ..base_storage import BaseStorage
 from ...models import LocalMemoryModel
 
-
+# TODO 搜索方式待整改
 class LocalStorage(BaseStorage):
 
     def __init__(self, memory_storage_config: dict[str, str]):
         print("========================load LocalStorage ========================")
 
     def search(self, query_text: str, limit: int, owner: str) -> list[str]:
-
-        query_words = jieba.cut(query_text, cut_all=False)
-        query_tags = list(query_words)
-        keywords = jieba.analyse.extract_tags(" ".join(query_tags), topK=20)
-
         # 使用 Q 对象组合查询条件，
         query = Q(owner=owner)
-        for keyword in keywords:
-            query |= Q(tags__icontains=keyword)  # 使用 | 运算符将多个条件组合在一起
 
         # 查询结果，并限制数量
         results = LocalMemoryModel.objects.filter(

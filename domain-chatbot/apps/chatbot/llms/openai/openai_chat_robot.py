@@ -38,11 +38,18 @@ class OpenAIGeneration():
                          realtime_callback=None,
                          conversation_end_callback=None):
         print(f"prompt:{prompt}")
+        messages = []
+        messages.append({'role': 'system', 'content': prompt})
+        for item in history:
+            message = {"role": "user", "content": item["human"]}
+            messages.append(message)
+            message = {"role": "assistant", "content": item["ai"]}
+            messages.append(message)
+        messages.append({'role': 'user', 'content': you_name+"说"+query})
+        print(f"messages:{messages}")
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
-            messages=[
-                {'role': 'user', 'content': prompt}
-            ],
+            messages=messages,
             temperature=0,
             stream=True  # again, we set stream=True
         )

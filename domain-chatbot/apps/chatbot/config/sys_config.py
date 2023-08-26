@@ -21,7 +21,7 @@ def lazy_memory_storage(sys_config_json: any, sys_cofnig: any):
     }
     print(f"memory_storage_config:{memory_storage_config}")
     # 加载记忆模块驱动
-    return MemoryStorageDriver(memory_storage_config=memory_storage_config, sysConfig=sys_cofnig)
+    return MemoryStorageDriver(memory_storage_config=memory_storage_config, sys_config=sys_cofnig)
 
 
 class SysConfig():
