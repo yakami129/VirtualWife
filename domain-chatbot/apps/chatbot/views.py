@@ -2,15 +2,12 @@ import time
 import traceback
 from django.shortcuts import render, get_object_or_404
 import json
-
 from .serializers import CustomRoleSerializer
-# from .chat import chat_service
 from .process import process_core
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .config import singleton_sys_config
 from .reflection.reflection_generation import ReflectionGeneration
-from .character.sys.maiko_zh import maiko_zh
 from .models import CustomRoleModel
 import logging
 logging.basicConfig(level=logging.INFO)

@@ -2,7 +2,7 @@ import json
 import os
 from ..llms.llm_model_strategy import LlmModelDriver
 from ..models import CustomRoleModel, SysConfigModel
-from ..character.sys.maiko_zh import maiko_zh
+from ..character.sys.aili_zh import aili_zh
 
 config_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(config_dir, 'sys_config.json')
@@ -81,12 +81,12 @@ class SysConfig():
             if len(result) == 0:
                 print("=> load default character")
                 custom_role = CustomRoleModel(
-                    role_name=maiko_zh.role_name,
-                    persona=maiko_zh.persona,
-                    personality=maiko_zh.personality,
-                    scenario=maiko_zh.scenario,
-                    examples_of_dialogue=maiko_zh.examples_of_dialogue,
-                    custom_role_template_type=maiko_zh.custom_role_template_type
+                    role_name=aili_zh.role_name,
+                    persona=aili_zh.persona,
+                    personality=aili_zh.personality,
+                    scenario=aili_zh.scenario,
+                    examples_of_dialogue=aili_zh.examples_of_dialogue,
+                    custom_role_template_type=aili_zh.custom_role_template_type
                 )
                 custom_role.save()
         except Exception as e:

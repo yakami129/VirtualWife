@@ -6,7 +6,7 @@ from ..models import CustomRoleModel
 from .character_template_zh import ChineseCharacterTemplate
 from .base_character_template import BaseCharacterTemplate
 from .character import Character
-from .sys.maiko_en import maiko_en
+from .sys.aili_zh import aili_zh
 
 
 class CharacterGeneration():
@@ -24,7 +24,7 @@ class CharacterGeneration():
         character = None
         character_model = get_object_or_404(CustomRoleModel, pk=role_id)
         if character_model == None:
-            character = maiko_en
+            character = aili_zh
         else:
             character = Character(
                 role_name=character_model.role_name,

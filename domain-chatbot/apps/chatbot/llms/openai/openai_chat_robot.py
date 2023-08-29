@@ -39,12 +39,12 @@ class OpenAIGeneration():
                          conversation_end_callback=None):
         print(f"prompt:{prompt}")
         messages = []
-        messages.append({'role': 'system', 'content': prompt})
         for item in history:
             message = {"role": "user", "content": item["human"]}
             messages.append(message)
             message = {"role": "assistant", "content": item["ai"]}
             messages.append(message)
+        messages.append({'role': 'system', 'content': prompt})
         messages.append({'role': 'user', 'content': you_name+"说"+query})
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
