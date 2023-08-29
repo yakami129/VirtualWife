@@ -4,26 +4,36 @@ from ..character.character_generation import singleton_character_generation
 from ..config import singleton_sys_config
 from ..output.realtime_message_queue import realtime_callback
 from ..chat.chat_history_queue import conversation_end_callback
+from ..emotion.emotion_manage import EmotionRecognition, EmotionRespond, GenerationEmotionRespondChatPropmt
 
 
 class ProcessCore():
+
+    generation_emotion_respond_chat_propmt: GenerationEmotionRespondChatPropmt
 
     def __init__(self) -> None:
 
         # 加载自定义角色生成模块
         self.singleton_character_generation = singleton_character_generation
+        self.generation_emotion_respond_chat_propmt = GenerationEmotionRespondChatPropmt()
 
     def chat(self, you_name: str, query: str):
 
         # try:
 
             # 生成角色prompt
-            custom_role = self.singleton_character_generation.get_custom_role(
+            character = self.singleton_character_generation.get_character(
                 singleton_sys_config.character)
-            role_name = custom_role.role_name
-            prompt = self.singleton_character_generation.output_prompt(
-                custom_role)
-            # TODO返回情绪值
+            role_name = character.role_name
+            character_prompt = self.singleton_character_generation.output_prompt(
+                character)
+            character_prompt = character_prompt.format(you_name=you_name)
+
+            # 情感识别
+            emotion_recognition = EmotionRecognition(
+                singleton_sys_config.llm_model_driver, singleton_sys_config.conversation_llm_model_driver_type)
+            intent = emotion_recognition.recognition(
+                you_name=you_name, query=query)
 
             # 检索关联的短期记忆和长期记忆
             short_history = singleton_sys_config.memory_storage_driver.search_short_memory(
@@ -31,9 +41,17 @@ class ProcessCore():
             long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
                 query_text=query, you_name=you_name, role_name=role_name)
 
+            # 情感响应
+            emotion_respond = EmotionRespond(
+                singleton_sys_config.llm_model_driver, singleton_sys_config.conversation_llm_model_driver_type)
+            respond = emotion_respond.respond(intent=intent, you_name=you_name, query=query,
+                                              long_history=long_history)
+
+            # 根据响应响对话propmt
+            prompt = self.generation_emotion_respond_chat_propmt.generation_propmt(
+                role_name=role_name, character_prompt=character_prompt, respond=respond)
+                
             # 调用大语言模型流式生成对话
-            prompt = prompt.format(
-                input=query, you_name=you_name, long_history=long_history)
             singleton_sys_config.llm_model_driver.chatStream(prompt=prompt,
                                                              type=singleton_sys_config.conversation_llm_model_driver_type,
                                                              role_name=role_name,

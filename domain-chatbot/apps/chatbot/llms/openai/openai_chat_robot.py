@@ -46,7 +46,6 @@ class OpenAIGeneration():
             message = {"role": "assistant", "content": item["ai"]}
             messages.append(message)
         messages.append({'role': 'user', 'content': you_name+"说"+query})
-        print(f"messages:{messages}")
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
             messages=messages,
