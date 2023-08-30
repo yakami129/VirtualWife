@@ -12,20 +12,26 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
-room_id = os.environ['B_STATION_ID']
 
 
 class BiliLiveClient():
 
     client: BLiveClient
+    room_id: str
+    uid: int = 0
 
     def __init__(self) -> None:
         print("====================== init BLiveClient ====================== ")
-        print("=> room_id:", room_id)
+        self.room_id = os.environ['B_STATION_ID']
+        uid = os.environ['B_UID']
+        if uid:
+            self.uid = int(uid)
+        print("=> room_id:", self.room_id)
+        print("=> uid:", self.uid)
 
     async def start(self):
-        self.client = BLiveClient(room_id=room_id, ssl=True)
-        handler = BiliHandler(room_id=room_id)
+        self.client = BLiveClient(room_id=self.room_id, uid=self.uid, ssl=True)
+        handler = BiliHandler(room_id=self.room_id)
         self.client.add_handler(handler)
         self.client.start()
         print("=> start BLiveClient success")

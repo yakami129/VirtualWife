@@ -62,7 +62,7 @@ class EmotionRecognition():
     def recognition(self, you_name: str, query: str) -> str:
         prompt = self.input_prompt.format(input=f"{you_name}说{query}")+self.output_prompt
         result = self.llm_model_driver.chat(
-            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history="", long_history="")
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
         print("=> recognition:", result)
         start_idx = result.find('{')
         end_idx = result.rfind('}')
@@ -105,7 +105,7 @@ class EmotionRespond():
         prompt = self.input_prompt.format(
             you_name=you_name, query=query, intent=intent, histroy=long_history)+self.output_prompt
         result = self.llm_model_driver.chat(
-            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history="", long_history="")
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
         print("=> respond:", result)
         start_idx = result.find('{')
         end_idx = result.rfind('}')

@@ -67,6 +67,8 @@ mv env_example .env
 ```
 # B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
 B_STATION_ID=27892212
+# 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
+B_UID=38ccccc
 
 # 时区
 TIMEZONE=Asia/Shanghai

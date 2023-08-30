@@ -24,48 +24,48 @@ class ProcessCore():
             singleton_sys_config.character)
         role_name = character.role_name
         
-        try:
+        # try:
 
-            prompt = self.singleton_character_generation.output_prompt(
-                character)
+        prompt = self.singleton_character_generation.output_prompt(
+            character)
 
-            # 情感识别
-            # emotion_recognition = EmotionRecognition(
-            #     singleton_sys_config.llm_model_driver, singleton_sys_config.conversation_llm_model_driver_type)
-            # intent = emotion_recognition.recognition(
-            #     you_name=you_name, query=query)
+        # 情感识别
+        # emotion_recognition = EmotionRecognition(
+        #     singleton_sys_config.llm_model_driver, singleton_sys_config.conversation_llm_model_driver_type)
+        # intent = emotion_recognition.recognition(
+        #     you_name=you_name, query=query)
 
-            # 检索关联的短期记忆和长期记忆
-            short_history = singleton_sys_config.memory_storage_driver.search_short_memory(
-                query_text=query, you_name=you_name, role_name=role_name)
-            long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
-                query_text=query, you_name=you_name, role_name=role_name)
+        # 检索关联的短期记忆和长期记忆
+        short_history = singleton_sys_config.memory_storage_driver.search_short_memory(
+            query_text=query, you_name=you_name, role_name=role_name)
+        long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
+            query_text=query, you_name=you_name, role_name=role_name)
 
-            # 情感响应
-            # emotion_respond = EmotionRespond(
-            #     singleton_sys_config.llm_model_driver, singleton_sys_config.conversation_llm_model_driver_type)
-            # respond = emotion_respond.respond(intent=intent, you_name=you_name, query=query,
-            #                                   long_history=long_history)
+        # 情感响应
+        # emotion_respond = EmotionRespond(
+        #     singleton_sys_config.llm_model_driver, singleton_sys_config.conversation_llm_model_driver_type)
+        # respond = emotion_respond.respond(intent=intent, you_name=you_name, query=query,
+        #                                   long_history=long_history)
 
-            # 根据响应响对话propmt
-            # prompt = self.generation_emotion_respond_chat_propmt.generation_propmt(
-            #     role_name=role_name, character_prompt=character_prompt, respond=respond)
+        # 根据响应响对话propmt
+        # prompt = self.generation_emotion_respond_chat_propmt.generation_propmt(
+        #     role_name=role_name, character_prompt=character_prompt, respond=respond)
 
-            current_time = get_current_time_str()
-            prompt = prompt.format(
-                you_name=you_name, long_history=long_history, current_time=current_time)
+        current_time = get_current_time_str()
+        prompt = prompt.format(
+            you_name=you_name, long_history=long_history, current_time=current_time)
 
-            # 调用大语言模型流式生成对话
-            singleton_sys_config.llm_model_driver.chatStream(prompt=prompt,
-                                                            type=singleton_sys_config.conversation_llm_model_driver_type,
-                                                            role_name=role_name,
-                                                            you_name=you_name,
-                                                            query=query,
-                                                            history=short_history,
-                                                            realtime_callback=realtime_callback,
-                                                            conversation_end_callback=conversation_end_callback)
-        except Exception as e:
-            error_message = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
-            realtime_callback(role_name=role_name,
-                              you_name=you_name, content=error_message)
-            print("chat error: %s" % str(e))
+        # 调用大语言模型流式生成对话
+        singleton_sys_config.llm_model_driver.chatStream(prompt=prompt,
+                                                        type=singleton_sys_config.conversation_llm_model_driver_type,
+                                                        role_name=role_name,
+                                                        you_name=you_name,
+                                                        query=query,
+                                                        history=short_history,
+                                                        realtime_callback=realtime_callback,
+                                                        conversation_end_callback=conversation_end_callback)
+        # except Exception as e:
+        #     error_message = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
+        #     realtime_callback(role_name=role_name,
+        #                       you_name=you_name, content=error_message)
+        #     print("chat error: %s" % str(e))
