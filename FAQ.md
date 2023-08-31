@@ -32,10 +32,10 @@
 
 ### 关于长期记忆中的Milvus如何安装？
 ```
-wget https://github.com/milvus-io/milvus/releases/download/v2.3.0/milvus-standalone-docker-compose.yml -O docker-compose.yml
+cd installer/milvus
 sudo docker compose up -d
 ```
-- 注意前提你需要将docker和docker-compose安装好
+- 注意前提你需要将docker和docker-compose安装好，如果使用官方的安装方式，请注意Milvus的版本号，需要与项目中的installer/milvus/docker-compose.yml 保持一致
 - 文档地址：https://milvus.io/docs/install_standalone-docker.md
 
 ### 关于使用Docker启动后，无法方式OpenAI问题，如何解决

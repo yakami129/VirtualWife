@@ -4,6 +4,7 @@
 ├── README.md               # 安装程序使用说明
 ├── docker-compose.yaml     # docker编排文件
 ├── env_example             # 环境变量配置模版，使用时需要将文件名改成.env
+├── milvus                  # 长期记忆，数据存储模块
 ├── linux                   # linux 启动和关闭程序
 │   ├── start.sh
 │   └── stop.sh
