@@ -2,6 +2,7 @@ from django.shortcuts import render
 import os
 import json
 import logging
+from django.http import FileResponse
 from .translation import translationClient
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -27,15 +28,16 @@ def generate(request):
         # Open the audio file in binary mode.
         audio_file = open(file_path, 'rb')
 
-        # Use FileResponse to stream the file.
-        response = StreamingHttpResponse(audio_file, content_type='audio/mpeg')
+        # Create a FileResponse with a custom __del__ method to delete the file after streaming.
+        class DeletableFileResponse(FileResponse):
+            def __del__(self):
+                delete_file(file_path)
+                print("delete file :", file_path)
+
+        # Create the response object.
+        response = DeletableFileResponse(audio_file, content_type='audio/mpeg')
         response['Content-Disposition'] = f'attachment; filename="{file_name}"'
 
-        # Attach a callback to close the file when the response is finished.
-        response.closed = lambda: (
-            audio_file.close(),
-            delete_file(file_path)
-        )
         return response
     except Exception as e:
         print(f"generate_audio error: {e}")

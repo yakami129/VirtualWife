@@ -15,7 +15,8 @@ export const initialFormData = {
 			"OPENAI_BASE_URL": ""
 		},
 		"textGeneration": {
-			"TEXT_GENERATION_API_URL": "http://127.0.0.1:5000"
+			"TEXT_GENERATION_API_URL": "http://127.0.0.1:5000",
+			"TEXT_GENERATION_WEB_SOCKET_URL": "ws://127.0.0.1:5005/api/v1/stream"
 		}
 	},
 	"characterConfig": {

@@ -242,6 +242,15 @@ export const Settings = ({
               }}
             />
           </div>
+          <div className="field">
+            <label>TEXT_GENERATION_WEB_SOCKET_URL</label>
+            <input type="text" defaultValue={formData.languageModelConfig.textGeneration.TEXT_GENERATION_WEB_SOCKET_URL ? formData.languageModelConfig.textGeneration.TEXT_GENERATION_WEB_SOCKET_URL : "ws://127.0.0.1:5005/api/v1/stream"}
+              onChange={e => {
+                formData.languageModelConfig.textGeneration.TEXT_GENERATION_WEB_SOCKET_URL = e.target.value
+                setFormData(formData);
+              }}
+            />
+          </div>
         </div>
       </div >
     )
@@ -419,7 +428,7 @@ export const Settings = ({
             enableLongMemory === true ? (
               <div>
                 <MilvusMemory />
-                <LongMemoryAdvancedSettings/>
+                <LongMemoryAdvancedSettings />
               </div>
             ) : (
               <div>

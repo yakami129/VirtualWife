@@ -39,7 +39,6 @@ class SysConfig():
     room_id: str
     local_memory_num: int = 3
 
-
     def __init__(self) -> None:
         self.load()
 
@@ -105,6 +104,7 @@ class SysConfig():
         os.environ['OPENAI_API_KEY'] = sys_config_json["languageModelConfig"]["openai"]["OPENAI_API_KEY"]
         os.environ['OPENAI_BASE_URL'] = sys_config_json["languageModelConfig"]["openai"]["OPENAI_BASE_URL"]
         os.environ['TEXT_GENERATION_API_URL'] = sys_config_json["languageModelConfig"]["textGeneration"]["TEXT_GENERATION_API_URL"]
+        os.environ['TEXT_GENERATION_WEB_SOCKET_URL'] = sys_config_json["languageModelConfig"]["textGeneration"].get("TEXT_GENERATION_WEB_SOCKET_URL","ws://127.0.0.1:5005/api/v1/stream")
 
         # 是否开启proxy
         enableProxy = sys_config_json["enableProxy"]
@@ -118,10 +118,9 @@ class SysConfig():
             print(f"HTTPS_PROXY:"+os.environ['HTTPS_PROXY'])
             print(f"SOCKS5_PROXY:"+os.environ['SOCKS5_PROXY'])
         else:
-            os.environ['HTTP_PROXY'] = "";
-            os.environ['HTTPS_PROXY'] = "";
-            os.environ['SOCKS5_PROXY'] = "";
-            
+            os.environ['HTTP_PROXY'] = ""
+            os.environ['HTTPS_PROXY'] = ""
+            os.environ['SOCKS5_PROXY'] = ""
 
         # 加载对话模块配置
         print("=> Chat Config")
@@ -152,8 +151,11 @@ class SysConfig():
                   self.summary_llm_model_driver_type)
 
         # 懒加载记忆模块
-        self.memory_storage_driver = lazy_memory_storage(
-            sys_config_json=sys_config_json, sys_cofnig=self)
+        try:
+            self.memory_storage_driver = lazy_memory_storage(
+                sys_config_json=sys_config_json, sys_cofnig=self)
+        except Exception as e:
+            print("[ERROR] init memory_storage error: %s" % str(e))
 
         # 加载直播配置
         # if self.bili_live_client != None:
