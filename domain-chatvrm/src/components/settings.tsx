@@ -679,7 +679,6 @@ export const Settings = ({
           >
             <option key="-1" value="-1" data-key="-1">请选择</option>
             <option key="zh" value="zh">zh</option>
-            <option key="en" value="en">en</option>
             {/* 可以继续添加更多选项 */}
           </select>
           <div className="flex justify-end mt-4">
