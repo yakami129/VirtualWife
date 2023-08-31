@@ -12,5 +12,16 @@ fixbug:
 3. 增加解决docker网络问题文档
 4. 修复直播获取弹幕，用户名带*号问题
 
+remove：
+1. 移除英文角色提示模版
+
 known issues:
 1. 语音识别，待解决
+
+注意事项：
+- 本次改动更改了数据库表设计，更新代码后请执行数据库迁移操作
+```shell
+python manage.py makemigrations 
+```
+```shell
+python manage.py migrate 
