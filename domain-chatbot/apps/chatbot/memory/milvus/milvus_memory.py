@@ -8,7 +8,7 @@ from sentence_transformers import SentenceTransformer
 import time
 
 
-_COLLECTION_NAME = "virtual_wife_memory_v1"
+_COLLECTION_NAME = "virtual_wife_memory_v2"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
@@ -33,6 +33,7 @@ class MilvusMemory():
         fields = [
             FieldSchema(name="id", dtype=DataType.INT64, is_primary=True),
             FieldSchema(name="text", dtype=DataType.VARCHAR, max_length=2000),
+            FieldSchema(name="sender", dtype=DataType.VARCHAR, max_length=50),
             FieldSchema(name="owner", dtype=DataType.VARCHAR, max_length=50),
             FieldSchema(name="timestamp", dtype=DataType.DOUBLE),
             FieldSchema(name="importance_score", dtype=DataType.INT64),
@@ -53,13 +54,13 @@ class MilvusMemory():
         # 初始化向量化模型
         self.embedding = Embedding()
 
-    def insert_memory(self, pk: int,  text: str, owner: str, importance_score: int):
+    def insert_memory(self, pk: int,  text: str, sender: str, owner: str, importance_score: int):
         '''定义插入记忆对象函数'''
         timestamp = time.time()
 
         # 使用语言模型获得文本embedding向量
         embedding = self.embedding.get_embedding_from_language_model(text)
-        data = [[pk], [text], [owner], [timestamp],
+        data = [[pk], [text], [sender], [owner], [timestamp],
                 [importance_score], [embedding]]
         self.collection.insert(data)
 
@@ -74,6 +75,7 @@ class MilvusMemory():
             memory = {
                 "id": hit.entity.id,
                 "text": hit.entity.text,
+                "sender": hit.entity.sender,
                 "timestamp": hit.entity.timestamp,
                 "owner": hit.entity.owner,
                 "importance_score":  hit.entity.importance_score
@@ -98,7 +100,7 @@ class MilvusMemory():
                 param=search_params,
                 limit=limit,
                 expr=expr,
-                output_fields=["id", "text", "owner",
+                output_fields=["id", "text", "sender", "owner",
                                "timestamp", "importance_score"]
             )
         else:
@@ -107,7 +109,7 @@ class MilvusMemory():
                 anns_field="embedding",
                 param=search_params,
                 limit=limit,
-                output_fields=["id", "text", "owner",
+                output_fields=["id", "text", "sender", "owner",
                                "timestamp", "importance_score"]
             )
 
@@ -130,7 +132,7 @@ class MilvusMemory():
             expr=expr,
             offset=offset,
             limit=limit,
-            output_fields=["id", "text", "owner",
+            output_fields=["id", "text", "sender", "owner",
                            "timestamp", "importance_score"]
         )
         return vector_hits

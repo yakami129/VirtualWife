@@ -22,7 +22,7 @@ class OpenAIGeneration():
             self.llm = ChatOpenAI(
                 temperature=0.7, model_name="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY)
 
-    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         print(f"prompt:{prompt}")
         llm_result = self.llm.generate(
             messages=[[HumanMessage(content=prompt)]])
@@ -39,14 +39,13 @@ class OpenAIGeneration():
                          conversation_end_callback=None):
         print(f"prompt:{prompt}")
         messages = []
-        messages.append({'role': 'system', 'content': prompt})
         for item in history:
             message = {"role": "user", "content": item["human"]}
             messages.append(message)
             message = {"role": "assistant", "content": item["ai"]}
             messages.append(message)
+        messages.append({'role': 'system', 'content': prompt})
         messages.append({'role': 'user', 'content': you_name+"说"+query})
-        print(f"messages:{messages}")
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
             messages=messages,

@@ -146,7 +146,7 @@ export const Menu = ({
         />
       )}
       {/* {!showChatLog && assistantMessage && (
-        <AssistantText message={assistantMessage} />
+        <AssistantText message={assistantMessage} role_name={globalsConfig.characterConfig.character+""} />
       )} */}
       <input
         type="file"

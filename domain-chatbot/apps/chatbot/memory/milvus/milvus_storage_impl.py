@@ -15,10 +15,10 @@ class MilvusStorage(BaseStorage):
         self.milvus_memory = MilvusMemory(
             host=host, port=port, user=user, password=password, db_name=db_name)
 
-    def search(self, query_text: str, limit: int, owner: str) -> list[str]:
+    def search(self, query_text: str, limit: int, sender: str, owner: str) -> list[str]:
 
         self.milvus_memory.loda()
-        expr = f"owner == '{owner}'"
+        expr = f"owner == '{owner}' and sender == '{sender}'"
         # 查询记忆，并且使用 关联性 + 重要性 + 最近性 算法进行评分
         memories = self.milvus_memory.compute_relevance(
             query_text, limit, expr=expr)
@@ -48,10 +48,10 @@ class MilvusStorage(BaseStorage):
         self.milvus_memory.release()
         return result
 
-    def save(self, pk: int,  query_text: str, owner: str, importance_score: int) -> None:
+    def save(self, pk: int,  query_text: str, sender: str, owner: str, importance_score: int) -> None:
         self.milvus_memory.loda()
         self.milvus_memory.insert_memory(
-            pk=pk, text=query_text, owner=owner, importance_score=importance_score)
+            pk=pk, text=query_text, owner=owner, sender=sender, importance_score=importance_score)
         self.milvus_memory.release()
 
     def clear(self, owner: str) -> None:

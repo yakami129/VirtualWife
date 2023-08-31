@@ -6,6 +6,8 @@ from ..base_storage import BaseStorage
 from ...models import LocalMemoryModel
 
 # TODO 搜索方式待整改
+
+
 class LocalStorage(BaseStorage):
 
     def __init__(self, memory_storage_config: dict[str, str]):
@@ -32,7 +34,7 @@ class LocalStorage(BaseStorage):
             'text', flat=True)[offset:offset + page_size]
         return list(results)
 
-    def save(self, pk: int, query_text: str, owner: str, importance_score: int) -> None:
+    def save(self, pk: int,  query_text: str, sender: str, owner: str, importance_score: int) -> None:
         query_words = jieba.cut(query_text, cut_all=False)
         query_tags = list(query_words)
         keywords = jieba.analyse.extract_tags(" ".join(query_tags), topK=20)
@@ -41,6 +43,7 @@ class LocalStorage(BaseStorage):
             id=pk,
             text=query_text,
             tags=",".join(keywords),  # 设置标签
+            sender=sender,
             owner=owner,
             timestamp=current_timestamp
         )

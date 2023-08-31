@@ -36,7 +36,7 @@ class MemoryStorageDriver():
         if self.sys_config.enable_longMemory:
             # 获取长期记忆，按照角色划分
             long_memory = self.long_memory_storage.search(
-                query_text, 3, owner=role_name)
+                query_text, 3, sender=you_name, owner=role_name)
             long_history = ""
             summary_historys = []
             if len(long_memory) > 0:
@@ -57,7 +57,7 @@ class MemoryStorageDriver():
             "human": self.format_you_history(you_name=you_name, query_text=query_text)
         }
         self.short_memory_storage.save(
-            pk, json.dumps(local_history), role_name, importance_score=1)
+            pk, json.dumps(local_history), you_name, role_name, importance_score=1)
 
         # 是否开启长期记忆
         if self.sys_config.enable_longMemory:
@@ -75,7 +75,7 @@ class MemoryStorageDriver():
                 importance_score = memory_importance.importance(
                     self.sys_config.summary_llm_model_driver_type, input=history)
             self.long_memory_storage.save(
-                pk, history, role_name, importance_score)
+                pk, history, you_name, role_name, importance_score)
 
     def format_history(self, you_name: str, query_text: str, role_name: str, answer_text: str):
         you_history = self.format_you_history(
@@ -126,7 +126,7 @@ class MemorySummary():
     def summary(self, llm_model_type: str, input: str) -> str:
         prompt = self.prompt + f"input:{input} [/INST]"
         result = self.sys_config.llm_model_driver.chat(prompt=prompt, type=llm_model_type, role_name="",
-                                                       you_name="", query=input, short_history="", long_history="")
+                                                       you_name="", query=input, short_history=[], long_history="")
         print("=> summary:", result)
         # 寻找 JSON 子串的开始和结束位置
         start_idx = result.find('{')
@@ -160,7 +160,7 @@ class MemoryImportance():
     def importance(self, llm_model_type: str, input: str) -> int:
         prompt = self.prompt + f"记忆:{input} [/INST]"
         result = self.sys_config.llm_model_driver.chat(prompt=prompt, type=llm_model_type, role_name="",
-                                                       you_name="", query=input, short_history="", long_history="")
+                                                       you_name="", query=input, short_history=[], long_history="")
         print("=> importance:", result)
         # 寻找 JSON 子串的开始和结束位置
         start_idx = result.find('{')

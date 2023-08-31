@@ -21,6 +21,9 @@ VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很
 - domain-chatvrm: VRM聊天客户端
 - infrastructure-gateway: 基础设施-网关
 
+### FAQ
+- 项目答疑以及部署中遇到问题的解决方案，请查阅[FAQ](FAQ.md)
+
 ## 快速开始
 
 ### 安装[Docker](https://www.docker.com/)环境
@@ -49,6 +52,7 @@ cd installer
 ├── README.md               # 安装程序使用说明
 ├── docker-compose.yaml     # docker编排文件
 ├── env_example             # 环境变量配置模版，使用时需要将文件名改成.env
+├── milvus                  # 长期记忆，数据存储模块，启动程序
 ├── linux                   # linux 启动和关闭程序
 │   ├── start.sh
 │   └── stop.sh
@@ -67,6 +71,8 @@ mv env_example .env
 ```
 # B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
 B_STATION_ID=27892212
+# 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
+B_UID=38ccccc
 
 # 时区
 TIMEZONE=Asia/Shanghai
@@ -131,7 +137,7 @@ http://localhost/
 
 ### 环境要求
 
-- python: 3.9.6
+- python: 3.10.12
 - node: 14.21.3
 
 ### 如何启动domain-chatbot？
@@ -148,7 +154,11 @@ cd domain-chatbot
 - 创建.env文件，添加B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
 ```shell
 # B站直播间ID
-B_STATION_ID=xxxxx
+B_STATION_ID=27xxx
+# 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
+B_UID=382xxxx
+# 时区
+TIMEZONE=Asia/Shanghai
 ```
 - 安装domain-chatbot项目依赖
 ```shell
@@ -184,8 +194,6 @@ npm run dev
 http://localhost:3000/
 ```
 
-## FAQ
-- 其他帮助请查阅[FAQ](FAQ.md)
 
 ## 技术交流群
 

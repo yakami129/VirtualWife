@@ -2,11 +2,11 @@
 
 from django.shortcuts import get_object_or_404
 from ..models import CustomRoleModel
-from .character_template_en import EnglishCharacterTemplate
+# from .character_template_en import EnglishCharacterTemplate
 from .character_template_zh import ChineseCharacterTemplate
 from .base_character_template import BaseCharacterTemplate
 from .character import Character
-from .sys.maiko_en import maiko_en
+from .sys.aili_zh import aili_zh
 
 
 class CharacterGeneration():
@@ -16,15 +16,15 @@ class CharacterGeneration():
     def __init__(self) -> None:
 
         # 加载模型
-        self.character_template_dict["en"] = EnglishCharacterTemplate()
+        # self.character_template_dict["en"] = EnglishCharacterTemplate()
         self.character_template_dict["zh"] = ChineseCharacterTemplate()
 
-    def get_custom_role(self, role_id: int) -> Character:
+    def get_character(self, role_id: int) -> Character:
         '''获取角色定义对象'''
         character = None
         character_model = get_object_or_404(CustomRoleModel, pk=role_id)
         if character_model == None:
-            character = maiko_en
+            character = aili_zh
         else:
             character = Character(
                 role_name=character_model.role_name,

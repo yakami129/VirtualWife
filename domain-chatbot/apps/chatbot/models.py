@@ -41,13 +41,15 @@ class LocalMemoryModel(models.Model):
     '''记忆数据存储数据结构
     id: 主键ID
     text: 记忆文本
+    sender: 发送者
     owner: 记忆的所有人
     timestamp: 创建时间
     '''
     id = models.AutoField
     text = models.TextField()
     tags = models.TextField()
-    owner = models.CharField(max_length=40)
+    sender = models.CharField(max_length=50,default="null")
+    owner = models.CharField(max_length=50)
     timestamp = models.DateTimeField()
 
     def __str__(self):

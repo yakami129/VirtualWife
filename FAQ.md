@@ -2,6 +2,7 @@
 
 作者是Mac系统，使用OBS进行直播，具体直播布置教程，可以参考以下视频
 - [新手MacBook直播OBS教程](https://www.bilibili.com/video/BV1aB4y1P7BK/?spm_id_from=333.999.0.0)
+- 最近B站已经上线了新的直播姬，支持win和mac，可以去官网下载
 
 ### 如何更换VRM模型呢？
 
@@ -24,7 +25,24 @@
 - [text-generation-webui详细安装教程](https://www.bilibili.com/video/BV1gM4y1J7dD/?spm_id_from=333.788&vd_source=11f40bfaa73ba3e80ac4ad36fb18f359)
 > 注意整个安装过程中，一定需要挂梯子
 
-### 目前支持的llam2模型
+### 目前支持的llama2模型
 
 - ziqingyang_chinese-alpaca-2-13b
 - ziqingyang_chinese-alpaca-2-7b
+
+### 关于长期记忆中的Milvus如何安装？
+```
+cd installer/milvus
+sudo docker compose up -d
+```
+- 注意前提你需要将docker和docker-compose安装好，如果使用官方的安装方式，请注意Milvus的版本号，需要与项目中的installer/milvus/docker-compose.yml 保持一致
+- 文档地址：https://milvus.io/docs/install_standalone-docker.md
+
+### 关于使用Docker启动后，无法方式OpenAI问题，如何解决
+- 第一步请排查：你的梯子是否正常
+- 第二步请排查：在高级设置中，将http-proxy设置开启，设置地址http://host.docker.internal:23457，注意这里的端口号请配置你代理的端口号
+
+
+### 关于使用docker启动后，通过127.0.0.1访问text-generation-webui或者Milvus网络问题
+- 可以使用Docker自带的DNS，将请求转发到宿主机，
+- DNS:http://host.docker.internal:xxxx

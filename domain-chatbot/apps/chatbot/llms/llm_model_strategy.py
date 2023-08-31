@@ -8,7 +8,7 @@ from .text_generation.text_generation_chat_robot import TextGeneration
 
 class LlmModelStrategy(ABC):
     @abstractmethod
-    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         pass
 
     @abstractmethod
@@ -32,7 +32,7 @@ class OpenAILlmModelStrategy(LlmModelStrategy):
         super().__init__()
         self.openai_generation = OpenAIGeneration()
 
-    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         return self.openai_generation.chat(prompt=prompt, role_name=role_name, you_name=you_name, query=query, short_history=short_history, long_history=long_history)
 
     async def chatStream(self,
@@ -61,7 +61,7 @@ class TextGenerationLlmModelStrategy(LlmModelStrategy):
         super().__init__()
         self.generation = TextGeneration()
 
-    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         return self.generation.chat(prompt=prompt, role_name=role_name, you_name=you_name, query=query, short_history=short_history, long_history=long_history)
 
     async def chatStream(self,
@@ -74,12 +74,12 @@ class TextGenerationLlmModelStrategy(LlmModelStrategy):
                          conversation_end_callback=None
                          ):
         return await self.generation.chatStream(prompt=prompt,
-                                          role_name=role_name,
-                                          you_name=you_name,
-                                          query=query,
-                                          history=history,
-                                          realtime_callback=realtime_callback,
-                                          conversation_end_callback=conversation_end_callback)
+                                                role_name=role_name,
+                                                you_name=you_name,
+                                                query=query,
+                                                history=history,
+                                                realtime_callback=realtime_callback,
+                                                conversation_end_callback=conversation_end_callback)
 
 
 class LlmModelDriver:
@@ -89,7 +89,7 @@ class LlmModelDriver:
         self.textGeneration = TextGenerationLlmModelStrategy()
         self.chat_stream_lock = threading.Lock()
 
-    def chat(self, prompt: str, type: str, role_name: str, you_name: str, query: str, short_history: str, long_history: str) -> str:
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         strategy = self.get_strategy(type)
         result = strategy.chat(prompt=prompt, role_name=role_name,
                                you_name=you_name, query=query, short_history=short_history, long_history=long_history)
