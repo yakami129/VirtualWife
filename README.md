@@ -154,7 +154,11 @@ cd domain-chatbot
 - 创建.env文件，添加B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
 ```shell
 # B站直播间ID
-B_STATION_ID=xxxxx
+B_STATION_ID=27xxx
+# 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
+B_UID=382xxxx
+# 时区
+TIMEZONE=Asia/Shanghai
 ```
 - 安装domain-chatbot项目依赖
 ```shell

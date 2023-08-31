@@ -25,3 +25,8 @@ python manage.py makemigrations
 ```
 ```shell
 python manage.py migrate 
+```
+- 本次改动新增了依赖，请执行更新依赖操作
+```shell
+pip3 install -r requirements.txt
+```
