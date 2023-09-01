@@ -89,7 +89,7 @@ class LlmModelDriver:
         self.textGeneration = TextGenerationLlmModelStrategy()
         self.chat_stream_lock = threading.Lock()
 
-    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
+    def chat(self, prompt: str, type: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         strategy = self.get_strategy(type)
         result = strategy.chat(prompt=prompt, role_name=role_name,
                                you_name=you_name, query=query, short_history=short_history, long_history=long_history)
