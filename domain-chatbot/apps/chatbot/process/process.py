@@ -29,27 +29,12 @@ class ProcessCore():
             prompt = self.singleton_character_generation.output_prompt(
                 character)
 
-            # 情感识别
-            # emotion_recognition = EmotionRecognition(
-            #     singleton_sys_config.llm_model_driver, singleton_sys_config.conversation_llm_model_driver_type)
-            # intent = emotion_recognition.recognition(
-            #     you_name=you_name, query=query)
-
             # 检索关联的短期记忆和长期记忆
             short_history = singleton_sys_config.memory_storage_driver.search_short_memory(
                 query_text=query, you_name=you_name, role_name=role_name)
             long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
                 query_text=query, you_name=you_name, role_name=role_name)
 
-            # 情感响应
-            # emotion_respond = EmotionRespond(
-            #     singleton_sys_config.llm_model_driver, singleton_sys_config.conversation_llm_model_driver_type)
-            # respond = emotion_respond.respond(intent=intent, you_name=you_name, query=query,
-            #                                   long_history=long_history)
-
-            # 根据响应响对话propmt
-            # prompt = self.generation_emotion_respond_chat_propmt.generation_propmt(
-            #     role_name=role_name, character_prompt=character_prompt, respond=respond)
 
             current_time = get_current_time_str()
             prompt = prompt.format(

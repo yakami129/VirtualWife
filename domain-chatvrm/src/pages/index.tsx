@@ -5,6 +5,7 @@ import {
   Message,
   textsToScreenplay,
   Screenplay,
+  EmotionType,
 } from "@/features/messages/messages";
 import { speakCharacter } from "@/features/messages/speakCharacter";
 import { MessageInputContainer } from "@/components/messageInputContainer";
@@ -96,17 +97,22 @@ export default function Home() {
     [viewer]
   );
 
-  const handleChatMessage = (type: string, user_name: string, content: string) => {
+  const handleChatMessage = (
+    type: string,
+    user_name: string,
+    content: string,
+    emote: string) => {
 
+    console.log("RobotMessage:" + content + " emote:" + emote)
     let aiTextLog = "";
     const sentences = new Array<string>();
     const aiText = content;
-    const aiTalks = textsToScreenplay([aiText], koeiroParam);
+    const aiTalks = textsToScreenplay([aiText], koeiroParam, emote);
     aiTextLog += aiText;
 
     // 文ごとに音声を生成 & 再生、返答を表示
     const currentAssistantMessage = sentences.join(" ");
-    console.log("RobotMessage:" + aiTextLog)
+   
     handleSpeakAi(aiTalks[0], () => {
       setAssistantMessage(currentAssistantMessage);
     });
@@ -145,11 +151,15 @@ export default function Home() {
   const handleWebSocketMessage = (event: MessageEvent) => {
     const data = event.data;
     const chatMessage = JSON.parse(data);
-    handleChatMessage(
-      chatMessage.message.type,
-      chatMessage.message.user_name,
-      chatMessage.message.content
-    );
+    const type = chatMessage.message.type;
+    if (type === "user") {
+      handleChatMessage(
+        chatMessage.message.type,
+        chatMessage.message.user_name,
+        chatMessage.message.content,
+        chatMessage.message.emote,
+      );
+    }
   };
 
   const setupWebSocket = () => {
@@ -165,7 +175,7 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if(!bind_message_event){
+    if (!bind_message_event) {
       console.log(">>>> setupWebSocket")
       setupWebSocket(); // Set up WebSocket when component mounts
       bind_message_event = true;

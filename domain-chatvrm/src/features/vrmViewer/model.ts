@@ -5,7 +5,7 @@ import { VRMAnimation } from "../../lib/VRMAnimation/VRMAnimation";
 import { VRMLookAtSmootherLoaderPlugin } from "@/lib/VRMLookAtSmootherLoaderPlugin/VRMLookAtSmootherLoaderPlugin";
 import { LipSync } from "../lipSync/lipSync";
 import { EmoteController } from "../emoteController/emoteController";
-import { Screenplay } from "../messages/messages";
+import { Screenplay, EmotionType } from "../messages/messages";
 
 /**
  * 3Dキャラクターを管理するクラス
@@ -74,8 +74,13 @@ export class Model {
     await new Promise((resolve) => {
       this._lipSync?.playFromArrayBuffer(buffer, () => {
         resolve(true);
+        this.emoteController?.playEmotion("neutral" as EmotionType);
       });
     });
+  }
+
+  public async emote(emotionType: EmotionType) {
+    this.emoteController?.playEmotion(emotionType);
   }
 
   public update(delta: number): void {

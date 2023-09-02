@@ -25,7 +25,7 @@ export type Talk = {
 };
 
 const emotions = ["neutral", "happy", "angry", "sad", "relaxed"] as const;
-type EmotionType = (typeof emotions)[number] & VRMExpressionPresetName;
+export type EmotionType = (typeof emotions)[number] & VRMExpressionPresetName;
 
 /**
  * 発話文と音声の感情と、モデルの感情表現がセットになった物
@@ -42,25 +42,14 @@ export const splitSentence = (text: string): string[] => {
 
 export const textsToScreenplay = (
   texts: string[],
-  koeiroParam: KoeiroParam
+  koeiroParam: KoeiroParam,
+  emote: string
 ): Screenplay[] => {
   const screenplays: Screenplay[] = [];
-  let prevExpression = "neutral";
   for (let i = 0; i < texts.length; i++) {
     const text = texts[i];
-
-    const match = text.match(/\[(.*?)\]/);
-
-    const tag = (match && match[1]) || prevExpression;
-
     const message = text.replace(/\[(.*?)\]/g, "");
-
-    let expression = prevExpression;
-    if (emotions.includes(tag as any)) {
-      expression = tag;
-      prevExpression = tag;
-    }
-
+    let expression = emote;
     screenplays.push({
       expression: expression as EmotionType,
       talk: {
