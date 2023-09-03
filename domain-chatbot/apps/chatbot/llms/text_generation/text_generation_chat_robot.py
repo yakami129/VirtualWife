@@ -102,7 +102,7 @@ class TextGeneration():
                         return
 
     def build_body(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> dict[str, Any]:
-        input_prompt = you_name+"说"+query+"[/INST]"
+        input_prompt = query+"[/INST]"
         prompt = prompt + input_prompt
         logging.info(f"prompt:{prompt}")
         # 构建短期记忆数据

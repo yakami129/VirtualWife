@@ -150,15 +150,15 @@ class GenerationEmote():
     llm_model_driver: LlmModelDriver
     input_prompt: str = """
     <s>[INST] <<SYS>>
-    你现在是一名情感表达AI，这是我的文本“{input}”，请推测文本想表达的情感，
-    表达情感的规则如下:感情的种类有表示正常的“neutral”，表示高兴的“happy”，表示愤怒的“angry”，表示悲伤的“sad”，表示平静的“relaxed”5种，你的结果只能是这五种之一
+    You are now an emotion expression AI, this is my text, please speculate on the emotion the text wants to express,
+    The rules for expressing emotions are as follows: There are five types of feelings that express normal "neutral", "happy" that expresses happiness, "angry" that expresses anger, "sad" that expresses sadness, and "relaxed" that expresses calm. Your result can only be one of these five
     """
 
     output_prompt: str = """
+    Please output the result in all lowercase letters.
+    Please only output the result, no need to output the reasoning process.
     Please output the results in English and JSON format as:
-    ```
     {"emote":"Your reasoning emotions"}
-    ```
     <</SYS>>
     """
 
@@ -167,10 +167,9 @@ class GenerationEmote():
         self.llm_model_driver_type = llm_model_driver_type
 
     def generation_emote(self, query: str) -> str:
-        input_prompt = self.input_prompt.format(input=query)
-        prompt = input_prompt + self.output_prompt
+        prompt =  self.input_prompt + self.output_prompt
         result = self.llm_model_driver.chat(
-            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query=f"text:{query}", short_history=[], long_history="")
         print("=> emote:", result)
         start_idx = result.find('{')
         end_idx = result.rfind('}')
