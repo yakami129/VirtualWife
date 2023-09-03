@@ -46,7 +46,8 @@ def send_message():
                     realtime_message_queue.put_message(realtime_message_queue.RealtimeMessage(
                         type=message.type,
                         user_name=message.user_name,
-                        content=content
+                        content=content,
+                        emote="neutral"
                     ))
                     process_core.chat(
                         you_name=message.user_name, query=message.content)

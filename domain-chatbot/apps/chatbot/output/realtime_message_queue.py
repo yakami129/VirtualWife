@@ -8,6 +8,7 @@ from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from ..utils.chat_message_utils import format_chat_text
+from ..utils.str_utils import remove_special_characters, remove_emojis
 from ..config import singleton_sys_config
 from ..emotion.emotion_manage import GenerationEmote
 import threading
@@ -66,21 +67,27 @@ def send_message():
 def realtime_callback(role_name: str, you_name: str, content: str):
     if not hasattr(realtime_callback, "message_buffer"):
         realtime_callback.message_buffer = ""
+
     realtime_callback.message_buffer += content
     # 如果 content 以结束标点符号结尾，打印并清空缓冲区
     if re.match(r"^(.+[。．！？~\n]|.{10,}[、,])", realtime_callback.message_buffer):
         realtime_callback.message_buffer = format_chat_text(
             role_name, you_name, realtime_callback.message_buffer)
 
+        # 删除表情符号和一些特定的特殊符号，防止语音合成失败
+        message_text = realtime_callback.message_buffer
+        message_text = remove_emojis(message_text)
+        message_text = remove_special_characters(message_text)
+
         # 生成人物表情
         generation_emote = GenerationEmote(llm_model_driver=singleton_sys_config.llm_model_driver,
                                            llm_model_driver_type=singleton_sys_config.conversation_llm_model_driver_type)
         emote = generation_emote.generation_emote(
-            query=realtime_callback.message_buffer)
+            query=message_text)
 
         # 发送文本消息
         put_message(RealtimeMessage(
-            type="user", user_name=you_name, content=realtime_callback.message_buffer, emote=emote))
+            type="user", user_name=you_name, content=message_text, emote=emote))
         realtime_callback.message_buffer = ""
 
 

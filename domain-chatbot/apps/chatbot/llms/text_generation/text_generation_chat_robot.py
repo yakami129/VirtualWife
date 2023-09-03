@@ -7,6 +7,7 @@ import requests
 import os
 import logging
 import json
+from ...utils.str_utils import remove_special_characters, remove_emojis, remove_spaces_and_tabs
 try:
     import websockets
 except ImportError:
@@ -90,8 +91,11 @@ class TextGeneration():
                 match incoming_data['event']:
                     case 'text_stream':
                         text = incoming_data['text']
-                        answer = answer + text
-                        realtime_callback(role_name, you_name, text)
+                        if text:
+                            # 过滤空格和制表符
+                            text = remove_spaces_and_tabs(text)
+                            answer = answer + text
+                            realtime_callback(role_name, you_name, text)
                         yield text
                     case 'stream_end':
                         conversation_end_callback(
