@@ -67,9 +67,8 @@ class MemoryStorageDriver():
             importance_score = 3
             if self.sys_config.enable_summary:
                 memory_summary = MemorySummary(self.sys_config)
-                summary = memory_summary.summary(
+                history = memory_summary.summary(
                     llm_model_type=self.sys_config.summary_llm_model_driver_type, input=history)
-                history = summary["summary"]
                 # 计算记忆的重要程度
                 memory_importance = MemoryImportance(self.sys_config)
                 importance_score = memory_importance.importance(
@@ -111,33 +110,31 @@ class MemorySummary():
         self.sys_config = sys_config
         self.prompt = '''
                <s>[INST] <<SYS>>          
-                请帮我提取对话内容的关键信息，下面是一个提取关键信息的示例:
-                ```
-                input:"alan说你好，爱莉，很高兴认识你，我是一名程序员，我喜欢吃川菜，也喜欢打篮球，我是水瓶座，生日是1月29日;爱莉说我们是兼容的
-                output:{"summary"："alan向爱莉表示自己是一名程序员，alan喜欢吃川菜和打篮球，alan是水瓶座，生日是1月29日，爱莉认为和alan是兼容的"}
-                ```
-                输出格式请严格使用JSON格式：
-                ```
-                {"summary":"对话摘要"}
-                ```
+                Please help me extract key information about the content of the conversation, here is an example of extracting key information:
+                input:"alan说你好，爱莉，很高兴认识你，我是一名程序员，我喜欢吃川菜，;爱莉说我们是兼容的
+                output:{"summary"："alan向爱莉表示自己是一名程序员，alan喜欢吃川菜，爱莉认为和alan是兼容的"}
+                Please export the conversation summary in Chinese.
+                Please use JSON format strictly and output the result:
+                {"Summary": "A summary of the conversation you generated"}
                 <</SYS>>
         '''
 
     def summary(self, llm_model_type: str, input: str) -> str:
-        prompt = self.prompt + f"input:{input} [/INST]"
-        result = self.sys_config.llm_model_driver.chat(prompt=prompt, type=llm_model_type, role_name="",
-                                                       you_name="", query=input, short_history=[], long_history="")
+        result = self.sys_config.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
+                                                       you_name="", query=f"input:{input}", short_history=[], long_history="")
         print("=> summary:", result)
-        # 寻找 JSON 子串的开始和结束位置
-        start_idx = result.find('{')
-        end_idx = result.rfind('}')
-        if start_idx != -1 and end_idx != -1:
-            json_str = result[start_idx:end_idx+1]
-            json_data = json.loads(json_str)
-        else:
-            json_data = {}
-            print("未找到匹配的JSON字符串")
-        return json_data
+        summary = input
+        if result:
+            # 寻找 JSON 子串的开始和结束位置
+            start_idx = result.find('{')
+            end_idx = result.rfind('}')
+            if start_idx != -1 and end_idx != -1:
+                json_str = result[start_idx:end_idx+1]
+                json_data = json.loads(json_str)
+                summary = json_data["Summary"]
+            else:
+                print("未找到匹配的JSON字符串")
+        return summary
 
 
 class MemoryImportance():
@@ -149,19 +146,17 @@ class MemoryImportance():
         self.sys_config = sys_config
         self.prompt = '''
                <s>[INST] <<SYS>>  
-                有一种记忆重要程度的评分机制，在到10的范围内，其中1是平凡的事务（例如，刷牙、铺床），10是极其印象深刻切重要的事务（例如，分手、大学录取），请帮我评估下面一段记忆的重要程度分数
-                输出格式请严格使用JSON格式：
-                ```
-                {"score":"评分整数"}
-                ```
+                There is a scoring mechanism for the importance of memory, on a scale of 10, where 1 is a mundane task (eg, brushing your teeth, making your bed) and 10 is an impressive extremely and important task (eg, breaking up, college admissions), Please help me evaluate the importance score of the following memory.
+                Please do not output the inference process, just output the scoring results.
+                Please output the results strictly in JSON format:
+                {"score": "The rating result you generated"}
                 <</SYS>>
         '''
 
     def importance(self, llm_model_type: str, input: str) -> int:
-        prompt = self.prompt + f"记忆:{input} [/INST]"
-        result = self.sys_config.llm_model_driver.chat(prompt=prompt, type=llm_model_type, role_name="",
-                                                       you_name="", query=input, short_history=[], long_history="")
-        print("=> importance:", result)
+        result = self.sys_config.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
+                                                       you_name="", query=f"memory:{input}", short_history=[], long_history="")
+        print("=> score:", result)
         # 寻找 JSON 子串的开始和结束位置
         start_idx = result.find('{')
         end_idx = result.rfind('}')

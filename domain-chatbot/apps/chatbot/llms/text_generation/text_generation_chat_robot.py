@@ -51,8 +51,7 @@ class TextGeneration():
                 else:
                     print("Received empty response. Retrying...")
             else:
-                print(f"text_generation error response is ",
-                      response, json.dumps(body))
+                print(f"text_generation error response is ", response)
 
     async def handle_realtime_data(self, role_name: str, you_name: str, realtime_callback=None, data: str = ""):
         if realtime_callback:
@@ -91,8 +90,6 @@ class TextGeneration():
                 match incoming_data['event']:
                     case 'text_stream':
                         text = incoming_data['text']
-                        if text == '' or text == None:
-                            continue
                         answer = answer + text
                         realtime_callback(role_name, you_name, text)
                         yield text

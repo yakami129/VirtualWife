@@ -157,8 +157,8 @@ class GenerationEmote():
     output_prompt: str = """
     Please output the result in all lowercase letters.
     Please only output the result, no need to output the reasoning process.
-    Please output the results in English and JSON format as:
-    {"emote":"Your reasoning emotions"}
+    Please output the result strictly in JSON format. The output example is as follows:
+    {"emote":"your reasoning emotions"}
     <</SYS>>
     """
 
@@ -171,13 +171,16 @@ class GenerationEmote():
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query=f"text:{query}", short_history=[], long_history="")
         print("=> emote:", result)
-        start_idx = result.find('{')
-        end_idx = result.rfind('}')
         emote = "neutral"
-        if start_idx != -1 and end_idx != -1:
-            json_str = result[start_idx:end_idx+1]
-            json_data = json.loads(json_str)
-            emote = json_data["emote"]
-        else:
-            print("未找到匹配的JSON字符串")
+        try:
+            start_idx = result.find('{')
+            end_idx = result.rfind('}')
+            if start_idx != -1 and end_idx != -1:
+                json_str = result[start_idx:end_idx+1]
+                json_data = json.loads(json_str)
+                emote = json_data["emote"]
+            else:
+                print("未找到匹配的JSON字符串")
+        except Exception as e:
+            print("GenerationEmote error: %s" % str(e))
         return emote

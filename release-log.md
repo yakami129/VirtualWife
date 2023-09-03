@@ -1,5 +1,10 @@
 # v2.0.1 发布日志 （待发布）
 
+release:
+1. 适配模型
+    - TheBloke_Wizard-Vicuna-13B-Uncensored-GPTQ
+    - TheBloke_Wizard-Vicuna-30B-Uncensored-GPTQ
+
 fixbug:
 1. 修复开启摘要，导致长期记忆存储报错问题
 
