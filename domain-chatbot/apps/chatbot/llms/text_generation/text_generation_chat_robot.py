@@ -67,7 +67,7 @@ class TextGeneration():
                          realtime_callback=None,
                          conversation_end_callback=None
                          ):
-        async for response in self.stream(prompt=prompt, role_name=role_name, you_name=you_name, query=query, history=history, realtime_callback=realtime_callback, conversation_end_callback=conversation_end_callback):
+        async for response in self.stream(prompt=prompt, role_name=role_name, you_name=you_name, query=you_name+"说"+query, history=history, realtime_callback=realtime_callback, conversation_end_callback=conversation_end_callback):
             sys.stdout.flush()
 
     async def stream(self,
@@ -107,12 +107,10 @@ class TextGeneration():
         prompt = prompt + input_prompt
         logging.info(f"prompt:{prompt}")
         # 构建短期记忆数据
-        internal = []
-        visible = []
+        history_item = []
         for item in short_history:
-            internal.append(item["human"])
-            visible.append(item["ai"])
-        history = {'internal': internal, 'visible': visible}
+            history_item.append([item["human"], item["ai"]])
+        history = {'internal': history_item, 'visible': history_item}
         body = {
             'prompt': prompt,
             'history': history,

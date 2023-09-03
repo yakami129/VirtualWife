@@ -157,6 +157,7 @@ class GenerationEmote():
     output_prompt: str = """
     Please output the result in all lowercase letters.
     Please only output the result, no need to output the reasoning process.
+    Please use the output of your reasoning emotion.
     Please output the result strictly in JSON format. The output example is as follows:
     {"emote":"your reasoning emotions"}
     <</SYS>>

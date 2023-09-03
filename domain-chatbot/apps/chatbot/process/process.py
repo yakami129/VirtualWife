@@ -42,13 +42,13 @@ class ProcessCore():
 
             # 调用大语言模型流式生成对话
             singleton_sys_config.llm_model_driver.chatStream(prompt=prompt,
-                                                             type=singleton_sys_config.conversation_llm_model_driver_type,
-                                                             role_name=role_name,
-                                                             you_name=you_name,
-                                                             query=query,
-                                                             history=short_history,
-                                                             realtime_callback=realtime_callback,
-                                                             conversation_end_callback=conversation_end_callback)
+                                                                type=singleton_sys_config.conversation_llm_model_driver_type,
+                                                                role_name=role_name,
+                                                                you_name=you_name,
+                                                                query=query,
+                                                                history=short_history,
+                                                                realtime_callback=realtime_callback,
+                                                                conversation_end_callback=conversation_end_callback)
         except Exception as e:
             error_message = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
             realtime_callback(role_name=role_name,
