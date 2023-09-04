@@ -45,7 +45,7 @@ class EmotionRecognition():
     29. 成瘾与康复
     ```
     """
-    output_prompt : str =  """
+    output_prompt: str = """
     请你使用JSON输出结果，输出格式如下：
     ```
     {"intent":"你识别的结果"}
@@ -53,14 +53,13 @@ class EmotionRecognition():
     <</SYS>>
     """
 
-    
-
     def __init__(self, llm_model_driver: LlmModelDriver, llm_model_driver_type: str) -> None:
         self.llm_model_driver = llm_model_driver
         self.llm_model_driver_type = llm_model_driver_type
 
     def recognition(self, you_name: str, query: str) -> str:
-        prompt = self.input_prompt.format(input=f"{you_name}说{query}")+self.output_prompt
+        prompt = self.input_prompt.format(
+            input=f"{you_name}说{query}")+self.output_prompt
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
         print("=> recognition:", result)
@@ -129,7 +128,7 @@ class GenerationEmotionRespondChatPropmt():
         {you_name}当前的情绪状态：{}
         <</SYS>>
         """
-    
+
     # prompt: str = """
     #    <s>[INST] <<SYS>>
     #     下面是{role_name}的角色扮演信息
@@ -139,6 +138,50 @@ class GenerationEmotionRespondChatPropmt():
     #     {role_name}需要按照“{respond}”这条指导思想，调整自己的语气和对话策略
     #     <</SYS>>
     #     """
-    
+
     def generation_propmt(self, role_name: str, character_prompt: str, respond: str):
         return self.prompt.format(role_name=role_name, character_prompt=character_prompt, respond=respond)
+
+
+class GenerationEmote():
+
+    """生成模型表情"""
+
+    llm_model_driver: LlmModelDriver
+    input_prompt: str = """
+    <s>[INST] <<SYS>>
+    You are now an emotion expression AI, this is my text, please speculate on the emotion the text wants to express,
+    The rules for expressing emotions are as follows: There are five types of feelings that express normal "neutral", "happy" that expresses happiness, "angry" that expresses anger, "sad" that expresses sadness, and "relaxed" that expresses calm. Your result can only be one of these five
+    """
+
+    output_prompt: str = """
+    Please output the result in all lowercase letters.
+    Please only output the result, no need to output the reasoning process.
+    Please use the output of your reasoning emotion.
+    Please output the result strictly in JSON format. The output example is as follows:
+    {"emote":"your reasoning emotions"}
+    <</SYS>>
+    """
+
+    def __init__(self, llm_model_driver: LlmModelDriver, llm_model_driver_type: str) -> None:
+        self.llm_model_driver = llm_model_driver
+        self.llm_model_driver_type = llm_model_driver_type
+
+    def generation_emote(self, query: str) -> str:
+        prompt =  self.input_prompt + self.output_prompt
+        result = self.llm_model_driver.chat(
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query=f"text:{query}", short_history=[], long_history="")
+        print("=> emote:", result)
+        emote = "neutral"
+        try:
+            start_idx = result.find('{')
+            end_idx = result.rfind('}')
+            if start_idx != -1 and end_idx != -1:
+                json_str = result[start_idx:end_idx+1]
+                json_data = json.loads(json_str)
+                emote = json_data["emote"]
+            else:
+                print("未找到匹配的JSON字符串")
+        except Exception as e:
+            print("GenerationEmote error: %s" % str(e))
+        return emote

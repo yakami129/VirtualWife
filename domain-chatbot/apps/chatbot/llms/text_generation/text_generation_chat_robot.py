@@ -7,6 +7,7 @@ import requests
 import os
 import logging
 import json
+from ...utils.str_utils import remove_special_characters, remove_emojis, remove_spaces_and_tabs
 try:
     import websockets
 except ImportError:
@@ -51,8 +52,7 @@ class TextGeneration():
                 else:
                     print("Received empty response. Retrying...")
             else:
-                print(f"text_generation error response is ",
-                      response, json.dumps(body))
+                print(f"text_generation error response is ", response)
 
     async def handle_realtime_data(self, role_name: str, you_name: str, realtime_callback=None, data: str = ""):
         if realtime_callback:
@@ -67,7 +67,7 @@ class TextGeneration():
                          realtime_callback=None,
                          conversation_end_callback=None
                          ):
-        async for response in self.stream(prompt=prompt, role_name=role_name, you_name=you_name, query=query, history=history, realtime_callback=realtime_callback, conversation_end_callback=conversation_end_callback):
+        async for response in self.stream(prompt=prompt, role_name=role_name, you_name=you_name, query=you_name+"说"+query, history=history, realtime_callback=realtime_callback, conversation_end_callback=conversation_end_callback):
             sys.stdout.flush()
 
     async def stream(self,
@@ -91,10 +91,11 @@ class TextGeneration():
                 match incoming_data['event']:
                     case 'text_stream':
                         text = incoming_data['text']
-                        if text == '' or text == None:
-                            continue
-                        answer = answer + text
-                        realtime_callback(role_name, you_name, text)
+                        if text:
+                            # 过滤空格和制表符
+                            text = remove_spaces_and_tabs(text)
+                            answer = answer + text
+                            realtime_callback(role_name, you_name, text)
                         yield text
                     case 'stream_end':
                         conversation_end_callback(
@@ -102,16 +103,14 @@ class TextGeneration():
                         return
 
     def build_body(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> dict[str, Any]:
-        input_prompt = you_name+"说"+query+"[/INST]"
+        input_prompt = query+"[/INST]"
         prompt = prompt + input_prompt
         logging.info(f"prompt:{prompt}")
         # 构建短期记忆数据
-        internal = []
-        visible = []
+        history_item = []
         for item in short_history:
-            internal.append(item["human"])
-            visible.append(item["ai"])
-        history = {'internal': internal, 'visible': visible}
+            history_item.append([item["human"], item["ai"]])
+        history = {'internal': history_item, 'visible': history_item}
         body = {
             'prompt': prompt,
             'history': history,

@@ -23,6 +23,7 @@ class OpenAIGeneration():
                 temperature=0.7, model_name="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY)
 
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
+        prompt = prompt + query
         print(f"prompt:{prompt}")
         llm_result = self.llm.generate(
             messages=[[HumanMessage(content=prompt)]])
