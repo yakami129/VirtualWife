@@ -7,6 +7,7 @@ release:
 fixbug:
 1. 修复开启摘要，导致长期记忆存储报错问题
 2. 修复text_generation的历史聊天记录不识别问题
+3. 修复表情符号和特殊符号导致语音合成失败问题
 
 known issues:
 1. 语音识别，待解决
