@@ -10,6 +10,11 @@ COPY ../domain-chatbot .
 # 安装项目依赖框架
 RUN pip install -r requirements.txt  -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 
+ENV OPENAI_API_KEY=sk-xxxxx
+ENV B_STATION_ID=xxxx
+ENV B_UID=12xx
+ENV TIMEZONE=Asia/Shanghai
+
 # 初始化数据库
 RUN python manage.py makemigrations 
 
