@@ -157,6 +157,8 @@ cd domain-chatbot
 B_STATION_ID=27xxx
 # 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
 B_UID=382xxxx
+# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie
+B_COOKIE="buvid3=Fggggg28116infoc"
 # 时区
 TIMEZONE=Asia/Shanghai
 ```
