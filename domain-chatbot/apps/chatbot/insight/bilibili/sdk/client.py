@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 import enum
+import http
 import json
 import logging
 import ssl as ssl_
@@ -9,6 +10,7 @@ from typing import *
 
 import aiohttp
 import brotli
+import http.cookiejar
 
 from . import handlers
 
@@ -88,6 +90,7 @@ class BLiveClient:
 
     :param room_id: URL中的房间ID，可以用短ID
     :param uid: B站用户ID，0表示未登录
+    :param cookie_str： coookie
     :param session: cookie、连接池
     :param heartbeat_interval: 发送心跳包的间隔时间（秒）
     :param ssl: True表示用默认的SSLContext验证，False表示不验证，也可以传入SSLContext
@@ -97,6 +100,7 @@ class BLiveClient:
         self,
         room_id,
         uid=0,
+        cookie_str: str = None,
         session: Optional[aiohttp.ClientSession] = None,
         heartbeat_interval=20,
         ssl: Union[bool, ssl_.SSLContext] = True,
@@ -104,9 +108,10 @@ class BLiveClient:
         self._tmp_room_id = room_id
         """用来init_room的临时房间ID，可以用短ID"""
         self._uid = uid
+        self._cookie_str = cookie_str
 
         if session is None:
-            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10))
+            self._session = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=10),headers={'Cookie': cookie_str})
             self._own_session = True
         else:
             self._session = session
