@@ -19,6 +19,7 @@ class BiliLiveClient():
     client: BLiveClient
     room_id: str
     uid: int = 0
+    cookie_str: str
 
     def __init__(self) -> None:
         print("====================== init BLiveClient ====================== ")
@@ -26,11 +27,14 @@ class BiliLiveClient():
         uid = os.environ['B_UID']
         if uid:
             self.uid = int(uid)
+        self.cookie_str = os.environ['B_COOKIE']
         print("=> room_id:", self.room_id)
         print("=> uid:", self.uid)
+        print("=> cookie_str:",  self.cookie_str)
 
     async def start(self):
-        self.client = BLiveClient(room_id=self.room_id, uid=self.uid, ssl=True)
+        self.client = BLiveClient(
+            room_id=self.room_id, uid=self.uid, ssl=True, cookie_str=self.cookie_str)
         handler = BiliHandler(room_id=self.room_id)
         self.client.add_handler(handler)
         self.client.start()
