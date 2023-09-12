@@ -2,10 +2,11 @@
 
 fixbug：
 1. 修复B弹幕获取不了的问题
+2. 修复Docker中无法使用http-proxy
+3. Docker部署ARM系统兼容问题
 
 known issues:
 1. 语音识别，待解决
-2. Docker部署ARM系统兼容问题
 
 # v2.0.3 发布日志
 
