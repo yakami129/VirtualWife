@@ -1,5 +1,8 @@
 # v2.0.4 发布日志
 
+fixbug：
+1. 修复B弹幕获取不了的问题
+
 known issues:
 1. 语音识别，待解决
 2. Docker部署ARM系统兼容问题
