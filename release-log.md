@@ -8,6 +8,9 @@ fixbug：
 2. 修复Docker中无法使用http-proxy
 3. Docker部署ARM系统兼容问题
 
+known issues:
+1. chatbot镜像文件过大（5.09G）,待解决
+
 # v2.0.3 发布日志
 
 release:
