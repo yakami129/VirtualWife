@@ -2,7 +2,7 @@ import datetime
 import os
 import pytz
 
-TIMEZONE = os.environ['TIMEZONE']
+TIMEZONE = os.environ.get("TIMEZONE","Asia/Shanghai")
 
 def get_current_time_str():
     current_time = datetime.datetime.now(pytz.timezone(TIMEZONE))
