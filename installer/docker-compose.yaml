@@ -5,6 +5,8 @@ services:
    chatbot:
        container_name: chatbot
        image: okapi0129/virtualwife-chatbot:${CHATBOT_TAG:-latest}
+       extra_hosts:
+        - "host.docker.internal:host-gateway"
        ports:
         - 8000:8000
        environment:
