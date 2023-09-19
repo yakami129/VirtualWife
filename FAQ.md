@@ -38,7 +38,7 @@ sudo docker compose up -d
 - 注意前提你需要将docker和docker-compose安装好，如果使用官方的安装方式，请注意Milvus的版本号，需要与项目中的installer/milvus/docker-compose.yml 保持一致
 - 文档地址：https://milvus.io/docs/install_standalone-docker.md
 
-### 关于使用Docker启动后，无法方式OpenAI问题，如何解决
+### 关于使用Docker启动后，无法访问OpenAI问题，如何解决
 - 第一步请排查：你的梯子是否正常
 - 第二步请排查：在高级设置中，将http-proxy设置开启，设置地址http://host.docker.internal:23457，注意这里的端口号请配置你代理的端口号
 
@@ -46,3 +46,8 @@ sudo docker compose up -d
 ### 关于使用docker启动后，通过127.0.0.1访问text-generation-webui或者Milvus网络问题
 - 可以使用Docker自带的DNS，将请求转发到宿主机，
 - DNS:http://host.docker.internal:xxxx
+
+
+### windows 系统安装Docker，需要安装WSL
+
+- 安装文档：https://learn.microsoft.com/zh-cn/windows/wsl/install

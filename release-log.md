@@ -7,6 +7,7 @@ fixbug：
 1. 修复B弹幕获取不了的问题
 2. 修复Docker中无法使用http-proxy
 3. Docker部署ARM系统兼容问题
+4. Windows 安装 WSL 的FAQ说明
 
 known issues:
 1. chatbot镜像文件过大（5.09G）,待解决

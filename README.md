@@ -201,6 +201,6 @@ http://localhost:3000/
 
 ## 技术交流群
 
-![winxin03.jpg](docs/winxin03.jpg)
+![winxin04.jpg](docs/winxin03.jpg)
 
 
