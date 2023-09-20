@@ -1,3 +1,5 @@
+from io import BytesIO
+
 from django.shortcuts import render
 import os
 import json
@@ -8,6 +10,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .tts.tts_core import create_audio
 from django.http import HttpResponse, StreamingHttpResponse
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -22,21 +25,22 @@ def generate(request):
         voice = data["voice"]
 
         file_name = create_audio(text, voice)
-        pwd_path = os.getcwd()
-        file_path = os.path.join(pwd_path, "tmp", file_name)
+        file_path = os.path.join("tmp", file_name)
 
-        # Open the audio file in binary mode.
-        audio_file = open(file_path, 'rb')
+        audio_file = BytesIO()
 
-        # Create a FileResponse with a custom __del__ method to delete the file after streaming.
-        class DeletableFileResponse(FileResponse):
-            def __del__(self):
-                delete_file(file_path)
-                print("delete file :", file_path)
+        with open(file_path, 'rb') as file:
+            audio_file.write(file.read())
+
+        delete_file(file_path)
+        print("delete file :", file_path)
+
+        audio_file.seek(0)
 
         # Create the response object.
-        response = DeletableFileResponse(audio_file, content_type='audio/mpeg')
+        response = HttpResponse(content_type='audio/mpeg')
         response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+        response.write(audio_file.getvalue())
 
         return response
     except Exception as e:
