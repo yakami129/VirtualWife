@@ -14,7 +14,7 @@ django-cors-headers
 channels
 daphne
 schedule
-drf-yasg
+drf-yasgg
 pymilvus==2.2.12
 datetime
 transformers
