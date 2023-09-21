@@ -1,5 +1,5 @@
 variable "TAG" {
-  default = "latest"
+  default = "v2.0.4"
 }
 
 variable "DISTRO" {
