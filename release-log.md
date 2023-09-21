@@ -8,9 +8,7 @@ release:
 
 fixbug:
 1. 修复对话记录不显示AI回复内容
-
-known issues:
-1. chatbot镜像文件过大（5.09G）,待解决
+2. chatbot镜像文件过大（5.09G）- Done
 
 # v2.0.4 发布日志
 
