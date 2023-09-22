@@ -1,4 +1,3 @@
-# 使用Python 3.10.12作为基础镜像
 FROM python:3.10.12
 
 # 设置工作目录
@@ -8,18 +7,21 @@ WORKDIR /app
 COPY ../domain-chatbot .
 
 # 安装项目依赖框架
-RUN pip install -r requirements.txt  -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+# 使用清华源安装依赖包
+RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple some-package && \
+    rm -rf ~/.cache/pip && \
+    rm -rf /tmp/* && \
+    rm -rf tmp/* && \
+    rm -rf logs/info.log && \
+    rm -rf db/db.sqlite3 && \
+    rm -rf .env && \
+    python manage.py makemigrations && \
+    python manage.py migrate
 
 ENV OPENAI_API_KEY=sk-xxxxx
 ENV B_STATION_ID=xxxx
 ENV B_UID=12xx
 ENV TIMEZONE=Asia/Shanghai
-
-# 初始化数据库
-RUN python manage.py makemigrations 
-
-# 执行数据库迁移
-RUN python manage.py migrate 
 
 # 暴露应用程序监听的端口
 EXPOSE 8000
