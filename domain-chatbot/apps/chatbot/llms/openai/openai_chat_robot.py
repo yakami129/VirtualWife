@@ -1,4 +1,5 @@
 import os
+from ...utils.str_utils import remove_spaces_and_tabs
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import (
     HumanMessage,
@@ -60,6 +61,8 @@ class OpenAIGeneration():
             finish_reason = part["choices"][0]["finish_reason"]
             if "content" in part["choices"][0]["delta"]:
                 content = part["choices"][0]["delta"]["content"]
+                # 过滤空格和制表符
+                content = remove_spaces_and_tabs(content)
                 answer += content
                 if realtime_callback:
                     realtime_callback(role_name, you_name,
