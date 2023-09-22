@@ -1,4 +1,4 @@
-import {useCallback, useContext, useEffect, useState} from "react";
+import {useCallback, useContext, useEffect, useRef, useState} from "react";
 import VrmViewer from "@/components/vrmViewer";
 import {ViewerContext} from "@/features/vrmViewer/viewerContext";
 import {Message, Screenplay, textsToScreenplay,} from "@/features/messages/messages";
@@ -43,6 +43,47 @@ export default function Home() {
     const [imageUrl, setImageUrl] = useState('');
     const [globalsConfig, setGlobalsConfig] = useState<FormDataType>(initialFormData);
     const [subtitle, setSubtitle] = useState("");
+    const [displayedSubtitle, setDisplayedSubtitle] = useState("");
+    const subtitleRef = useRef("");
+    const typingDelay = 100; // 每个字的延迟时间，可以根据需要进行调整
+
+    useEffect(() => {
+        subtitleRef.current = subtitle;
+        setDisplayedSubtitle("");
+
+        let currentIndex = 0;
+        let typingTimeout: NodeJS.Timeout | null = null;
+
+        const typeCharacter = () => {
+            if (currentIndex < subtitleRef.current.length) {
+                const currentChar = subtitleRef.current[currentIndex];
+                if (currentChar !== undefined) {
+                    setDisplayedSubtitle((prevSubtitle) => prevSubtitle + currentChar);
+                    currentIndex++;
+                    typingTimeout = setTimeout(typeCharacter, typingDelay);
+                }
+            }
+        };
+
+        const startTyping = () => {
+            if (typingTimeout !== null) {
+                clearTimeout(typingTimeout);
+            }
+            typingTimeout = setTimeout(typeCharacter, typingDelay);
+        };
+
+        const clearTyping = () => {
+            if (typingTimeout !== null) {
+                clearTimeout(typingTimeout);
+            }
+        };
+
+        if (subtitleRef.current.length > 0) {
+            startTyping();
+        }
+
+        return clearTyping;
+    }, [subtitle]);
     useEffect(() => {
         getConfig().then(data => {
             setGlobalsConfig(data)
@@ -97,6 +138,11 @@ export default function Home() {
         emote: string) => {
 
         console.log("RobotMessage:" + content + " emote:" + emote)
+        // 如果content为空，不进行处理
+        // 如果与上一句content完全相同，不进行处理
+        if (content == null || content == '') {
+            return
+        }
         let aiTextLog = "";
         const sentences = new Array<string>();
         const aiText = content;
@@ -104,7 +150,7 @@ export default function Home() {
         aiTextLog += aiText;
         // 文ごとに音声を生成 & 再生、返答を表示
         const currentAssistantMessage = sentences.join(" ");
-        setSubtitle(currentAssistantMessage);
+        setSubtitle(aiTextLog);
         handleSpeakAi(aiTalks[0], () => {
             setAssistantMessage(currentAssistantMessage);
         });
@@ -179,11 +225,11 @@ export default function Home() {
             <Meta/>
             <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey}/>
             <VrmViewer globalsConfig={globalsConfig}/>
-            <div className="flex justify-center">
+            <div className="flex items-center justify-center">
                 <div
-                    className="absolute top-100 z-10 "
+                    className="absolute bottom-1/4  z-10 "
                 >
-                    字幕
+                    {displayedSubtitle}
                 </div>
             </div>
             <MessageInputContainer
