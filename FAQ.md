@@ -19,7 +19,7 @@
 - 本系统已经内置了很多中文语音包
 ![](docs/16925247438437.jpg)
 
-### 如何安装text-generation-webui?
+### 支持私有化模型，需要安装text-generation-webui
 
 - [text-generation-webui官网](https://github.com/oobabooga/text-generation-webui)
 - [text-generation-webui详细安装教程](https://www.bilibili.com/video/BV1gM4y1J7dD/?spm_id_from=333.788&vd_source=11f40bfaa73ba3e80ac4ad36fb18f359)
