@@ -8,7 +8,7 @@ COPY ../domain-chatbot .
 
 # 安装项目依赖框架
 # 使用清华源安装依赖包
-RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple some-package && \ 
+RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple some-package && \
     rm -rf ~/.cache/pip && \
     rm -rf /tmp/* && \
     rm -rf tmp/* && \

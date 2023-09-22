@@ -1,5 +1,6 @@
 import os
 import re
+import subprocess
 
 from ..utils.uuid_generator import generate
 
@@ -23,6 +24,7 @@ voiceMap = {
 
 def getVoiceById(voiceId):
     return voiceMap.get(voiceId)
+
 
 # 删除html标签
 
@@ -51,7 +53,6 @@ def create_audio(text, voiceId):
         # 用open创建文件 兼容mac
         open(filePath, 'a').close()
 
-    script = 'edge-tts --voice ' + voice + ' --text "' + \
-        new_text + '" --write-media ' + filePath
-    os.system(script)
+    subprocess.run(["edge-tts", "--voice", voice, "--text", new_text,
+                    "--write-media", str(filePath)])
     return file_name

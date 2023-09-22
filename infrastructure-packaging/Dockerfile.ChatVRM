@@ -10,7 +10,7 @@ RUN npm config set registry https://registry.npmmirror.com && \
     npm run build --no-lint
 
 
-# 生产阶段  
+# 生产阶段
 FROM node:14.21.3-slim
 
 WORKDIR /app
