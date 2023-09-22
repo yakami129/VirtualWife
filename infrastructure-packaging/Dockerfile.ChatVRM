@@ -1,22 +1,27 @@
-# 使用Node.js 14.21.3作为基础镜像
-FROM node:14.21.3
+# 构建阶段
+FROM node:14.21.3 AS build
 
-# 设置工作目录
 WORKDIR /app
 
-# 复制应用程序到工作目录
 COPY ../domain-chatvrm .
 
-
-# 更改npm镜像源
 RUN npm config set registry https://registry.npmmirror.com && \
-    npm install rimraf -g && \
-    rimraf node_modules && \
     npm install && \
     npm run build --no-lint
 
-# 暴露应用程序监听的端口
+
+# 生产阶段
+FROM node:14.21.3-slim
+
+WORKDIR /app
+
+COPY --from=build /app/.next ./.next
+COPY --from=build /app/next.config.js ./
+COPY --from=build /app/public ./public
+COPY --from=build /app/package.json ./
+
+RUN npm install --production
+
 EXPOSE 3000
 
-# 启动Node.js应用程序
 CMD ["npm", "run", "start"]
