@@ -2,16 +2,14 @@ import queue
 import re
 import threading
 import traceback
-import json
-from channels.layers import get_channel_layer
+
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
-from ..utils.chat_message_utils import format_chat_text
-from ..utils.str_utils import remove_special_characters, remove_emojis
+
 from ..config import singleton_sys_config
 from ..emotion.emotion_manage import GenerationEmote
-import threading
+from ..utils.chat_message_utils import format_chat_text
+from ..utils.str_utils import remove_special_characters, remove_emojis
 
 # 聊天消息通道
 chat_channel = "chat_channel"
@@ -58,7 +56,7 @@ def send_message():
             message = chat_queue.get()
             if (message != None and message != ''):
                 chat_message = {"type": "chat_message",
-                                "message":  message.to_dict()}
+                                "message": message.to_dict()}
                 send_message_exe(chat_channel, chat_message)
         except Exception as e:
             traceback.print_exc()
@@ -70,7 +68,7 @@ def realtime_callback(role_name: str, you_name: str, content: str):
 
     realtime_callback.message_buffer += content
     # 如果 content 以结束标点符号结尾，打印并清空缓冲区
-    if re.match(r"^(.+[。．！？~\n]|.{10,}[、,])", realtime_callback.message_buffer):
+    if re.match(r"^(.+[。．！？~\n]|.{10,}[、,]|$)", realtime_callback.message_buffer):
         realtime_callback.message_buffer = format_chat_text(
             role_name, you_name, realtime_callback.message_buffer)
 
