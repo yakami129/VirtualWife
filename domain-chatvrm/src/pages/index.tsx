@@ -16,6 +16,7 @@ import {GitHubLink} from "@/components/githubLink";
 import {Meta} from "@/components/meta";
 import {FormDataType, getConfig, initialFormData} from "@/features/config/configApi";
 
+
 // const m_plus_2 = M_PLUS_2({
 //   variable: "--font-m-plus-2",
 //   display: "swap",
@@ -44,46 +45,18 @@ export default function Home() {
     const [globalsConfig, setGlobalsConfig] = useState<FormDataType>(initialFormData);
     const [subtitle, setSubtitle] = useState("");
     const [displayedSubtitle, setDisplayedSubtitle] = useState("");
-    const subtitleRef = useRef("");
     const typingDelay = 100; // 每个字的延迟时间，可以根据需要进行调整
+    const handleSubtitle = (newSubtitle: string) => {
+        setDisplayedSubtitle(newSubtitle);
+        setSubtitle((prevSubtitle) => prevSubtitle + newSubtitle);
+        setTimeout(clearSubtitle, 3000); // 3秒后清空字幕
+    };
 
-    useEffect(() => {
-        subtitleRef.current = subtitle;
+    const clearSubtitle = () => {
         setDisplayedSubtitle("");
+        setSubtitle("");
+    };
 
-        let currentIndex = 0;
-        let typingTimeout: NodeJS.Timeout | null = null;
-
-        const typeCharacter = () => {
-            if (currentIndex < subtitleRef.current.length) {
-                const currentChar = subtitleRef.current[currentIndex];
-                if (currentChar !== undefined) {
-                    setDisplayedSubtitle((prevSubtitle) => prevSubtitle + currentChar);
-                    currentIndex++;
-                    typingTimeout = setTimeout(typeCharacter, typingDelay);
-                }
-            }
-        };
-
-        const startTyping = () => {
-            if (typingTimeout !== null) {
-                clearTimeout(typingTimeout);
-            }
-            typingTimeout = setTimeout(typeCharacter, typingDelay);
-        };
-
-        const clearTyping = () => {
-            if (typingTimeout !== null) {
-                clearTimeout(typingTimeout);
-            }
-        };
-
-        if (subtitleRef.current.length > 0) {
-            startTyping();
-        }
-
-        return clearTyping;
-    }, [subtitle]);
     useEffect(() => {
         getConfig().then(data => {
             setGlobalsConfig(data)
@@ -140,7 +113,7 @@ export default function Home() {
         console.log("RobotMessage:" + content + " emote:" + emote)
         // 如果content为空，不进行处理
         // 如果与上一句content完全相同，不进行处理
-        if (content == null || content == '') {
+        if (content == null || content == ''||content == ' ') {
             return
         }
         let aiTextLog = "";
@@ -148,11 +121,13 @@ export default function Home() {
         const aiText = content;
         const aiTalks = textsToScreenplay([aiText], koeiroParam, emote);
         aiTextLog += aiText;
+        console.log("机器人说的"+aiTextLog)
         // 文ごとに音声を生成 & 再生、返答を表示
         const currentAssistantMessage = sentences.join(" ");
         setSubtitle(aiTextLog);
         handleSpeakAi(aiTalks[0], () => {
             setAssistantMessage(currentAssistantMessage);
+            handleSubtitle(aiText + " "); // 添加空格以区分不同的字幕
         });
 
     }
@@ -226,9 +201,11 @@ export default function Home() {
             <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey}/>
             <VrmViewer globalsConfig={globalsConfig}/>
             <div className="flex items-center justify-center">
-                <div
-                    className="absolute bottom-1/4  z-10 "
-                >
+                <div className="absolute bottom-1/4 z-10" style={{
+                    fontFamily: "fzfs",
+                    fontSize: "24px",
+                    color: "#555",
+                }}>
                     {displayedSubtitle}
                 </div>
             </div>
