@@ -54,3 +54,8 @@ class LocalMemoryModel(models.Model):
 
     def __str__(self):
         return self.id
+    
+class BackgroundImageModel(models.Model):
+    id = models.AutoField
+    original_name = models.CharField(max_length=50)
+    image = models.ImageField(upload_to='background/')

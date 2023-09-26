@@ -1,14 +1,16 @@
 import time
-import traceback
 from django.shortcuts import render, get_object_or_404
 import json
-from .serializers import CustomRoleSerializer
+from .serializers import CustomRoleSerializer, UploadedImageSerializer
 from .process import process_core
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework import status
 from .config import singleton_sys_config
 from .reflection.reflection_generation import ReflectionGeneration
-from .models import CustomRoleModel
+from .models import CustomRoleModel, BackgroundImageModel
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 import logging
 logging.basicConfig(level=logging.INFO)
 
@@ -123,17 +125,8 @@ def custom_role_detail(request, pk):
     return Response({"response": role, "code": "200"})
 
 
-# @api_view(['POST'])
-# def custom_role_create(request):
-#     form = CustomRoleForm(request.POST)
-#     if form.is_valid():
-#         form.save()
-#         return Response({"response": form, "code": "200"})
-#     else:
-#         print("Form errors:", form.errors)
-#         return Response({"response": None, "code": "500"})
 @api_view(['POST'])
-def custom_role_create(request):
+def create_custom_role(request):
     data = request.data  # 获取请求的 JSON 数据
 
     # 从 JSON 数据中提取字段值
@@ -159,7 +152,7 @@ def custom_role_create(request):
 
 
 @api_view(['POST'])
-def custom_role_edit(request, pk):
+def edit_custom_role(request, pk):
     data = request.data  # 获取请求的 JSON 数据
     # 从 JSON 数据中提取字段值
     id = data.get('id')
@@ -186,7 +179,38 @@ def custom_role_edit(request, pk):
 
 
 @api_view(['POST'])
-def custom_role_delete(request, pk):
+def delete_custom_role(request, pk):
     role = get_object_or_404(CustomRoleModel, pk=pk)
     role.delete()
     return Response({"response": "ok", "code": "200"})
+
+@api_view(['POST'])
+def delete_background_image(request, pk):
+    role = get_object_or_404(BackgroundImageModel, pk=pk)
+    role.delete()
+    return Response({"response": "ok", "code": "200"})
+
+@api_view(['POST'])
+def upload_background_image(request):
+    """
+    Upload a background image.
+    """
+    serializer = UploadedImageSerializer(data=request.data)
+    if serializer.is_valid():
+            # 获取上传文件对象
+        uploaded_file = request.data['image']
+        # 获取上传文件的原始文件名
+        original_filename = uploaded_file.name
+        print("xx:",original_filename)
+        serializer.save(original_name=original_filename)
+        return Response({"response": "ok", "code": "200"})
+    return Response({"response": "no", "code": "500"})
+
+@api_view(['GET'])
+def show_background_image(request):
+    """
+    Retrieve a list of uploaded background images.
+    """
+    images = BackgroundImageModel.objects.all()
+    serializer = UploadedImageSerializer(images, many=True)
+    return Response({"response": serializer.data, "code": "200"})

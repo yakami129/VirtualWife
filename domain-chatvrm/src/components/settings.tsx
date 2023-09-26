@@ -1,10 +1,11 @@
 // 引入过渡动画组件
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IconButton } from "./iconButton";
 import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
 import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList, vrmModelData, vrmModelList } from "@/features/customRole/customRoleApi";
+import { uploadBackground,queryBackground,backgroundModelData, deleteBackground } from "@/features/media/mediaApi";
 import { getConfig, saveConfig, FormDataType } from "@/features/config/configApi";
 import {
   KoeiroParam,
@@ -75,7 +76,11 @@ export const Settings = ({
   const [enableCreateRole, setEnableCreateRole] = useState(true);
   const [customRoleLog, setCustomRoleLog] = useState("");
   const [deleteCustomRoleLog, setDeleteCustomRoleLog] = useState("");
+  const [deleteBackgroundLog, setDeleteBackgroundLog] = useState("");
   const [selectedRoleId, setSelectedRoleId] = useState(-1);
+  const [selectedBackgroundId, setSelectedBackgroundId] = useState(-1);
+  const [backgroundModels, setBackgroundModels] = useState([backgroundModelData]);
+  const backgroundFileInputRef = useRef(null);
 
   useEffect(() => {
     customroleList().then(data => {
@@ -88,6 +93,7 @@ export const Settings = ({
     setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableProxy(globalsConfig.enableProxy)
+    queryBackground().then(data => setBackgroundModels(data))
   }, [])
 
   // 监听变化重新渲染
@@ -202,8 +208,83 @@ export const Settings = ({
             </select>
           </div>
         </div>
+
+        <div className="section">
+          <div className="title">壁纸设置</div>
+          <div className="field">
+            <label>选择壁纸</label>
+            <div className="flex items-center justify-center space-x-4">
+            <select
+              defaultValue={formData.background_id + ''}
+              onChange={e => {
+                const selectedBackgroundId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                const selectedBackgroundUrl = e.target.options[e.target.selectedIndex].getAttribute('data-url');
+                formData.background_id = Number(selectedBackgroundId);
+                formData.background_url = selectedBackgroundUrl + "";
+                setFormData(formData);
+                setSelectedBackgroundId(formData.background_id);
+              }}>
+              {backgroundModels.map(backgroundModel => (
+                <option key={backgroundModel.id} value={backgroundModel.id} data-key={backgroundModel.id} data-url={backgroundModel.image}>
+                  {backgroundModel.original_name}
+                </option>
+              ))}
+            </select >
+            <input
+              type="file"
+              ref={backgroundFileInputRef}
+              style={{ display: 'none' }}
+              onChange={handleFileChange}
+            />
+            <IconButton
+                iconName="16/Add"
+                isProcessing={false}
+                onClick={handleButtonClick}
+              ></IconButton>
+              <IconButton
+                iconName="16/Remove"
+                isProcessing={false}
+                onClick={e => {
+                  if (selectedBackgroundId !== -1) {
+                    handleDeleteBackground(selectedBackgroundId)
+                  }
+                }}
+              ></IconButton>
+                <div className="flex justify-end mt-4">
+                  {deleteBackgroundLog}
+                </div>
+            </div>  
+          </div>
+        </div>
       </div>
     );
+  }
+
+  const handleButtonClick = () => {
+    backgroundFileInputRef?.current?.click();
+  };
+
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+    uploadBackground(formData)
+    .then(data =>{
+      queryBackground().then(data => setBackgroundModels(data))
+    })
+  };
+
+  const handleDeleteBackground = (selectedBackgroundId: number) => {
+    deleteBackground(selectedBackgroundId)
+      .then(data => {
+        queryBackground().then(data => setBackgroundModels(data))
+        setDeleteBackgroundLog("OK")
+      }).catch(e => {
+        setDeleteBackgroundLog("ERROR")
+      })
   }
 
   const LlmSettings = () => {
@@ -589,6 +670,7 @@ export const Settings = ({
       })
     }
   }
+
 
   const handleCustomRoleDelete = (selectedRoleId: number) => {
     customroleDelete(selectedRoleId)

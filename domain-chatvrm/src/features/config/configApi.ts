@@ -43,7 +43,9 @@ export const initialFormData = {
 		"languageModelForReflection": "openai"
 	},
 	"custom_role_template_type": "zh",
-	"role_name": "1"
+	"role_name": "1",
+	"background_id": 1,
+	"background_url": ""
 }
 
 // 定义类型别名

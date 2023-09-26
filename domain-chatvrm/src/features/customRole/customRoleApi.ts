@@ -15,7 +15,7 @@ export type CustomRoleFormData = typeof custoRoleFormData;
 export const vrmModelData = {
     name: ""
 }
-export type VrmModel = typeof custoRoleFormData;
+export type VrmModel = typeof vrmModelData;
 
 
 
