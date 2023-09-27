@@ -21,6 +21,7 @@ export const initialFormData = {
 	},
 	"characterConfig": {
 		"character": 1,
+		"character_name": "爱莉",
 		"yourName": "yuki129",
 		"vrmModel": "\u308f\u305f\u3042\u3081_03.vrm"
 	},
@@ -43,7 +44,6 @@ export const initialFormData = {
 		"languageModelForReflection": "openai"
 	},
 	"custom_role_template_type": "zh",
-	"role_name": "1",
 	"background_id": 1,
 	"background_url": ""
 }

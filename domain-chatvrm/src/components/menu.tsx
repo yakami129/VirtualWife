@@ -17,6 +17,7 @@ type Props = {
   assistantMessage: string;
   onChangeSystemPrompt: (systemPrompt: string) => void;
   onChangeAiKey: (key: string) => void;
+  onChangeBackgroundImageUrl: (key: string) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiromapParam: (param: KoeiroParam) => void;
   handleClickResetChatLog: () => void;
@@ -32,6 +33,7 @@ export const Menu = ({
   assistantMessage,
   onChangeSystemPrompt,
   onChangeAiKey,
+  onChangeBackgroundImageUrl,
   onChangeChatLog,
   onChangeKoeiromapParam,
   handleClickResetChatLog,
@@ -126,7 +128,7 @@ export const Menu = ({
           )}
         </div>
       </div>
-      {showChatLog && <ChatLog messages={chatLog} />}
+      {showChatLog && <ChatLog messages={chatLog}  globalsConfig={globalsConfig} />}
       {showSettings && (
         <Settings
           globalsConfig={globalsConfig}
@@ -137,6 +139,7 @@ export const Menu = ({
           remoteLoadVrmFile={remoteLoadVrmFile}
           onClickClose={() => setShowSettings(false)}
           onChangeAiKey={handleAiKeyChange}
+          onChangeBackgroundImageUrl={onChangeBackgroundImageUrl}
           onChangeSystemPrompt={handleChangeSystemPrompt}
           onChangeChatLog={onChangeChatLog}
           onChangeKoeiroParam={handleChangeKoeiroParam}

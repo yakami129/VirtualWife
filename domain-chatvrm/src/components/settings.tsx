@@ -5,7 +5,7 @@ import { IconButton } from "./iconButton";
 import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
 import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList, vrmModelData, vrmModelList } from "@/features/customRole/customRoleApi";
-import { uploadBackground,queryBackground,backgroundModelData, deleteBackground } from "@/features/media/mediaApi";
+import { uploadBackground, queryBackground, backgroundModelData, deleteBackground } from "@/features/media/mediaApi";
 import { getConfig, saveConfig, FormDataType } from "@/features/config/configApi";
 import {
   KoeiroParam,
@@ -38,6 +38,7 @@ type Props = {
   remoteLoadVrmFile: (url: string) => void;
   onClickClose: () => void;
   onChangeAiKey: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeBackgroundImageUrl: (key: string) => void;
   onChangeSystemPrompt: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiroParam: (x: number, y: number) => void;
@@ -56,6 +57,7 @@ export const Settings = ({
   onClickClose,
   onChangeSystemPrompt,
   onChangeAiKey,
+  onChangeBackgroundImageUrl,
   onChangeChatLog,
   onChangeKoeiroParam,
   onClickOpenVrmFile,
@@ -134,11 +136,13 @@ export const Settings = ({
               defaultValue={formData.characterConfig.character + ''}
               onChange={e => {
                 const selectedRoleId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                const selectedRoleName = e.target.options[e.target.selectedIndex].getAttribute('data-val');
                 formData.characterConfig.character = Number(selectedRoleId);
+                formData.characterConfig.character_name = selectedRoleName + "";
                 setFormData(formData);
               }}>
               {customRoles.map(role => (
-                <option key={role.id} value={role.id} data-key={role.id}>
+                <option key={role.id} value={role.id} data-key={role.id} data-val={role.role_name}>
                   {role.role_name}
                 </option>
               ))}
@@ -214,29 +218,30 @@ export const Settings = ({
           <div className="field">
             <label>选择壁纸</label>
             <div className="flex items-center justify-center space-x-4">
-            <select
-              defaultValue={formData.background_id + ''}
-              onChange={e => {
-                const selectedBackgroundId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
-                const selectedBackgroundUrl = e.target.options[e.target.selectedIndex].getAttribute('data-url');
-                formData.background_id = Number(selectedBackgroundId);
-                formData.background_url = selectedBackgroundUrl + "";
-                setFormData(formData);
-                setSelectedBackgroundId(formData.background_id);
-              }}>
-              {backgroundModels.map(backgroundModel => (
-                <option key={backgroundModel.id} value={backgroundModel.id} data-key={backgroundModel.id} data-url={backgroundModel.image}>
-                  {backgroundModel.original_name}
-                </option>
-              ))}
-            </select >
-            <input
-              type="file"
-              ref={backgroundFileInputRef}
-              style={{ display: 'none' }}
-              onChange={handleFileChange}
-            />
-            <IconButton
+              <select
+                defaultValue={formData.background_id + ''}
+                onChange={e => {
+                  const selectedBackgroundId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                  const selectedBackgroundUrl = e.target.options[e.target.selectedIndex].getAttribute('data-url');
+                  formData.background_id = Number(selectedBackgroundId);
+                  formData.background_url = selectedBackgroundUrl + "";
+                  setFormData(formData);
+                  onChangeBackgroundImageUrl(formData.background_url)
+                  setSelectedBackgroundId(formData.background_id);
+                }}>
+                {backgroundModels.map(backgroundModel => (
+                  <option key={backgroundModel.id} value={backgroundModel.id} data-key={backgroundModel.id} data-url={backgroundModel.image}>
+                    {backgroundModel.original_name}
+                  </option>
+                ))}
+              </select >
+              <input
+                type="file"
+                ref={backgroundFileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
+              <IconButton
                 iconName="16/Add"
                 isProcessing={false}
                 onClick={handleButtonClick}
@@ -250,10 +255,10 @@ export const Settings = ({
                   }
                 }}
               ></IconButton>
-                <div className="flex justify-end mt-4">
-                  {deleteBackgroundLog}
-                </div>
-            </div>  
+              <div className="flex justify-end mt-4">
+                {deleteBackgroundLog}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -272,9 +277,9 @@ export const Settings = ({
     const formData = new FormData();
     formData.append('image', selectedFile);
     uploadBackground(formData)
-    .then(data =>{
-      queryBackground().then(data => setBackgroundModels(data))
-    })
+      .then(data => {
+        queryBackground().then(data => setBackgroundModels(data))
+      })
   };
 
   const handleDeleteBackground = (selectedBackgroundId: number) => {

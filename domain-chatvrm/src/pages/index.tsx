@@ -63,7 +63,7 @@ export default function Home() {
     useEffect(() => {
         getConfig().then(data => {
             setGlobalsConfig(data)
-            if(data.background_url != ''){
+            if (data.background_url != '') {
                 setBackgroundImageUrl(buildBackgroundUrl(data.background_url))
             }
         })
@@ -89,7 +89,7 @@ export default function Home() {
     const handleChangeChatLog = useCallback(
         (targetIndex: number, text: string) => {
             const newChatLog = chatLog.map((v: Message, i) => {
-                return i === targetIndex ? { role: v.role, content: text } : v;
+                return i === targetIndex ? { role: v.role, content: text, user_name: v.user_name } : v;
             });
             setChatLog(newChatLog);
         },
@@ -133,8 +133,19 @@ export default function Home() {
         handleSpeakAi(aiTalks[0], () => {
             setAssistantMessage(currentAssistantMessage);
             handleSubtitle(aiText + " "); // 添加空格以区分不同的字幕
+
+            // アシスタントの返答をログに追加
+            const params = JSON.parse(
+                window.localStorage.getItem("chatVRMParams") as string
+            );
+            const messageLogAssistant: Message[] = [
+                ...params.chatLog,
+                { role: "assistant", content: aiTextLog, "user_name": user_name },
+            ];
+            setChatLog(messageLogAssistant);
         });
 
+       
     }
 
     /**
@@ -146,21 +157,19 @@ export default function Home() {
             console.log("UserMessage:" + content)
 
             setChatProcessing(true);
+            const yourName = user_name == null || user_name == '' ? globalsConfig?.characterConfig?.yourName : user_name
             // ユーザーの発言を追加して表示
             const messageLog: Message[] = [
-                ...chatLog,
-                { role: "user", content: content },
+            ...chatLog,
+            { role: "user", content: content, "user_name": yourName },
             ];
             setChatLog(messageLog);
-
-            const yourName = user_name == null || user_name == '' ? globalsConfig?.characterConfig?.yourName : user_name
             await chat(content, yourName).catch(
                 (e) => {
                     console.error(e);
                     return null;
                 }
             );
-
             setChatProcessing(false);
         },
         [systemPrompt, chatLog, setChatLog, handleSpeakAi, setImageUrl, openAiKey, koeiroParam]
@@ -235,6 +244,9 @@ export default function Home() {
                     koeiroParam={koeiroParam}
                     assistantMessage={assistantMessage}
                     onChangeAiKey={setOpenAiKey}
+                    onChangeBackgroundImageUrl={data => 
+                        setBackgroundImageUrl(buildBackgroundUrl(data))
+                    }
                     onChangeSystemPrompt={setSystemPrompt}
                     onChangeChatLog={handleChangeChatLog}
                     onChangeKoeiromapParam={setKoeiroParam}

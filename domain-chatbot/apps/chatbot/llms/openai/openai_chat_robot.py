@@ -57,7 +57,6 @@ class OpenAIGeneration:
         # create variables to collect the stream of chunks
         answer = ''
         for part in response:
-            print(f"part:{part}")
             finish_reason = part["choices"][0]["finish_reason"]
             if finish_reason is None and "delta" in part["choices"][0] and "content" in part["choices"][0]["delta"]:
                 content = part["choices"][0]["delta"]["content"]
