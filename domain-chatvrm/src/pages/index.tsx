@@ -16,7 +16,7 @@ import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
 import { FormDataType, getConfig, initialFormData } from "@/features/config/configApi";
 import { buildUrl } from "@/utils/buildUrl";
-import { buildBackgroundUrl } from "@/features/media/mediaApi";
+import { generateMediaUrl } from "@/features/media/mediaApi";
 
 
 // const m_plus_2 = M_PLUS_2({
@@ -64,7 +64,7 @@ export default function Home() {
         getConfig().then(data => {
             setGlobalsConfig(data)
             if (data.background_url != '') {
-                setBackgroundImageUrl(buildBackgroundUrl(data.background_url))
+                setBackgroundImageUrl(generateMediaUrl(data.background_url))
             }
         })
         if (window.localStorage.getItem("chatVRMParams")) {
@@ -245,7 +245,7 @@ export default function Home() {
                     assistantMessage={assistantMessage}
                     onChangeAiKey={setOpenAiKey}
                     onChangeBackgroundImageUrl={data => 
-                        setBackgroundImageUrl(buildBackgroundUrl(data))
+                        setBackgroundImageUrl(generateMediaUrl(data))
                     }
                     onChangeSystemPrompt={setSystemPrompt}
                     onChangeChatLog={handleChangeChatLog}

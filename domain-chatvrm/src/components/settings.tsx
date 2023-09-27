@@ -4,8 +4,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { IconButton } from "./iconButton";
 import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
-import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList, vrmModelData, vrmModelList } from "@/features/customRole/customRoleApi";
-import { uploadBackground, queryBackground, backgroundModelData, deleteBackground } from "@/features/media/mediaApi";
+import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList } from "@/features/customRole/customRoleApi";
+import { uploadBackground, queryBackground, backgroundModelData, deleteBackground,uploadVrmModel,queryUserVrmModels,querySystemVrmModels,vrmModelData,deleteVrmModel, generateMediaUrl, buildVrmModelUrl } from "@/features/media/mediaApi";
 import { getConfig, saveConfig, FormDataType } from "@/features/config/configApi";
 import {
   KoeiroParam,
@@ -68,7 +68,6 @@ export const Settings = ({
   const [currentTab, setCurrentTab] = useState('基础设置');
   const [formData, setFormData] = useState(globalsConfig);
   const [customRoles, setCustomRoles] = useState([custoRoleFormData]);
-  const [vrmModels, setVrmModels] = useState([vrmModelData]);
   const [enableProxy, setEnableProxy] = useState(false);
   const [conversationType, setConversationType] = useState('default');
   const [enableLongMemory, setEnableLongMemory] = useState(false);
@@ -83,20 +82,27 @@ export const Settings = ({
   const [selectedBackgroundId, setSelectedBackgroundId] = useState(-1);
   const [backgroundModels, setBackgroundModels] = useState([backgroundModelData]);
   const backgroundFileInputRef = useRef(null);
+  const [selectedVrmModelId, setSelectedVrmModelId] = useState(-1);
+  const [userVrmModels, setUserVrmModels] = useState([vrmModelData]);
+  const [systemVrmModels, setSystemVrmModels] = useState([vrmModelData]);
+  const [deleteVrmModelLog, setDeleteVrmModelLog] = useState("");
+  const VrmModelFileInputRef = useRef(null);
 
   useEffect(() => {
     customroleList().then(data => {
       setCustomRoles(data)
     })
     setFormData(globalsConfig);
-    vrmModelList().then(data => setVrmModels(data))
     setConversationType(globalsConfig.conversationConfig.conversationType)
     setEnableLongMemory(globalsConfig.memoryStorageConfig.enableLongMemory)
     setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableProxy(globalsConfig.enableProxy)
     setSelectedBackgroundId(globalsConfig.background_id)
+    setSelectedVrmModelId(-1)
     queryBackground().then(data => setBackgroundModels(data))
+    queryUserVrmModels().then(data => setUserVrmModels(data))
+    querySystemVrmModels().then(data => setSystemVrmModels(data))
   }, [])
 
   // 监听变化重新渲染
@@ -164,13 +170,21 @@ export const Settings = ({
             <select
               defaultValue={formData.characterConfig.vrmModel}
               onChange={e => {
+                const selectedVrmModelType = e.target.options[e.target.selectedIndex].getAttribute('data-type');
                 formData.characterConfig.vrmModel = e.target.value;
+                formData.characterConfig.vrmModelType = selectedVrmModelType+"";
                 setFormData(formData);
-                remoteLoadVrmFile(formData.characterConfig.vrmModel)
+                const vrm_url = buildVrmModelUrl(formData.characterConfig.vrmModel,selectedVrmModelType+"")
+                remoteLoadVrmFile(vrm_url)
               }}>
               {
-                vrmModels.map(vrm => (
-                  <option key={vrm.name} value={vrm.name}>{vrm.name}</option>
+                systemVrmModels.map(vrm => (
+                  <option key={vrm.id} value={vrm.vrm} data-type={vrm.type}>{vrm.original_name}</option>
+                ))
+              }
+              {
+                userVrmModels.map(vrm => (
+                  <option key={vrm.id} value={vrm.vrm} data-type={vrm.type}>{vrm.original_name}</option>
                 ))
               }
             </select>
@@ -224,16 +238,16 @@ export const Settings = ({
                 onChange={e => {
                   const selectedBackgroundId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
                   let selectedBackgroundUrl = e.target.options[e.target.selectedIndex].getAttribute('data-url');
-                  selectedBackgroundUrl = selectedBackgroundUrl? selectedBackgroundUrl: ""
+                  selectedBackgroundUrl = selectedBackgroundUrl ? selectedBackgroundUrl : ""
                   formData.background_id = Number(selectedBackgroundId);
                   formData.background_url = selectedBackgroundUrl;
-                  if(selectedBackgroundId != '-1'){
+                  if (selectedBackgroundId != '-1') {
                     setFormData(formData);
                     onChangeBackgroundImageUrl(formData.background_url)
                     setSelectedBackgroundId(formData.background_id);
                   }
                 }}>
-                <option key="-1" value="-1" data-key="-1">请选择</option>    
+                <option key="-1" value="-1" data-key="-1">请选择</option>
                 {backgroundModels.map(backgroundModel => (
                   <option key={backgroundModel.id} value={backgroundModel.id} data-key={backgroundModel.id} data-url={backgroundModel.image}>
                     {backgroundModel.original_name}
@@ -244,12 +258,12 @@ export const Settings = ({
                 type="file"
                 ref={backgroundFileInputRef}
                 style={{ display: 'none' }}
-                onChange={handleFileChange}
+                onChange={handleBackgroundFileChange}
               />
               <IconButton
                 iconName="16/Add"
                 isProcessing={false}
-                onClick={handleButtonClick}
+                onClick={handleBackgroundButtonClick}
               ></IconButton>
               <IconButton
                 iconName="16/Remove"
@@ -270,11 +284,11 @@ export const Settings = ({
     );
   }
 
-  const handleButtonClick = () => {
+  const handleBackgroundButtonClick = () => {
     backgroundFileInputRef?.current?.click();
   };
 
-  const handleFileChange = (event) => {
+  const handleBackgroundFileChange = (event) => {
     const selectedFile = event.target.files[0];
     if (!selectedFile) {
       return;
@@ -294,6 +308,33 @@ export const Settings = ({
         setDeleteBackgroundLog("OK")
       }).catch(e => {
         setDeleteBackgroundLog("ERROR")
+      })
+  }
+
+  const handleVrmModelButtonClick = () => {
+    VrmModelFileInputRef?.current?.click();
+  };
+
+  const handleVrmModelFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('vrm', selectedFile);
+    uploadVrmModel(formData)
+      .then(data => {
+        queryUserVrmModels().then(data => setUserVrmModels(data))
+      })
+  };
+
+  const handleDeleteVrmModel = (selectedVrmModelId: number) => {
+    deleteVrmModel(selectedVrmModelId)
+      .then(data => {
+        queryUserVrmModels().then(data => setUserVrmModels(data))
+        setDeleteVrmModelLog("OK")
+      }).catch(e => {
+        setDeleteVrmModelLog("ERROR")
       })
   }
 
@@ -602,6 +643,7 @@ export const Settings = ({
     return (
       <div className="globals-settings">
         <div className="section">
+          <div className="title">自定义角色设置</div>
           <div className="field">
             <label>添加或编辑角色</label>
             <div className="flex items-center justify-center space-x-4">
@@ -652,9 +694,54 @@ export const Settings = ({
           </div>
         </div>
         <div className="section">
-          <div className="title">自定义VRM模型</div>
+          {/* <div className="title">自定义VRM模型</div>
           <div className="my-8">
             <TextButton onClick={onClickOpenVrmFile}>上传VRM</TextButton>
+          </div> */}
+          <div className="title">自定义VRM模型</div>
+          <div className="field">
+            <label>上传VRM模型</label>
+            <div className="flex items-center justify-center space-x-4">
+              <select
+                value={selectedVrmModelId}
+                onChange={e => {
+                  const selectedVrmModelId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                  const vrmModelId = Number(selectedVrmModelId);
+                  setSelectedVrmModelId(vrmModelId);
+                }}>
+                <option key="-1" value="-1" data-key="-1" data-url="">请选择</option>
+                {userVrmModels.map(vrmModel => (
+                  <option key={vrmModel.id} value={vrmModel.id} data-key={vrmModel.id} data-url={vrmModel.vrm}>
+                    {vrmModel.original_name}
+                  </option>
+                ))}
+              </select >
+              <input
+                type="file"
+                ref={VrmModelFileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleVrmModelFileChange}
+              />
+              <IconButton
+                iconName="16/Add"
+                label='上传模型'
+                isProcessing={false}
+                onClick={handleVrmModelButtonClick}
+              ></IconButton>
+              <IconButton
+                iconName="16/Remove"
+                label='删除模型'
+                isProcessing={false}
+                onClick={e => {
+                  if (selectedVrmModelId !== -1) {
+                    handleDeleteVrmModel(selectedVrmModelId)
+                  }
+                }}
+              ></IconButton>
+              <div className="flex justify-end mt-4">
+                {deleteVrmModelLog}
+              </div>
+            </div>
           </div>
         </div>
       </div>)

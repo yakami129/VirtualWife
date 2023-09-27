@@ -3,14 +3,14 @@ import time
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 import json
-from .serializers import CustomRoleSerializer, UploadedImageSerializer
+from .serializers import CustomRoleSerializer, UploadedImageSerializer, UploadedVrmModelSerializer
 from .process import process_core
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .config import singleton_sys_config
 from .reflection.reflection_generation import ReflectionGeneration
-from .models import CustomRoleModel, BackgroundImageModel
+from .models import CustomRoleModel, BackgroundImageModel, VrmModel
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import logging
@@ -31,36 +31,7 @@ def chat(request):
     return Response({"response": "OK", "code": "200"})
 
 
-@api_view(['GET'])
-def vrm_model_list(request):
-    '''
-      获取角色模型列表
-    :param request:
-    :return:
-    '''
-    vrm_models = [
-        {
-            "id": "1",
-            "name": "わたあめ_03.vrm",
-        },
-        {
-            "id": "2",
-            "name": "わたあめ_02.vrm",
-        },
-        {
-            "id": "3",
-            "name": "hailey.vrm",
-        },
-        {
-            "id": "4",
-            "name": "后藤仁.vrm",
-        },
-        {
-            "id": "5",
-            "name": "aili.vrm",
-        }
-    ]
-    return Response({"response": vrm_models, "code": "200"})
+
 
 
 @api_view(['POST'])
@@ -186,20 +157,23 @@ def delete_custom_role(request, pk):
     role.delete()
     return Response({"response": "ok", "code": "200"})
 
+
 @api_view(['POST'])
 def delete_background_image(request, pk):
 
     # 删除数据
-    role = get_object_or_404(BackgroundImageModel, pk=pk)
-    role.delete()
+    background_image_model = get_object_or_404(BackgroundImageModel, pk=pk)
+    background_image_model.delete()
 
     # 获取要删除的文件路径
-    file_path = os.path.join(settings.MEDIA_ROOT, str(role.image))
+    file_path = os.path.join(
+        settings.MEDIA_ROOT, str(background_image_model.image))
     # 删除关联的文件
     if os.path.exists(file_path):
         os.remove(file_path)
-    
+
     return Response({"response": "ok", "code": "200"})
+
 
 @api_view(['POST'])
 def upload_background_image(request):
@@ -208,13 +182,14 @@ def upload_background_image(request):
     """
     serializer = UploadedImageSerializer(data=request.data)
     if serializer.is_valid():
-            # 获取上传文件对象
+        # 获取上传文件对象
         uploaded_file = request.data['image']
         # 获取上传文件的原始文件名
         original_filename = uploaded_file.name
         serializer.save(original_name=original_filename)
         return Response({"response": "ok", "code": "200"})
     return Response({"response": "no", "code": "500"})
+
 
 @api_view(['GET'])
 def show_background_image(request):
@@ -224,3 +199,89 @@ def show_background_image(request):
     images = BackgroundImageModel.objects.all()
     serializer = UploadedImageSerializer(images, many=True)
     return Response({"response": serializer.data, "code": "200"})
+
+
+@api_view(['POST'])
+def delete_vrm_model(request, pk):
+    """
+    删除VRM模型数据
+    """
+    # 删除数据
+    vrm_model = get_object_or_404(VrmModel, pk=pk)
+    vrm_model.delete()
+
+    # 获取要删除的文件路径
+    file_path = os.path.join(settings.MEDIA_ROOT, str(vrm_model.vrm))
+    # 删除关联的文件
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    return Response({"response": "ok", "code": "200"})
+
+
+@api_view(['POST'])
+def upload_vrm_model(request):
+    """
+    上传VRM模型
+    """
+    serializer = UploadedVrmModelSerializer(data=request.data)
+    if serializer.is_valid():
+        # 获取上传文件对象
+        uploaded_file = request.data['vrm']
+        # 获取上传文件的原始文件名
+        original_filename = uploaded_file.name
+        serializer.save(original_name=original_filename, type="user")
+        return Response({"response": "ok", "code": "200"})
+    print("=> errors:",serializer.errors)
+    return Response({"response": "no", "code": "500"})
+
+
+@api_view(['GET'])
+def show_user_vrm_models(request):
+    """
+    获取VRM模型列表
+    """
+    vrm_models = VrmModel.objects.all()
+    serializer = UploadedVrmModelSerializer(vrm_models, many=True)
+    return Response({"response": serializer.data, "code": "200"})
+
+@api_view(['GET'])
+def show_system_vrm_models(request):
+    '''
+      获取角色模型列表
+    :param request:
+    :return:
+    '''
+    vrm_models = [
+        {
+            "id": "sys_01",
+            "type": "system",
+            "original_name": "わたあめ_03.vrm",
+            "vrm": "わたあめ_03.vrm"
+        },
+        {
+            "id": "sys_02",
+            "type": "system",
+            "original_name": "わたあめ_02.vrm",
+            "vrm": "わたあめ_02.vrm"
+        },
+        {
+            "id": "sys_03",
+            "type": "system",
+            "original_name": "hailey.vrm",
+            "vrm": "hailey.vrm"
+        },
+        {
+            "id": "sys_04",
+            "type": "system",
+            "original_name": "后藤仁.vrm",
+            "vrm": "后藤仁.vrm"
+        },
+        {
+            "id": "sys_05",
+            "type": "system",
+            "original_name": "aili.vrm",
+            "vrm": "aili.vrm"
+        }
+    ]
+    return Response({"response": vrm_models, "code": "200"})

@@ -23,7 +23,8 @@ export const initialFormData = {
 		"character": 1,
 		"character_name": "爱莉",
 		"yourName": "yuki129",
-		"vrmModel": "\u308f\u305f\u3042\u3081_03.vrm"
+		"vrmModel": "\u308f\u305f\u3042\u3081_03.vrm",
+		"vrmModelType": "system"
 	},
 	"conversationConfig": {
 		"conversationType": "default",

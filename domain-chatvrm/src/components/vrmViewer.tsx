@@ -1,6 +1,6 @@
 import { useContext, useCallback } from "react";
 import { ViewerContext } from "../features/vrmViewer/viewerContext";
-import { buildUrl } from "@/utils/buildUrl";
+import { buildVrmModelUrl, generateMediaUrl } from "@/features/media/mediaApi";
 import { FormDataType, getConfig } from "@/features/config/configApi";
 
 type Props = {
@@ -18,8 +18,7 @@ export default function VrmViewer({
       if (canvas) {
         viewer.setup(canvas);
         getConfig().then(data => {
-          const url = data.characterConfig.vrmModel;
-          console.log(url)
+          const url = buildVrmModelUrl(data.characterConfig.vrmModel,data.characterConfig.vrmModelType);
           viewer.loadVrm(url);
           // Drag and DropでVRMを差し替え
           canvas.addEventListener("dragover", function (event) {

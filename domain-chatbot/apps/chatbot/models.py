@@ -59,3 +59,10 @@ class BackgroundImageModel(models.Model):
     id = models.AutoField
     original_name = models.CharField(max_length=50)
     image = models.ImageField(upload_to='background/')
+
+
+class VrmModel(models.Model):
+    id = models.AutoField
+    type = models.CharField(max_length=10)
+    original_name = models.CharField(max_length=50)
+    vrm = models.FileField(upload_to='vrm/')
