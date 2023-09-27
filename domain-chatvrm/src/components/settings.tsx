@@ -95,6 +95,7 @@ export const Settings = ({
     setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
     setEnableProxy(globalsConfig.enableProxy)
+    setSelectedBackgroundId(globalsConfig.background_id)
     queryBackground().then(data => setBackgroundModels(data))
   }, [])
 
@@ -222,13 +223,17 @@ export const Settings = ({
                 defaultValue={formData.background_id + ''}
                 onChange={e => {
                   const selectedBackgroundId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
-                  const selectedBackgroundUrl = e.target.options[e.target.selectedIndex].getAttribute('data-url');
+                  let selectedBackgroundUrl = e.target.options[e.target.selectedIndex].getAttribute('data-url');
+                  selectedBackgroundUrl = selectedBackgroundUrl? selectedBackgroundUrl: ""
                   formData.background_id = Number(selectedBackgroundId);
-                  formData.background_url = selectedBackgroundUrl + "";
-                  setFormData(formData);
-                  onChangeBackgroundImageUrl(formData.background_url)
-                  setSelectedBackgroundId(formData.background_id);
+                  formData.background_url = selectedBackgroundUrl;
+                  if(selectedBackgroundId != '-1'){
+                    setFormData(formData);
+                    onChangeBackgroundImageUrl(formData.background_url)
+                    setSelectedBackgroundId(formData.background_id);
+                  }
                 }}>
+                <option key="-1" value="-1" data-key="-1">请选择</option>    
                 {backgroundModels.map(backgroundModel => (
                   <option key={backgroundModel.id} value={backgroundModel.id} data-key={backgroundModel.id} data-url={backgroundModel.image}>
                     {backgroundModel.original_name}

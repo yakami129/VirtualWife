@@ -1,4 +1,6 @@
+import os
 import time
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 import json
 from .serializers import CustomRoleSerializer, UploadedImageSerializer
@@ -186,8 +188,17 @@ def delete_custom_role(request, pk):
 
 @api_view(['POST'])
 def delete_background_image(request, pk):
+
+    # 删除数据
     role = get_object_or_404(BackgroundImageModel, pk=pk)
     role.delete()
+
+    # 获取要删除的文件路径
+    file_path = os.path.join(settings.MEDIA_ROOT, str(role.image))
+    # 删除关联的文件
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    
     return Response({"response": "ok", "code": "200"})
 
 @api_view(['POST'])
@@ -201,7 +212,6 @@ def upload_background_image(request):
         uploaded_file = request.data['image']
         # 获取上传文件的原始文件名
         original_filename = uploaded_file.name
-        print("xx:",original_filename)
         serializer.save(original_name=original_filename)
         return Response({"response": "ok", "code": "200"})
     return Response({"response": "no", "code": "500"})
