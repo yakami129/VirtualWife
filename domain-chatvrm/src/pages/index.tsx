@@ -45,17 +45,20 @@ export default function Home() {
     const [globalsConfig, setGlobalsConfig] = useState<FormDataType>(initialFormData);
     const [subtitle, setSubtitle] = useState("");
     const [displayedSubtitle, setDisplayedSubtitle] = useState("");
-    const typingDelay = 100; // 每个字的延迟时间，可以根据需要进行调整
+    const MAX_SUBTITLES = 30;
     const handleSubtitle = (newSubtitle: string) => {
-        setDisplayedSubtitle(newSubtitle);
-        setSubtitle((prevSubtitle) => prevSubtitle + newSubtitle);
-        setTimeout(clearSubtitle, 3000); // 3秒后清空字幕
+
+        setDisplayedSubtitle((prevSubtitle: string) => {
+            const updatedSubtitle = prevSubtitle + newSubtitle;
+            if (updatedSubtitle.length > MAX_SUBTITLES) {
+                const startIndex = updatedSubtitle.length - MAX_SUBTITLES;
+                return updatedSubtitle.substring(startIndex);
+            }
+            return updatedSubtitle;
+        });
     };
 
-    const clearSubtitle = () => {
-        setDisplayedSubtitle("");
-        setSubtitle("");
-    };
+
 
     useEffect(() => {
         getConfig().then(data => {
@@ -124,14 +127,23 @@ export default function Home() {
         console.log("机器人说的"+aiTextLog)
         // 文ごとに音声を生成 & 再生、返答を表示
         const currentAssistantMessage = sentences.join(" ");
-        setSubtitle(aiTextLog);
         handleSpeakAi(aiTalks[0], () => {
             setAssistantMessage(currentAssistantMessage);
-            handleSubtitle(aiText + " "); // 添加空格以区分不同的字幕
+            startTypewriterEffect(aiTextLog);
         });
 
     }
-
+    const startTypewriterEffect = (text: string) => {
+        let currentIndex = 0;
+        const subtitleInterval = setInterval(() => {
+            const newSubtitle = text[currentIndex];
+            handleSubtitle(newSubtitle);
+            currentIndex++;
+            if (currentIndex >= text.length) {
+                clearInterval(subtitleInterval);
+            }
+        }, 100); // 每个字符的间隔时间
+    };
     /**
      * アシスタントとの会話を行う
      */
