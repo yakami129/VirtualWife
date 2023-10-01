@@ -59,8 +59,9 @@ export class Viewer {
 
       this._scene.add(this.model.vrm.scene);
 
-      const vrma = await loadVRMAnimation(buildUrl("/idle_loop.vrma"));
-      if (vrma) this.model.loadAnimation(vrma);
+      // const vrma = await loadVRMAnimation(buildUrl("/idle_loop.vrma"));
+      // if (vrma) this.model.loadAnimation(vrma);
+      this.model.loadFBX(buildUrl("/rumba_dancing.fbx"))
 
       // HACK: アニメーションの原点がずれているので再生後にカメラ位置を調整する
       requestAnimationFrame(() => {

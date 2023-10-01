@@ -6,6 +6,7 @@ import { VRMLookAtSmootherLoaderPlugin } from "@/lib/VRMLookAtSmootherLoaderPlug
 import { LipSync } from "../lipSync/lipSync";
 import { EmoteController } from "../emoteController/emoteController";
 import { Screenplay, EmotionType } from "../messages/messages";
+import { loadMixamoAnimation } from "../mixamo/loadMixamoAnimation";
 
 /**
  * 3Dキャラクターを管理するクラス
@@ -64,6 +65,22 @@ export class Model {
     const clip = vrmAnimation.createAnimationClip(vrm);
     const action = mixer.clipAction(clip);
     action.play();
+  }
+
+  // mixamo animation
+  public async loadFBX( animationUrl:string ): Promise<void> {
+    const { vrm, mixer } = this;
+
+    if (vrm == null || mixer == null) {
+      throw new Error("You have to load VRM first");
+    }
+
+    // Load animation
+    loadMixamoAnimation(animationUrl,vrm).then((clip) => {
+      // Apply the loaded animation to mixer and play
+      mixer.clipAction(clip).play();
+      // mixer.timeScale = params.timeScale;
+    } );
   }
 
   /**
