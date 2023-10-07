@@ -12,6 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua
     rm -rf ~/.cache/pip && \
     rm -rf /tmp/* && \
     rm -rf tmp/* && \
+    rm -rf media/* && \
     rm -rf logs/info.log && \
     rm -rf db/db.sqlite3 && \
     rm -rf .env && \

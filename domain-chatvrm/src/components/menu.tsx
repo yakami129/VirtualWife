@@ -6,10 +6,10 @@ import React, { useCallback, useContext, useEffect, useRef, useState } from "rea
 import { Settings } from "./settings";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
 import { AssistantText } from "./assistantText";
-import { FormDataType } from "@/features/config/configApi";
+import { GlobalConfig } from "@/features/config/configApi";
 
 type Props = {
-  globalsConfig: FormDataType;
+  globalConfig: GlobalConfig;
   openAiKey: string;
   systemPrompt: string;
   chatLog: Message[];
@@ -17,14 +17,16 @@ type Props = {
   assistantMessage: string;
   onChangeSystemPrompt: (systemPrompt: string) => void;
   onChangeAiKey: (key: string) => void;
+  onChangeBackgroundImageUrl: (key: string) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiromapParam: (param: KoeiroParam) => void;
+  onChangeGlobalConfig: (globalConfig: GlobalConfig) => void;
   handleClickResetChatLog: () => void;
   handleClickResetSystemPrompt: () => void;
 };
 
 export const Menu = ({
-  globalsConfig,
+  globalConfig,
   openAiKey,
   systemPrompt,
   chatLog,
@@ -32,6 +34,7 @@ export const Menu = ({
   assistantMessage,
   onChangeSystemPrompt,
   onChangeAiKey,
+  onChangeBackgroundImageUrl,
   onChangeChatLog,
   onChangeKoeiromapParam,
   handleClickResetChatLog,
@@ -126,10 +129,10 @@ export const Menu = ({
           )}
         </div>
       </div>
-      {showChatLog && <ChatLog messages={chatLog} />}
+      {showChatLog && <ChatLog messages={chatLog}  globalConfig={globalConfig} />}
       {showSettings && (
         <Settings
-          globalsConfig={globalsConfig}
+          globalConfig={globalConfig}
           openAiKey={openAiKey}
           chatLog={chatLog}
           systemPrompt={systemPrompt}
@@ -137,6 +140,7 @@ export const Menu = ({
           remoteLoadVrmFile={remoteLoadVrmFile}
           onClickClose={() => setShowSettings(false)}
           onChangeAiKey={handleAiKeyChange}
+          onChangeBackgroundImageUrl={onChangeBackgroundImageUrl}
           onChangeSystemPrompt={handleChangeSystemPrompt}
           onChangeChatLog={onChangeChatLog}
           onChangeKoeiroParam={handleChangeKoeiroParam}
@@ -146,7 +150,7 @@ export const Menu = ({
         />
       )}
       {/* {!showChatLog && assistantMessage && (
-        <AssistantText message={assistantMessage} role_name={globalsConfig.characterConfig.character+""} />
+        <AssistantText message={assistantMessage} role_name={globalConfig.characterConfig.character+""} />
       )} */}
       <input
         type="file"

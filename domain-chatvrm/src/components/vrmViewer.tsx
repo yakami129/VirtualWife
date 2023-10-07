@@ -1,14 +1,14 @@
 import { useContext, useCallback } from "react";
 import { ViewerContext } from "../features/vrmViewer/viewerContext";
-import { buildUrl } from "@/utils/buildUrl";
-import { FormDataType, getConfig } from "@/features/config/configApi";
+import { buildVrmModelUrl, generateMediaUrl } from "@/features/media/mediaApi";
+import { GlobalConfig, getConfig } from "@/features/config/configApi";
 
 type Props = {
-  globalsConfig: FormDataType;
+  globalConfig: GlobalConfig;
 };
 
 export default function VrmViewer({
-  globalsConfig,
+  globalConfig,
 }: Props) {
 
   const { viewer } = useContext(ViewerContext);
@@ -18,8 +18,7 @@ export default function VrmViewer({
       if (canvas) {
         viewer.setup(canvas);
         getConfig().then(data => {
-          const url = data.characterConfig.vrmModel;
-          console.log(url)
+          const url = buildVrmModelUrl(data.characterConfig.vrmModel,data.characterConfig.vrmModelType);
           viewer.loadVrm(url);
           // Drag and DropでVRMを差し替え
           canvas.addEventListener("dragover", function (event) {
@@ -52,7 +51,7 @@ export default function VrmViewer({
   );
 
   return (
-    <div className={"absolute top-0 left-0 w-screen h-[100svh] -z-10"}>
+    <div className={"absolute top-0 left-0 w-screen h-[100svh] -z-10"} >
       <canvas ref={canvasRef} className={"h-full w-full"}></canvas>
     </div>
   );
