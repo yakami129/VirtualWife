@@ -33,6 +33,7 @@ import { generateMediaUrl } from "@/features/media/mediaApi";
 
 let socketInstance: WebSocket | null = null;
 let bind_message_event = false;
+let webGlobalConfig = initialFormData
 
 export default function Home() {
 
@@ -62,6 +63,7 @@ export default function Home() {
 
     useEffect(() => {
         getConfig().then(data => {
+            webGlobalConfig = data
             setGlobalConfig(data)
             if (data.background_url != '') {
                 setBackgroundImageUrl(generateMediaUrl(data.background_url))
@@ -112,6 +114,7 @@ export default function Home() {
     );
 
     const handleChatMessage = useCallback((
+        globalConfig: GlobalConfig,
         type: string,
         user_name: string,
         content: string,
@@ -163,7 +166,7 @@ export default function Home() {
      * アシスタントとの会話を行う
      */
     const handleSendChat = useCallback(
-        async (type: string, user_name: string, content: string) => {
+        async (globalConfig: GlobalConfig,type: string, user_name: string, content: string) => {
 
             console.log("UserMessage:" + content)
 
@@ -186,12 +189,19 @@ export default function Home() {
         [systemPrompt, chatLog, setChatLog, handleSpeakAi, setImageUrl, openAiKey, koeiroParam]
     );
 
+    const onChangeGlobalConfig = useCallback((
+        globalConfig: GlobalConfig) => {
+            setGlobalConfig(globalConfig);
+            webGlobalConfig = globalConfig;
+        },[])
+
     const handleWebSocketMessage = (event: MessageEvent) => {
         const data = event.data;
         const chatMessage = JSON.parse(data);
         const type = chatMessage.message.type;
         if (type === "user") {
             handleChatMessage(
+                webGlobalConfig,
                 chatMessage.message.type,
                 chatMessage.message.user_name,
                 chatMessage.message.content,
@@ -252,6 +262,7 @@ export default function Home() {
                 <MessageInputContainer
                     isChatProcessing={chatProcessing}
                     onChatProcessStart={handleSendChat}
+                    globalConfig={globalConfig}
                 />
                 <Menu
                     globalConfig={globalConfig}
@@ -267,6 +278,7 @@ export default function Home() {
                     onChangeSystemPrompt={setSystemPrompt}
                     onChangeChatLog={handleChangeChatLog}
                     onChangeKoeiromapParam={setKoeiroParam}
+                    onChangeGlobalConfig={onChangeGlobalConfig}
                     handleClickResetChatLog={() => setChatLog([])}
                     handleClickResetSystemPrompt={() => setSystemPrompt(SYSTEM_PROMPT)}
                 />

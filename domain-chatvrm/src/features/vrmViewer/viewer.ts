@@ -63,6 +63,7 @@ export class Viewer {
        // 加载所有人物动作
       this.model.clipMap.set("daily/idle_01.fbx",await loadMixamoAnimation(buildUrl("daily/idle_01.fbx"),this.model.vrm))
       this.model.clipMap.set("daily/idle_02.fbx",await loadMixamoAnimation(buildUrl("daily/idle_02.fbx"),this.model.vrm))
+      this.model.clipMap.set("daily/idle_03.fbx",await loadMixamoAnimation(buildUrl("daily/idle_03.fbx"),this.model.vrm))
       this.model.clipMap.set("daily/standing_greeting.fbx",await loadMixamoAnimation(buildUrl("daily/standing_greeting.fbx"),this.model.vrm))
 
       // const vrma = await loadVRMAnimation(buildUrl("/idle_loop.vrma"));

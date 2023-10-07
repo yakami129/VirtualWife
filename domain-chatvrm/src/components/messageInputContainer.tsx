@@ -1,9 +1,11 @@
 import { MessageInput } from "@/components/messageInput";
+import { GlobalConfig } from "@/features/config/configApi";
 import { useState, useEffect, useCallback } from "react";
 
 type Props = {
   isChatProcessing: boolean;
-  onChatProcessStart: (type: string, user_name: string, content: string) => void;
+  onChatProcessStart: (globalConfig: GlobalConfig,type: string, user_name: string, content: string) => void;
+  globalConfig: GlobalConfig;
 };
 
 /**
@@ -15,6 +17,7 @@ type Props = {
 export const MessageInputContainer = ({
   isChatProcessing,
   onChatProcessStart,
+  globalConfig,
 }: Props) => {
   const [userMessage, setUserMessage] = useState("");
   const [speechRecognition, setSpeechRecognition] =
@@ -30,7 +33,7 @@ export const MessageInputContainer = ({
       if (event.results[0].isFinal) {
         setUserMessage(text);
         // 返答文の生成を開始
-        onChatProcessStart("","",text);
+        onChatProcessStart(globalConfig,"","",text);
       }
     },
     [onChatProcessStart]
@@ -54,7 +57,7 @@ export const MessageInputContainer = ({
   }, [isMicRecording, speechRecognition]);
 
   const handleClickSendButton = useCallback(() => {
-    onChatProcessStart("","",userMessage);
+    onChatProcessStart(globalConfig,"","",userMessage);
   }, [onChatProcessStart, userMessage]);
 
   useEffect(() => {

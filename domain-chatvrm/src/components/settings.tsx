@@ -108,6 +108,7 @@ export const Settings = ({
     queryBackground().then(data => setBackgroundModels(data))
     queryUserVrmModels().then(data => setUserVrmModels(data))
     querySystemVrmModels().then(data => setSystemVrmModels(data))
+    setTTSType(globalConfig.ttsConfig.ttsType);
     getVoices(globalConfig.ttsConfig.ttsType).then(data => setVoices(data))
   }, [])
 
@@ -226,7 +227,7 @@ export const Settings = ({
           </div>
           
           <div className="field">
-            <label>选择语言模型:</label>
+            <label>选择语音模型:</label>
             <select
                 defaultValue={formData.ttsConfig.ttsVoiceId + ''}
                 onChange={e => {

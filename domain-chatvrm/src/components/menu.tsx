@@ -20,6 +20,7 @@ type Props = {
   onChangeBackgroundImageUrl: (key: string) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiromapParam: (param: KoeiroParam) => void;
+  onChangeGlobalConfig: (globalConfig: GlobalConfig) => void;
   handleClickResetChatLog: () => void;
   handleClickResetSystemPrompt: () => void;
 };
