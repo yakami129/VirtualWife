@@ -31,9 +31,6 @@ def chat(request):
     return Response({"response": "OK", "code": "200"})
 
 
-
-
-
 @api_view(['POST'])
 def save_config(request):
     '''

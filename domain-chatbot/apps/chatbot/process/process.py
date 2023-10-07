@@ -51,6 +51,8 @@ class ProcessCore():
                                                                 conversation_end_callback=conversation_end_callback)
         except Exception as e:
             error_message = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
+            print("chat error: %s" % str(e))
             realtime_callback(role_name=role_name,
                               you_name=you_name, content=error_message)
-            print("chat error: %s" % str(e))
+            
+
