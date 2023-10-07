@@ -15,6 +15,7 @@ import {Menu} from "@/components/menu";
 import {GitHubLink} from "@/components/githubLink";
 import {Meta} from "@/components/meta";
 import {FormDataType, getConfig, initialFormData} from "@/features/config/configApi";
+import {customroleList, vrmModelData, vrmModelList} from "@/features/customRole/customRoleApi";
 
 
 // const m_plus_2 = M_PLUS_2({
@@ -45,7 +46,9 @@ export default function Home() {
     const [globalsConfig, setGlobalsConfig] = useState<FormDataType>(initialFormData);
     const [subtitle, setSubtitle] = useState("");
     const [displayedSubtitle, setDisplayedSubtitle] = useState("");
+    const [vrmModels, setVrmModels] = useState([vrmModelData]);
     const MAX_SUBTITLES = 30;
+
     const handleSubtitle = (newSubtitle: string) => {
 
         setDisplayedSubtitle((prevSubtitle: string) => {
@@ -58,7 +61,10 @@ export default function Home() {
         });
     };
 
-
+    useEffect(() => {
+        vrmModelList().then(data => setVrmModels(data))
+        console.log("vrmModelList")
+    }, [])
 
     useEffect(() => {
         getConfig().then(data => {
@@ -172,7 +178,7 @@ export default function Home() {
         },
         [systemPrompt, chatLog, setChatLog, handleSpeakAi, setImageUrl, openAiKey, koeiroParam]
     );
-
+    let lastSwitchTime = 0;
     const handleWebSocketMessage = (event: MessageEvent) => {
         const data = event.data;
         const chatMessage = JSON.parse(data);
@@ -184,6 +190,20 @@ export default function Home() {
                 chatMessage.message.content,
                 chatMessage.message.emote,
             );
+        //  切换角色但是十秒内只切换一次
+            const currentTime = Date.now();
+            if (currentTime - lastSwitchTime >= 10000) {
+                lastSwitchTime = currentTime;
+                const index = Math.floor(Math.random() * vrmModels.length);
+                console.log(vrmModels)
+                const url = vrmModels[index].name;
+                viewer.loadVrm(url);
+            }
+        }else if (type === "switch") {
+            // 从vrmModels随机选择一个模型
+            const index = Math.floor(Math.random() * vrmModels.length);
+            const url = vrmModels[index].name;
+            viewer.loadVrm(url);
         }
     };
 
