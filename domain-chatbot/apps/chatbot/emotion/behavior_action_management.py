@@ -29,7 +29,7 @@ class IdleActionManagement():
     emote: []
 
     def __init__(self) -> None:
-        self.idle_action = ["daily/idle_01.fbx", "daily/idle_02.fbx"]
+        self.idle_action = ["daily/idle_01.fbx"]
         self.emote = ["neutral", "happy"]
 
     def random_action(self) -> BehaviorActionMessage:

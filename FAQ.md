@@ -68,7 +68,8 @@ npm run dev
 ### B站弹幕监听不到
 
 - 检查B站直播间ID，主播UID 
-    - 在页面上登录B站后，打开https://api.bilibili.com/x/web-interface/nav，找到uid
+    - 在页面上登录B站后，打开https://api.bilibili.com/x/web-interface/nav
+    - 找到uid
 - 检查B_COOKIE是否设置正确
     - 注意一定要复制完整的cookie,
     - 错误示例：
