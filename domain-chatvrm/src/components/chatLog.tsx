@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { Message } from "@/features/messages/messages";
-import { FormDataType } from "@/features/config/configApi";
+import { GlobalConfig } from "@/features/config/configApi";
 type Props = {
-  globalsConfig: FormDataType;
+  globalConfig: GlobalConfig;
   messages: Message[];
 };
-export const ChatLog = ({ messages, globalsConfig }: Props) => {
+export const ChatLog = ({ messages, globalConfig }: Props) => {
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export const ChatLog = ({ messages, globalsConfig }: Props) => {
         {messages.map((msg, i) => {
           return (
             <div key={i} ref={messages.length - 1 === i ? chatScrollRef : null}>
-              <Chat role={msg.role} message={msg.content} user_name={msg.user_name} globalsConfig={globalsConfig} />
+              <Chat role={msg.role} message={msg.content} user_name={msg.user_name} globalConfig={globalConfig} />
             </div>
           );
         })}
@@ -36,7 +36,7 @@ export const ChatLog = ({ messages, globalsConfig }: Props) => {
   );
 };
 
-const Chat = ({ role, message, user_name,globalsConfig }: { role: string; message: string; user_name: string; globalsConfig:FormDataType}) => {
+const Chat = ({ role, message, user_name,globalConfig }: { role: string; message: string; user_name: string; globalConfig:GlobalConfig}) => {
   const roleColor =
     role === "assistant" ? "bg-secondary text-white " : "bg-base text-primary";
   const roleText = role === "assistant" ? "text-secondary" : "text-primary";
@@ -47,7 +47,7 @@ const Chat = ({ role, message, user_name,globalsConfig }: { role: string; messag
       <div
         className={`px-24 py-8 rounded-t-8 font-Montserrat font-bold tracking-wider ${roleColor}`}
       >
-        {role === "assistant" ? globalsConfig.characterConfig.character_name : user_name}
+        {role === "assistant" ? globalConfig.characterConfig.character_name : user_name}
       </div>
       <div className="px-24 py-16 bg-white rounded-b-8">
         <div className={`typography-16 font-M_PLUS_2 font-bold ${roleText}`}>

@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import VrmViewer from "@/components/vrmViewer";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
 import { EmotionType, Message, Screenplay, textsToScreenplay, } from "@/features/messages/messages";
@@ -14,7 +14,7 @@ import { Introduction } from "@/components/introduction";
 import { Menu } from "@/components/menu";
 import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
-import { FormDataType, getConfig, initialFormData } from "@/features/config/configApi";
+import { GlobalConfig, getConfig, initialFormData } from "@/features/config/configApi";
 import { buildUrl } from "@/utils/buildUrl";
 import { generateMediaUrl } from "@/features/media/mediaApi";
 
@@ -44,7 +44,7 @@ export default function Home() {
     const [chatLog, setChatLog] = useState<Message[]>([]);
     const [assistantMessage, setAssistantMessage] = useState("");
     const [imageUrl, setImageUrl] = useState('');
-    const [globalsConfig, setGlobalsConfig] = useState<FormDataType>(initialFormData);
+    const [globalConfig, setGlobalConfig] = useState<GlobalConfig>(initialFormData);
     const [subtitle, setSubtitle] = useState("");
     const [displayedSubtitle, setDisplayedSubtitle] = useState("");
     const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>(buildUrl("/bg-c.png"));
@@ -62,7 +62,7 @@ export default function Home() {
 
     useEffect(() => {
         getConfig().then(data => {
-            setGlobalsConfig(data)
+            setGlobalConfig(data)
             if (data.background_url != '') {
                 setBackgroundImageUrl(generateMediaUrl(data.background_url))
             }
@@ -101,16 +101,17 @@ export default function Home() {
      */
     const handleSpeakAi = useCallback(
         async (
+            globalConfig: GlobalConfig,
             screenplay: Screenplay,
             onStart?: () => void,
             onEnd?: () => void
         ) => {
-            speakCharacter(screenplay, viewer, onStart, onEnd);
+            speakCharacter(globalConfig, screenplay, viewer, onStart, onEnd);
         },
         [viewer]
     );
 
-    const handleChatMessage = (
+    const handleChatMessage = useCallback((
         type: string,
         user_name: string,
         content: string,
@@ -130,7 +131,7 @@ export default function Home() {
         // 文ごとに音声を生成 & 再生、返答を表示
         const currentAssistantMessage = sentences.join(" ");
         setSubtitle(aiTextLog);
-        handleSpeakAi(aiTalks[0], () => {
+        handleSpeakAi(globalConfig, aiTalks[0], () => {
             setAssistantMessage(currentAssistantMessage);
             handleSubtitle(aiText + " "); // 添加空格以区分不同的字幕
 
@@ -144,9 +145,7 @@ export default function Home() {
             ];
             setChatLog(messageLogAssistant);
         });
-
-       
-    }
+    }, [])
 
     const handleBehaviorAction = (
         type: string,
@@ -169,11 +168,11 @@ export default function Home() {
             console.log("UserMessage:" + content)
 
             setChatProcessing(true);
-            const yourName = user_name == null || user_name == '' ? globalsConfig?.characterConfig?.yourName : user_name
+            const yourName = user_name == null || user_name == '' ? globalConfig?.characterConfig?.yourName : user_name
             // ユーザーの発言を追加して表示
             const messageLog: Message[] = [
-            ...chatLog,
-            { role: "user", content: content, "user_name": yourName },
+                ...chatLog,
+                { role: "user", content: content, "user_name": yourName },
             ];
             setChatLog(messageLog);
             await chat(content, yourName).catch(
@@ -198,7 +197,7 @@ export default function Home() {
                 chatMessage.message.content,
                 chatMessage.message.emote,
             );
-        }else if(type === "behavior_action"){
+        } else if (type === "behavior_action") {
             handleBehaviorAction(
                 chatMessage.message.type,
                 chatMessage.message.content,
@@ -240,7 +239,7 @@ export default function Home() {
             <div>
                 <Meta />
                 <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey} />
-                <VrmViewer globalsConfig={globalsConfig} />
+                <VrmViewer globalConfig={globalConfig} />
                 <div className="flex items-center justify-center">
                     <div className="absolute bottom-1/4 z-10" style={{
                         fontFamily: "fzfs",
@@ -255,14 +254,14 @@ export default function Home() {
                     onChatProcessStart={handleSendChat}
                 />
                 <Menu
-                    globalsConfig={globalsConfig}
+                    globalConfig={globalConfig}
                     openAiKey={openAiKey}
                     systemPrompt={systemPrompt}
                     chatLog={chatLog}
                     koeiroParam={koeiroParam}
                     assistantMessage={assistantMessage}
                     onChangeAiKey={setOpenAiKey}
-                    onChangeBackgroundImageUrl={data => 
+                    onChangeBackgroundImageUrl={data =>
                         setBackgroundImageUrl(generateMediaUrl(data))
                     }
                     onChangeSystemPrompt={setSystemPrompt}

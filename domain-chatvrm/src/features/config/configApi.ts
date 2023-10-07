@@ -46,11 +46,15 @@ export const initialFormData = {
 	},
 	"custom_role_template_type": "zh",
 	"background_id": 1,
-	"background_url": ""
+	"background_url": "",
+	"ttsConfig": {
+		"ttsType": "Edge",
+		"ttsVoiceId": "zh-CN-XiaoyiNeural"
+	}
 }
 
 // 定义类型别名
-export type FormDataType = typeof initialFormData;
+export type GlobalConfig = typeof initialFormData;
 
 export async function getConfig() {
 

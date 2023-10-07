@@ -6,7 +6,7 @@ import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
 import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList } from "@/features/customRole/customRoleApi";
 import { uploadBackground, queryBackground, backgroundModelData, deleteBackground,uploadVrmModel,queryUserVrmModels,querySystemVrmModels,vrmModelData,deleteVrmModel, generateMediaUrl, buildVrmModelUrl } from "@/features/media/mediaApi";
-import { getConfig, saveConfig, FormDataType } from "@/features/config/configApi";
+import { getConfig, saveConfig, GlobalConfig } from "@/features/config/configApi";
 import {
   KoeiroParam,
   PRESET_A,
@@ -17,6 +17,7 @@ import {
 import { Link } from "./link";
 import { damp } from 'three/src/math/MathUtils';
 import { join } from 'path';
+import { voiceData,getVoices } from '@/features/tts/ttsApi';
 
 const tabNames = ['基础设置', '自定义角色设置', '大语言模型设置', '记忆模块设置', '高级设置'];
 const llm_enums = ["openai", "text_generation"]
@@ -30,7 +31,7 @@ interface TabItemProps {
 }
 
 type Props = {
-  globalsConfig: FormDataType;
+  globalConfig: GlobalConfig;
   openAiKey: string;
   systemPrompt: string;
   chatLog: Message[];
@@ -48,7 +49,7 @@ type Props = {
 };
 
 export const Settings = ({
-  globalsConfig,
+  globalConfig,
   openAiKey,
   chatLog,
   systemPrompt,
@@ -66,10 +67,11 @@ export const Settings = ({
 }: Props) => {
 
   const [currentTab, setCurrentTab] = useState('基础设置');
-  const [formData, setFormData] = useState(globalsConfig);
+  const [formData, setFormData] = useState(globalConfig);
   const [customRoles, setCustomRoles] = useState([custoRoleFormData]);
   const [enableProxy, setEnableProxy] = useState(false);
   const [conversationType, setConversationType] = useState('default');
+ 
   const [enableLongMemory, setEnableLongMemory] = useState(false);
   const [enableSummary, setEnableSummary] = useState(false);
   const [enableReflection, setEnableReflection] = useState(false);
@@ -81,6 +83,9 @@ export const Settings = ({
   const [selectedRoleId, setSelectedRoleId] = useState(-1);
   const [selectedBackgroundId, setSelectedBackgroundId] = useState(-1);
   const [backgroundModels, setBackgroundModels] = useState([backgroundModelData]);
+  const [voices, setVoices] = useState([voiceData]);
+  const [ttsType, setTTSType] = useState('Edge');
+  const [voiceId, setVoiceId] = useState('xiaoyi');
   const backgroundFileInputRef = useRef(null);
   const [selectedVrmModelId, setSelectedVrmModelId] = useState(-1);
   const [userVrmModels, setUserVrmModels] = useState([vrmModelData]);
@@ -92,18 +97,26 @@ export const Settings = ({
     customroleList().then(data => {
       setCustomRoles(data)
     })
-    setFormData(globalsConfig);
-    setConversationType(globalsConfig.conversationConfig.conversationType)
-    setEnableLongMemory(globalsConfig.memoryStorageConfig.enableLongMemory)
-    setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
-    setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
-    setEnableProxy(globalsConfig.enableProxy)
-    setSelectedBackgroundId(globalsConfig.background_id)
+    setFormData(globalConfig);
+    setConversationType(globalConfig.conversationConfig.conversationType)
+    setEnableLongMemory(globalConfig.memoryStorageConfig.enableLongMemory)
+    setEnableSummary(globalConfig.memoryStorageConfig.enableSummary)
+    setEnableReflection(globalConfig.memoryStorageConfig.enableSummary)
+    setEnableProxy(globalConfig.enableProxy)
+    setSelectedBackgroundId(globalConfig.background_id)
     setSelectedVrmModelId(-1)
     queryBackground().then(data => setBackgroundModels(data))
     queryUserVrmModels().then(data => setUserVrmModels(data))
     querySystemVrmModels().then(data => setSystemVrmModels(data))
+    getVoices(globalConfig.ttsConfig.ttsType).then(data => setVoices(data))
   }, [])
+
+
+  // 监听变化重新渲染
+  useEffect(() => {
+    // rerender
+    getVoices(globalConfig.ttsConfig.ttsType).then(data => setVoices(data))
+  }, [ttsType])
 
   // 监听变化重新渲染
   useEffect(() => {
@@ -192,6 +205,49 @@ export const Settings = ({
         </div>
 
         <div className="section">
+          <div className="title">语音设置</div>
+          <div className="checkbot-field">
+            <label>语音引擎:</label>
+            <input className='checkbot-input' type="radio" name="ttsType" value="Edge"
+              onChange={() => {
+                formData.ttsConfig.ttsType = 'Edge';
+                setFormData(formData);
+                setTTSType(formData.ttsConfig.ttsType);
+              }}
+              checked={ttsType === 'Edge'} /> Edge（微软）
+            <input className='checkbot-input' type="radio" name="ttsType" value="Bert-VITS2"
+              onChange={() => {
+                formData.ttsConfig.ttsType = 'Bert-VITS2';
+                setFormData(formData);
+                setTTSType(formData.ttsConfig.ttsType);
+              }}
+              checked={ttsType === 'Bert-VITS2'}
+            /> Bert-VITS2
+          </div>
+          
+          <div className="field">
+            <label>选择语言模型:</label>
+            <select
+                defaultValue={formData.ttsConfig.ttsVoiceId + ''}
+                onChange={e => {
+                  const selectedVoiceId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                  formData.ttsConfig.ttsVoiceId= selectedVoiceId + "";
+                  if (selectedVoiceId != '-1') {
+                    setFormData(formData);
+                    setVoiceId(formData.ttsConfig.ttsVoiceId);
+                  }
+                }}>
+                <option key="-1" value="-1" data-key="-1">请选择</option>
+                {voices.map(voice => (
+                  <option key={voice.id} value={voice.id} data-key={voice.id}>
+                    {voice.name}
+                  </option>
+                ))}
+              </select >
+          </div>
+        </div>
+
+        <div className="section">
           <div className="title">对话设置</div>
           <div className="checkbot-field">
             <label>对话模式:</label>
@@ -211,6 +267,7 @@ export const Settings = ({
               checked={conversationType === 'thought_chain'}
             /> 推理+生成对话模式 */}
           </div>
+          
           <div className="field">
             <label>选择大语言模型:</label>
             <select

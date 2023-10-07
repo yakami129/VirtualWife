@@ -8,7 +8,7 @@ from django.http import FileResponse
 from .translation import translationClient
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .tts.tts_core import create_audio
+from .tts import single_tts_driver
 from django.http import HttpResponse, StreamingHttpResponse
 
 logging.basicConfig(level=logging.INFO)
@@ -22,13 +22,14 @@ def generate(request):
     try:
         data = json.loads(request.body.decode('utf-8'))
         text = data["text"]
-        voice = data["voice"]
+        voice_id = data["voice_id"]
+        type = data["type"]
 
-        file_name = create_audio(text, voice)
+        file_name = single_tts_driver.synthesis(
+            type=type, text=text, voice_id=voice_id)
         file_path = os.path.join("tmp", file_name)
 
         audio_file = BytesIO()
-
         with open(file_path, 'rb') as file:
             audio_file.write(file.read())
 
@@ -41,7 +42,6 @@ def generate(request):
         response = HttpResponse(content_type='audio/mpeg')
         response['Content-Disposition'] = f'attachment; filename="{file_name}"'
         response.write(audio_file.getvalue())
-
         return response
     except Exception as e:
         print(f"generate_audio error: {e}")
@@ -51,6 +51,11 @@ def generate(request):
 def delete_file(file_path):
     os.remove(file_path)
 
+@api_view(['POST'])
+def get_voices(request):
+    data = json.loads(request.body.decode('utf-8'))
+    type = data["type"]
+    return Response({"response": single_tts_driver.get_voices(type=type), "code": "200"})
 
 @api_view(['POST'])
 def translation(request):

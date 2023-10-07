@@ -53,7 +53,6 @@ class OpenAIGeneration:
             temperature=0,
             stream=True  # again, we set stream=True
         )
-        print(f"response:{response}")
         # create variables to collect the stream of chunks
         answer = ''
         for part in response:
@@ -64,7 +63,6 @@ class OpenAIGeneration:
                 content = remove_spaces_and_tabs(content)
                 if content == "":
                     continue
-                print(f"content:{content}")
                 answer += content
                 if realtime_callback:
                     realtime_callback(role_name, you_name,

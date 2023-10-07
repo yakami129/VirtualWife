@@ -1,14 +1,14 @@
 import { useContext, useCallback } from "react";
 import { ViewerContext } from "../features/vrmViewer/viewerContext";
 import { buildVrmModelUrl, generateMediaUrl } from "@/features/media/mediaApi";
-import { FormDataType, getConfig } from "@/features/config/configApi";
+import { GlobalConfig, getConfig } from "@/features/config/configApi";
 
 type Props = {
-  globalsConfig: FormDataType;
+  globalConfig: GlobalConfig;
 };
 
 export default function VrmViewer({
-  globalsConfig,
+  globalConfig,
 }: Props) {
 
   const { viewer } = useContext(ViewerContext);

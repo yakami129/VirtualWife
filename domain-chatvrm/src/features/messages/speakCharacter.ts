@@ -5,6 +5,7 @@ import { Screenplay } from "./messages";
 import { Talk } from "./messages";
 import axios from 'axios';
 import { postRequestArraybuffer } from "../httpclient/httpclient";
+import { GlobalConfig } from "../config/configApi";
 
 
 const createSpeakCharacter = () => {
@@ -13,6 +14,7 @@ const createSpeakCharacter = () => {
   let prevSpeakPromise: Promise<unknown> = Promise.resolve();
 
   return (
+    globalConfig: GlobalConfig,
     screenplay: Screenplay,
     viewer: Viewer,
     onStart?: () => void,
@@ -24,7 +26,7 @@ const createSpeakCharacter = () => {
         await wait(1000 - (now - lastTime));
       }
 
-      const buffer = await fetchAudio(screenplay.talk).catch(() => null);
+      const buffer = await fetchAudio(screenplay.talk, globalConfig).catch(() => null);
       lastTime = Date.now();
       return buffer;
     });
@@ -48,7 +50,7 @@ const createSpeakCharacter = () => {
 
 export const speakCharacter = createSpeakCharacter();
 
-export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
+export const fetchAudio = async (talk: Talk, globalConfig: GlobalConfig): Promise<ArrayBuffer> => {
   // const ttsVoice = await synthesizeVoice(
   //   talk.message,
   //   talk.speakerX,
@@ -66,7 +68,8 @@ export const fetchAudio = async (talk: Talk): Promise<ArrayBuffer> => {
 
   const requestBody = {
     text: talk.message,
-    voice: "xiaoyi",
+    voice_id: globalConfig.ttsConfig.ttsVoiceId,
+    type: globalConfig.ttsConfig.ttsType
   };
 
   const headers = {

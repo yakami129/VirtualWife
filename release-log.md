@@ -11,6 +11,9 @@ fixbug:
 - [x] 1. 修复对话记录不显示AI回复内容
 - [x] 2. chatbot镜像文件过大（5.09G
 
+known issues:
+- [] 1. 人物动作切换不自然
+
 # v2.0.4 发布日志
 
 release:
