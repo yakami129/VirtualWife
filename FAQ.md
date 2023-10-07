@@ -51,3 +51,31 @@ sudo docker compose up -d
 ### windows 系统安装Docker，需要安装WSL
 
 - 安装文档：https://learn.microsoft.com/zh-cn/windows/wsl/install
+
+### npm run dev 出现错误
+
+- 错误日志
+```
+> chat-vrm@1.0 dev 
+> next dev
+```
+- 解决方案：
+```
+rm domain-chatvrm/package-lock.json
+npm run dev
+```
+
+### B站弹幕监听不到
+
+- 检查B站直播间ID，主播UID 
+    - 在页面上登录B站后，打开https://api.bilibili.com/x/web-interface/nav，找到uid
+- 检查B_COOKIE是否设置正确
+    - 注意一定要复制完整的cookie,
+    - 错误示例：
+    ```
+    B_COOKIE="buvid3=Fggggg28116infoc;"
+    ```
+    - 正确示例
+    ```
+    B_COOKIE="buvid3=8B473137-DAF1-B326-XXXXX-CA8A06BEE16802942infoc; b_nut=1681972902; _uuid=106F868A4-19CC-4D4B-XXX-2651010333D7E1003163infoc; buvid4=A628284B-D833-9256-XXX-903BA100474C03740-023042014-7G54s1lO7XHCknT6D8RZoQ%3D%3D; nostalgia_conf=-1; CURRENT_FNVAL=4048; ....... 此处略去其他的"
+    ```

@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import VrmViewer from "@/components/vrmViewer";
 import { ViewerContext } from "@/features/vrmViewer/viewerContext";
-import { Message, Screenplay, textsToScreenplay, } from "@/features/messages/messages";
+import { EmotionType, Message, Screenplay, textsToScreenplay, } from "@/features/messages/messages";
 import { speakCharacter } from "@/features/messages/speakCharacter";
 import { MessageInputContainer } from "@/components/messageInputContainer";
 import { SYSTEM_PROMPT } from "@/features/constants/systemPromptConstants";
@@ -148,6 +148,18 @@ export default function Home() {
        
     }
 
+    const handleBehaviorAction = (
+        type: string,
+        content: string,
+        emote: string) => {
+
+        console.log("BehaviorActionMessage:" + content + " emote:" + emote)
+
+        viewer.model?.emote(emote as EmotionType)
+        viewer.model?.loadFBX(buildUrl(content))
+    }
+
+
     /**
      * アシスタントとの会話を行う
      */
@@ -183,6 +195,12 @@ export default function Home() {
             handleChatMessage(
                 chatMessage.message.type,
                 chatMessage.message.user_name,
+                chatMessage.message.content,
+                chatMessage.message.emote,
+            );
+        }else if(type === "behavior_action"){
+            handleBehaviorAction(
+                chatMessage.message.type,
                 chatMessage.message.content,
                 chatMessage.message.emote,
             );

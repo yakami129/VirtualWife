@@ -79,8 +79,8 @@ mv env_example .env
 B_STATION_ID=27892212
 # 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
 B_UID=38ccccc
-# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie
-B_COOKIE="buvid3=Fggggg28116infoc"
+# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie，一定要复制完整的cookie
+B_COOKIE="buvid3=Fggggg28116infoc;xxxxxxxxxxxxxxxxxxxxxxxxxx";....... 此处略去其他的
 
 # 时区
 TIMEZONE=Asia/Shanghai
