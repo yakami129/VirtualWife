@@ -185,6 +185,13 @@ export default function Home() {
             console.log("UserMessage:" + content)
 
             setChatProcessing(true);
+
+            handleBehaviorAction(
+                "behavior_action",
+                "thinking",
+                "happy",
+            );
+
             const yourName = user_name == null || user_name == '' ? globalConfig?.characterConfig?.yourName : user_name
             // ユーザーの発言を追加して表示
             const messageLog: Message[] = [
@@ -192,12 +199,20 @@ export default function Home() {
                 { role: "user", content: content, "user_name": yourName },
             ];
             setChatLog(messageLog);
+
             await chat(content, yourName).catch(
                 (e) => {
                     console.error(e);
                     return null;
                 }
             );
+
+            handleBehaviorAction(
+                "behavior_action",
+                "daily/idle_02.fbx",
+                "neutral",
+            );
+
             setChatProcessing(false);
         },
         [systemPrompt, chatLog, setChatLog, handleSpeakAi, setImageUrl, openAiKey, koeiroParam]

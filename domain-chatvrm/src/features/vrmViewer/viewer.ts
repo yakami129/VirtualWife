@@ -66,9 +66,13 @@ export class Viewer {
       this.model.clipMap.set("daily/idle_03.fbx",await loadMixamoAnimation(buildUrl("daily/idle_03.fbx"),this.model.vrm))
       this.model.clipMap.set("daily/standing_greeting.fbx",await loadMixamoAnimation(buildUrl("daily/standing_greeting.fbx"),this.model.vrm))
 
+      // 加载思考动作
+      const thinkingClip = await loadMixamoAnimation(buildUrl("daily/thinking.fbx"),this.model.vrm)
+      this.model.clipMap.set("thinking",thinkingClip)
+
       // const vrma = await loadVRMAnimation(buildUrl("/idle_loop.vrma"));
       // if (vrma) this.model.loadAnimation(vrma);
-      this.model.loadFBX("daily/idle_01.fbx")
+      this.model.loadFBX("daily/idle_02.fbx")
 
       // HACK: アニメーションの原点がずれているので再生後にカメラ位置を調整する
       requestAnimationFrame(() => {
