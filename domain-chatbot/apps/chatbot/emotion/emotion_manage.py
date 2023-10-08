@@ -143,7 +143,7 @@ class GenerationEmotionRespondChatPropmt():
         return self.prompt.format(role_name=role_name, character_prompt=character_prompt, respond=respond)
 
 
-class GenerationEmote():
+class GenerationEmote:
 
     """生成模型表情"""
 
@@ -168,6 +168,7 @@ class GenerationEmote():
         self.llm_model_driver_type = llm_model_driver_type
 
     def generation_emote(self, query: str) -> str:
+        global json_str
         prompt =  self.input_prompt + self.output_prompt
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query=f"text:{query}", short_history=[], long_history="")
@@ -178,8 +179,12 @@ class GenerationEmote():
             end_idx = result.rfind('}')
             if start_idx != -1 and end_idx != -1:
                 json_str = result[start_idx:end_idx+1]
+                json_str = json_str.encode().decode('unicode_escape')
+            try:
                 json_data = json.loads(json_str)
                 emote = json_data["emote"]
+            except json.JSONDecodeError:
+                print("Invalid JSON string")
             else:
                 print("未找到匹配的JSON字符串")
         except Exception as e:

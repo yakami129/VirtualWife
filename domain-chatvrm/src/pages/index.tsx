@@ -48,18 +48,26 @@ export default function Home() {
     const [globalConfig, setGlobalConfig] = useState<GlobalConfig>(initialFormData);
     const [subtitle, setSubtitle] = useState("");
     const [displayedSubtitle, setDisplayedSubtitle] = useState("");
+    const [vrmModels, setVrmModels] = useState([vrmModelData]);
     const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>(buildUrl("/bg-c.png"));
     const typingDelay = 100; // 每个字的延迟时间，可以根据需要进行调整
+    const MAX_SUBTITLES = 30;
     const handleSubtitle = (newSubtitle: string) => {
-        setDisplayedSubtitle(newSubtitle);
-        setSubtitle((prevSubtitle) => prevSubtitle + newSubtitle);
-        setTimeout(clearSubtitle, 3000); // 3秒后清空字幕
+
+        setDisplayedSubtitle((prevSubtitle: string) => {
+            const updatedSubtitle = prevSubtitle + newSubtitle;
+            if (updatedSubtitle.length > MAX_SUBTITLES) {
+                const startIndex = updatedSubtitle.length - MAX_SUBTITLES;
+                return updatedSubtitle.substring(startIndex);
+            }
+            return updatedSubtitle;
+        });
     };
 
-    const clearSubtitle = () => {
-        setDisplayedSubtitle("");
-        setSubtitle("");
-    };
+    useEffect(() => {
+        vrmModelList().then(data => setVrmModels(data))
+        console.log("vrmModelList")
+    }, [])
 
     useEffect(() => {
         getConfig().then(data => {
@@ -136,7 +144,8 @@ export default function Home() {
         setSubtitle(aiTextLog);
         handleSpeakAi(globalConfig, aiTalks[0], () => {
             setAssistantMessage(currentAssistantMessage);
-            handleSubtitle(aiText + " "); // 添加空格以区分不同的字幕
+            // handleSubtitle(aiText + " "); // 添加空格以区分不同的字幕
+            startTypewriterEffect(aiTextLog);
 
             // アシスタントの返答をログに追加
             const params = JSON.parse(
@@ -161,6 +170,17 @@ export default function Home() {
         viewer.model?.loadFBX(buildUrl(content))
     }
 
+    const startTypewriterEffect = (text: string) => {
+        let currentIndex = 0;
+        const subtitleInterval = setInterval(() => {
+            const newSubtitle = text[currentIndex];
+            handleSubtitle(newSubtitle);
+            currentIndex++;
+            if (currentIndex >= text.length) {
+                clearInterval(subtitleInterval);
+            }
+        }, 100); // 每个字符的间隔时间
+    };
 
     /**
      * アシスタントとの会話を行う
@@ -188,6 +208,8 @@ export default function Home() {
         },
         [systemPrompt, chatLog, setChatLog, handleSpeakAi, setImageUrl, openAiKey, koeiroParam]
     );
+
+    let lastSwitchTime = 0;
 
     const onChangeGlobalConfig = useCallback((
         globalConfig: GlobalConfig) => {
