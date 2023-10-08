@@ -16,7 +16,7 @@ import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
 import { GlobalConfig, getConfig, initialFormData } from "@/features/config/configApi";
 import { buildUrl } from "@/utils/buildUrl";
-import { generateMediaUrl } from "@/features/media/mediaApi";
+import { generateMediaUrl, vrmModelData } from "@/features/media/mediaApi";
 
 
 // const m_plus_2 = M_PLUS_2({
@@ -48,7 +48,6 @@ export default function Home() {
     const [globalConfig, setGlobalConfig] = useState<GlobalConfig>(initialFormData);
     const [subtitle, setSubtitle] = useState("");
     const [displayedSubtitle, setDisplayedSubtitle] = useState("");
-    const [vrmModels, setVrmModels] = useState([vrmModelData]);
     const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>(buildUrl("/bg-c.png"));
     const typingDelay = 100; // 每个字的延迟时间，可以根据需要进行调整
     const MAX_SUBTITLES = 30;
@@ -63,11 +62,6 @@ export default function Home() {
             return updatedSubtitle;
         });
     };
-
-    useEffect(() => {
-        vrmModelList().then(data => setVrmModels(data))
-        console.log("vrmModelList")
-    }, [])
 
     useEffect(() => {
         getConfig().then(data => {
