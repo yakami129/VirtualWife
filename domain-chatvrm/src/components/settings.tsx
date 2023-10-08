@@ -1,11 +1,12 @@
 // 引入过渡动画组件
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IconButton } from "./iconButton";
 import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
-import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList, vrmModelData, vrmModelList } from "@/features/customRole/customRoleApi";
-import { getConfig, saveConfig, FormDataType } from "@/features/config/configApi";
+import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList } from "@/features/customRole/customRoleApi";
+import { uploadBackground, queryBackground, backgroundModelData, deleteBackground,uploadVrmModel,queryUserVrmModels,querySystemVrmModels,vrmModelData,deleteVrmModel, generateMediaUrl, buildVrmModelUrl } from "@/features/media/mediaApi";
+import { getConfig, saveConfig, GlobalConfig } from "@/features/config/configApi";
 import {
   KoeiroParam,
   PRESET_A,
@@ -16,6 +17,7 @@ import {
 import { Link } from "./link";
 import { damp } from 'three/src/math/MathUtils';
 import { join } from 'path';
+import { voiceData,getVoices } from '@/features/tts/ttsApi';
 
 const tabNames = ['基础设置', '自定义角色设置', '大语言模型设置', '记忆模块设置', '高级设置'];
 const llm_enums = ["openai", "text_generation"]
@@ -29,7 +31,7 @@ interface TabItemProps {
 }
 
 type Props = {
-  globalsConfig: FormDataType;
+  globalConfig: GlobalConfig;
   openAiKey: string;
   systemPrompt: string;
   chatLog: Message[];
@@ -37,6 +39,7 @@ type Props = {
   remoteLoadVrmFile: (url: string) => void;
   onClickClose: () => void;
   onChangeAiKey: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeBackgroundImageUrl: (key: string) => void;
   onChangeSystemPrompt: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onChangeChatLog: (index: number, text: string) => void;
   onChangeKoeiroParam: (x: number, y: number) => void;
@@ -46,7 +49,7 @@ type Props = {
 };
 
 export const Settings = ({
-  globalsConfig,
+  globalConfig,
   openAiKey,
   chatLog,
   systemPrompt,
@@ -55,6 +58,7 @@ export const Settings = ({
   onClickClose,
   onChangeSystemPrompt,
   onChangeAiKey,
+  onChangeBackgroundImageUrl,
   onChangeChatLog,
   onChangeKoeiroParam,
   onClickOpenVrmFile,
@@ -63,11 +67,11 @@ export const Settings = ({
 }: Props) => {
 
   const [currentTab, setCurrentTab] = useState('基础设置');
-  const [formData, setFormData] = useState(globalsConfig);
+  const [formData, setFormData] = useState(globalConfig);
   const [customRoles, setCustomRoles] = useState([custoRoleFormData]);
-  const [vrmModels, setVrmModels] = useState([vrmModelData]);
   const [enableProxy, setEnableProxy] = useState(false);
   const [conversationType, setConversationType] = useState('default');
+ 
   const [enableLongMemory, setEnableLongMemory] = useState(false);
   const [enableSummary, setEnableSummary] = useState(false);
   const [enableReflection, setEnableReflection] = useState(false);
@@ -75,20 +79,45 @@ export const Settings = ({
   const [enableCreateRole, setEnableCreateRole] = useState(true);
   const [customRoleLog, setCustomRoleLog] = useState("");
   const [deleteCustomRoleLog, setDeleteCustomRoleLog] = useState("");
+  const [deleteBackgroundLog, setDeleteBackgroundLog] = useState("");
   const [selectedRoleId, setSelectedRoleId] = useState(-1);
+  const [selectedBackgroundId, setSelectedBackgroundId] = useState(-1);
+  const [backgroundModels, setBackgroundModels] = useState([backgroundModelData]);
+  const [voices, setVoices] = useState([voiceData]);
+  const [ttsType, setTTSType] = useState('Edge');
+  const [voiceId, setVoiceId] = useState('xiaoyi');
+  const backgroundFileInputRef = useRef(null);
+  const [selectedVrmModelId, setSelectedVrmModelId] = useState(-1);
+  const [userVrmModels, setUserVrmModels] = useState([vrmModelData]);
+  const [systemVrmModels, setSystemVrmModels] = useState([vrmModelData]);
+  const [deleteVrmModelLog, setDeleteVrmModelLog] = useState("");
+  const VrmModelFileInputRef = useRef(null);
 
   useEffect(() => {
     customroleList().then(data => {
       setCustomRoles(data)
     })
-    setFormData(globalsConfig);
-    vrmModelList().then(data => setVrmModels(data))
-    setConversationType(globalsConfig.conversationConfig.conversationType)
-    setEnableLongMemory(globalsConfig.memoryStorageConfig.enableLongMemory)
-    setEnableSummary(globalsConfig.memoryStorageConfig.enableSummary)
-    setEnableReflection(globalsConfig.memoryStorageConfig.enableSummary)
-    setEnableProxy(globalsConfig.enableProxy)
+    setFormData(globalConfig);
+    setConversationType(globalConfig.conversationConfig.conversationType)
+    setEnableLongMemory(globalConfig.memoryStorageConfig.enableLongMemory)
+    setEnableSummary(globalConfig.memoryStorageConfig.enableSummary)
+    setEnableReflection(globalConfig.memoryStorageConfig.enableSummary)
+    setEnableProxy(globalConfig.enableProxy)
+    setSelectedBackgroundId(globalConfig.background_id)
+    setSelectedVrmModelId(-1)
+    queryBackground().then(data => setBackgroundModels(data))
+    queryUserVrmModels().then(data => setUserVrmModels(data))
+    querySystemVrmModels().then(data => setSystemVrmModels(data))
+    setTTSType(globalConfig.ttsConfig.ttsType);
+    getVoices(globalConfig.ttsConfig.ttsType).then(data => setVoices(data))
   }, [])
+
+
+  // 监听变化重新渲染
+  useEffect(() => {
+    // rerender
+    getVoices(globalConfig.ttsConfig.ttsType).then(data => setVoices(data))
+  }, [ttsType])
 
   // 监听变化重新渲染
   useEffect(() => {
@@ -128,11 +157,13 @@ export const Settings = ({
               defaultValue={formData.characterConfig.character + ''}
               onChange={e => {
                 const selectedRoleId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                const selectedRoleName = e.target.options[e.target.selectedIndex].getAttribute('data-val');
                 formData.characterConfig.character = Number(selectedRoleId);
+                formData.characterConfig.character_name = selectedRoleName + "";
                 setFormData(formData);
               }}>
               {customRoles.map(role => (
-                <option key={role.id} value={role.id} data-key={role.id}>
+                <option key={role.id} value={role.id} data-key={role.id} data-val={role.role_name}>
                   {role.role_name}
                 </option>
               ))}
@@ -153,16 +184,67 @@ export const Settings = ({
             <select
               defaultValue={formData.characterConfig.vrmModel}
               onChange={e => {
+                const selectedVrmModelType = e.target.options[e.target.selectedIndex].getAttribute('data-type');
                 formData.characterConfig.vrmModel = e.target.value;
+                formData.characterConfig.vrmModelType = selectedVrmModelType+"";
                 setFormData(formData);
-                remoteLoadVrmFile(formData.characterConfig.vrmModel)
+                const vrm_url = buildVrmModelUrl(formData.characterConfig.vrmModel,selectedVrmModelType+"")
+                remoteLoadVrmFile(vrm_url)
               }}>
               {
-                vrmModels.map(vrm => (
-                  <option key={vrm.name} value={vrm.name}>{vrm.name}</option>
+                systemVrmModels.map(vrm => (
+                  <option key={vrm.id} value={vrm.vrm} data-type={vrm.type}>{vrm.original_name}</option>
+                ))
+              }
+              {
+                userVrmModels.map(vrm => (
+                  <option key={vrm.id} value={vrm.vrm} data-type={vrm.type}>{vrm.original_name}</option>
                 ))
               }
             </select>
+          </div>
+        </div>
+
+        <div className="section">
+          <div className="title">语音设置</div>
+          <div className="checkbot-field">
+            <label>语音引擎:</label>
+            <input className='checkbot-input' type="radio" name="ttsType" value="Edge"
+              onChange={() => {
+                formData.ttsConfig.ttsType = 'Edge';
+                setFormData(formData);
+                setTTSType(formData.ttsConfig.ttsType);
+              }}
+              checked={ttsType === 'Edge'} /> Edge（微软）
+            <input className='checkbot-input' type="radio" name="ttsType" value="Bert-VITS2"
+              onChange={() => {
+                formData.ttsConfig.ttsType = 'Bert-VITS2';
+                setFormData(formData);
+                setTTSType(formData.ttsConfig.ttsType);
+              }}
+              checked={ttsType === 'Bert-VITS2'}
+            /> Bert-VITS2
+          </div>
+          
+          <div className="field">
+            <label>选择语音模型:</label>
+            <select
+                defaultValue={formData.ttsConfig.ttsVoiceId + ''}
+                onChange={e => {
+                  const selectedVoiceId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                  formData.ttsConfig.ttsVoiceId= selectedVoiceId + "";
+                  if (selectedVoiceId != '-1') {
+                    setFormData(formData);
+                    setVoiceId(formData.ttsConfig.ttsVoiceId);
+                  }
+                }}>
+                <option key="-1" value="-1" data-key="-1">请选择</option>
+                {voices.map(voice => (
+                  <option key={voice.id} value={voice.id} data-key={voice.id}>
+                    {voice.name}
+                  </option>
+                ))}
+              </select >
           </div>
         </div>
 
@@ -186,6 +268,7 @@ export const Settings = ({
               checked={conversationType === 'thought_chain'}
             /> 推理+生成对话模式 */}
           </div>
+          
           <div className="field">
             <label>选择大语言模型:</label>
             <select
@@ -202,8 +285,115 @@ export const Settings = ({
             </select>
           </div>
         </div>
+
+        <div className="section">
+          <div className="title">壁纸设置</div>
+          <div className="field">
+            <label>选择壁纸</label>
+            <div className="flex items-center justify-center space-x-4">
+              <select
+                defaultValue={formData.background_id + ''}
+                onChange={e => {
+                  const selectedBackgroundId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                  let selectedBackgroundUrl = e.target.options[e.target.selectedIndex].getAttribute('data-url');
+                  selectedBackgroundUrl = selectedBackgroundUrl ? selectedBackgroundUrl : ""
+                  formData.background_id = Number(selectedBackgroundId);
+                  formData.background_url = selectedBackgroundUrl;
+                  if (selectedBackgroundId != '-1') {
+                    setFormData(formData);
+                    onChangeBackgroundImageUrl(formData.background_url)
+                    setSelectedBackgroundId(formData.background_id);
+                  }
+                }}>
+                <option key="-1" value="-1" data-key="-1">请选择</option>
+                {backgroundModels.map(backgroundModel => (
+                  <option key={backgroundModel.id} value={backgroundModel.id} data-key={backgroundModel.id} data-url={backgroundModel.image}>
+                    {backgroundModel.original_name}
+                  </option>
+                ))}
+              </select >
+              <input
+                type="file"
+                ref={backgroundFileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleBackgroundFileChange}
+              />
+              <IconButton
+                iconName="16/Add"
+                isProcessing={false}
+                onClick={handleBackgroundButtonClick}
+              ></IconButton>
+              <IconButton
+                iconName="16/Remove"
+                isProcessing={false}
+                onClick={e => {
+                  if (selectedBackgroundId !== -1) {
+                    handleDeleteBackground(selectedBackgroundId)
+                  }
+                }}
+              ></IconButton>
+              <div className="flex justify-end mt-4">
+                {deleteBackgroundLog}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
+  }
+
+  const handleBackgroundButtonClick = () => {
+    backgroundFileInputRef?.current?.click();
+  };
+
+  const handleBackgroundFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('image', selectedFile);
+    uploadBackground(formData)
+      .then(data => {
+        queryBackground().then(data => setBackgroundModels(data))
+      })
+  };
+
+  const handleDeleteBackground = (selectedBackgroundId: number) => {
+    deleteBackground(selectedBackgroundId)
+      .then(data => {
+        queryBackground().then(data => setBackgroundModels(data))
+        setDeleteBackgroundLog("OK")
+      }).catch(e => {
+        setDeleteBackgroundLog("ERROR")
+      })
+  }
+
+  const handleVrmModelButtonClick = () => {
+    VrmModelFileInputRef?.current?.click();
+  };
+
+  const handleVrmModelFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (!selectedFile) {
+      return;
+    }
+    const formData = new FormData();
+    formData.append('vrm', selectedFile);
+    uploadVrmModel(formData)
+      .then(data => {
+        queryUserVrmModels().then(data => setUserVrmModels(data))
+      })
+  };
+
+  const handleDeleteVrmModel = (selectedVrmModelId: number) => {
+    deleteVrmModel(selectedVrmModelId)
+      .then(data => {
+        queryUserVrmModels().then(data => setUserVrmModels(data))
+        setDeleteVrmModelLog("OK")
+      }).catch(e => {
+        setDeleteVrmModelLog("ERROR")
+      })
   }
 
   const LlmSettings = () => {
@@ -511,6 +701,7 @@ export const Settings = ({
     return (
       <div className="globals-settings">
         <div className="section">
+          <div className="title">自定义角色设置</div>
           <div className="field">
             <label>添加或编辑角色</label>
             <div className="flex items-center justify-center space-x-4">
@@ -561,9 +752,54 @@ export const Settings = ({
           </div>
         </div>
         <div className="section">
-          <div className="title">自定义VRM模型</div>
+          {/* <div className="title">自定义VRM模型</div>
           <div className="my-8">
             <TextButton onClick={onClickOpenVrmFile}>上传VRM</TextButton>
+          </div> */}
+          <div className="title">自定义VRM模型</div>
+          <div className="field">
+            <label>上传VRM模型</label>
+            <div className="flex items-center justify-center space-x-4">
+              <select
+                value={selectedVrmModelId}
+                onChange={e => {
+                  const selectedVrmModelId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                  const vrmModelId = Number(selectedVrmModelId);
+                  setSelectedVrmModelId(vrmModelId);
+                }}>
+                <option key="-1" value="-1" data-key="-1" data-url="">请选择</option>
+                {userVrmModels.map(vrmModel => (
+                  <option key={vrmModel.id} value={vrmModel.id} data-key={vrmModel.id} data-url={vrmModel.vrm}>
+                    {vrmModel.original_name}
+                  </option>
+                ))}
+              </select >
+              <input
+                type="file"
+                ref={VrmModelFileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleVrmModelFileChange}
+              />
+              <IconButton
+                iconName="16/Add"
+                label='上传模型'
+                isProcessing={false}
+                onClick={handleVrmModelButtonClick}
+              ></IconButton>
+              <IconButton
+                iconName="16/Remove"
+                label='删除模型'
+                isProcessing={false}
+                onClick={e => {
+                  if (selectedVrmModelId !== -1) {
+                    handleDeleteVrmModel(selectedVrmModelId)
+                  }
+                }}
+              ></IconButton>
+              <div className="flex justify-end mt-4">
+                {deleteVrmModelLog}
+              </div>
+            </div>
           </div>
         </div>
       </div>)
@@ -589,6 +825,7 @@ export const Settings = ({
       })
     }
   }
+
 
   const handleCustomRoleDelete = (selectedRoleId: number) => {
     customroleDelete(selectedRoleId)

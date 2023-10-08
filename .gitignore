@@ -14,6 +14,7 @@
 .vscode
 
 domain-chatbot/tmp/
+domain-chatbot/media/
 
 .DS_Store
 

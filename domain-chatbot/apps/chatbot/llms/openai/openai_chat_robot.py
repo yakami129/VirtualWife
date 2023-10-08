@@ -53,11 +53,9 @@ class OpenAIGeneration:
             temperature=0,
             stream=True  # again, we set stream=True
         )
-        print(f"response:{response}")
         # create variables to collect the stream of chunks
         answer = ''
         for part in response:
-            print(f"part:{part}")
             finish_reason = part["choices"][0]["finish_reason"]
             if finish_reason is None and "delta" in part["choices"][0] and "content" in part["choices"][0]["delta"]:
                 content = part["choices"][0]["delta"]["content"]
@@ -65,7 +63,6 @@ class OpenAIGeneration:
                 content = remove_spaces_and_tabs(content)
                 if content == "":
                     continue
-                print(f"content:{content}")
                 answer += content
                 if realtime_callback:
                     realtime_callback(role_name, you_name,
