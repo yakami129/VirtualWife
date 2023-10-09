@@ -23,13 +23,15 @@ class RealtimeMessage():
     user_name: str
     content: str
     emote: str
+    action: str
     expand: str
 
-    def __init__(self, type: str, user_name: str, content: str, emote: str, expand: str = None) -> None:
+    def __init__(self, type: str, user_name: str, content: str, emote: str, expand: str = None, action: str = None) -> None:
         self.type = type
         self.user_name = user_name
         self.content = content
         self.emote = emote
+        self.action = action
         self.expand = expand
 
     def to_dict(self):
@@ -38,6 +40,7 @@ class RealtimeMessage():
             "user_name": self.user_name,
             "content": self.content,
             "emote": self.emote,
+            "action": self.action,
             "expand": self.expand
         }
 
@@ -51,10 +54,12 @@ def send_message():
     global chat_queue
     channel_layer = get_channel_layer()
     send_message_exe = async_to_sync(channel_layer.group_send)
+   
     while True:
         try:
             message = chat_queue.get()
-            if (message != None and message != ''):
+            if (message is not None and message != ''):
+                print("message:",message.to_dict())
                 chat_message = {"type": "chat_message",
                                 "message": message.to_dict()}
                 send_message_exe(chat_channel, chat_message)
@@ -68,7 +73,7 @@ def realtime_callback(role_name: str, you_name: str, content: str):
 
     realtime_callback.message_buffer += content
     # 如果 content 以结束标点符号或空结尾，打印并清空缓冲区
-    if re.match(r"^(.+[。．！？~\n]|.{10,}[、,])", realtime_callback.message_buffer):
+    if re.match(r"^(.+[。．！？~\n]|.{5,}[、,])", realtime_callback.message_buffer):
         realtime_callback.message_buffer = format_chat_text(
             role_name, you_name, realtime_callback.message_buffer)
 

@@ -68,17 +68,17 @@ class BiliHandler(BaseHandler):
     async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
         print(message.msg)
         put_message(InsightMessage(
-            type="chat", user_name=message.uname, content=message.msg))
+            type="danmaku", user_name=message.uname, content=message.msg, emote="neutral", action=""))
 
     async def _on_gift(self, client: BLiveClient, message: GiftMessage):
         message_str = f'{message.uname}赠送{message.gift_name}x{message.num}'
         put_message(InsightMessage(
-            type="chat", user_name=message.uname, content=message_str))
+            type="danmaku", user_name=message.uname, content=message_str, emote="happy", action=""))
 
     async def _on_buy_guard(self, client: BLiveClient, message: GuardBuyMessage):
         message_str = f'{message.username}购买{message.gift_name}'
         put_message(InsightMessage(
-            type="chat", user_name=message.gift_name, content=message_str))
+            type="danmaku", user_name=message.gift_name, content=message_str, emote="happy", action=""))
 
     async def _on_super_chat(self, client: BLiveClient, message: SuperChatMessage):
         print(
@@ -87,15 +87,15 @@ class BiliHandler(BaseHandler):
     async def _on_like_click(self, client: BLiveClient, message: LikeInfoV3ClickMessage):
         message_str = f'{message.uname}偷偷摸了摸爱莉的头'
         put_message(InsightMessage(
-            type="chat", user_name=message.uname, content=message_str))
+            type="danmaku", user_name=message.uname, content=message_str, emote="happy", action="excited"))
 
     async def _on_interact_word(self, client: BLiveClient, message: InteractWordMessage):
         """
         用户进入直播间，用户关注直播间
         """
-        message_str = f'{message.uname}进入了直播间'
+        message_str = f'{message.uname}进入了直播间，欢迎欢迎'
         put_message(InsightMessage(
-            type="chat", user_name=message.uname, content=message_str))
+            type="danmaku", user_name=message.uname, content=message_str, emote="happy", action="standing_greeting"))
 
 
 enable_bili_live = False

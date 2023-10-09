@@ -9,6 +9,9 @@ import { Screenplay, EmotionType } from "../messages/messages";
 import { loadMixamoAnimation } from "../mixamo/loadMixamoAnimation";
 import { buildUrl } from "@/utils/buildUrl";
 
+
+
+
 /**
  * 3Dキャラクターを管理するクラス
  */
@@ -18,17 +21,11 @@ export class Model {
   public emoteController?: EmoteController;
   public clipMap: Map<string, THREE.AnimationClip> = new Map();
   public blendTime: number = 0.5; // 这是混合时间，可以根据需要调整
-
-
+  public current_clipMap: Map<string, THREE.AnimationClip> = new Map();
 
   private _lookAtTargetParent: THREE.Object3D;
   private _lipSync?: LipSync;
- 
-  private _current_clipMap: Map<string, THREE.AnimationClip> = new Map();
 
-
-
- 
   constructor(lookAtTargetParent: THREE.Object3D) {
     this._lookAtTargetParent = lookAtTargetParent;
     this._lipSync = new LipSync(new AudioContext());
@@ -53,7 +50,7 @@ export class Model {
 
     this.emoteController = new EmoteController(vrm, this._lookAtTargetParent);
 
-   }
+  }
 
   public unLoadVrm() {
     if (this.vrm) {
@@ -79,41 +76,33 @@ export class Model {
   }
 
   // mixamo animation
-  public async loadFBX( animationUrl:string ) {
-    const { vrm, mixer, clipMap, _current_clipMap,blendTime } = this;
+  public async loadFBX(animationUrl: string) {
+    const { vrm, mixer, clipMap, blendTime,current_clipMap } = this;
 
     const animationClip = clipMap.get(animationUrl)
-    const currentClip = _current_clipMap.get("current")
+    const currentClip = current_clipMap.get("current")
     if (vrm == null || mixer == null || animationClip == null) {
       throw new Error("You have to load VRM first");
     }
 
-    _current_clipMap?.set("current",animationClip)
+    if (currentClip != null) {
 
-    if(currentClip != null){
-      // 创建动画动作
-      // const currentClipAction = mixer.clipAction(currentClip);
-      // const nextClipAction = mixer.clipAction(animationClip);
-
-      // 设置初始权重
-      // currentClipAction.setEffectiveWeight(1.0);
-      // nextClipAction.setEffectiveWeight(0.0);
-
-      // // 切换动画
-      // currentClipAction.crossFadeTo(nextClipAction, blendTime, true);
-      // currentClipAction.stop();
-      // nextClipAction.play();
-
-      mixer.clipAction(currentClip)?.stop();
-      mixer.clipAction(animationClip)?.play();
-    }else{
+      const currentClipAction = mixer.clipAction(currentClip)
+      const animationClipAction = mixer.clipAction(animationClip)
+      this.crossPlay(currentClipAction,animationClipAction)
+    } else {
       mixer.clipAction(animationClip)?.play();
     }
+    current_clipMap?.set("current", animationClip)
+  }
 
- 
-
-   
-    
+   // 给动作切换时加一个淡入淡出效果，避免角色抖动
+   public async crossPlay(curAction: THREE.AnimationAction, newAction: THREE.AnimationAction) {
+    curAction.fadeOut(1);
+    newAction.reset();
+    newAction.setEffectiveWeight(1);
+    newAction.play();
+    newAction.fadeIn(1);
   }
 
   /**

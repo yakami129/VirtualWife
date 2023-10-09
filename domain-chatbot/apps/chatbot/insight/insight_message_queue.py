@@ -14,12 +14,16 @@ class InsightMessage():
     type: str
     user_name: str
     content: str
+    emote: str
+    action: str
     expand: str
 
-    def __init__(self, type: str, user_name: str, content: str, expand: str = None) -> None:
+    def __init__(self, type: str, user_name: str, content: str, emote: str, action: str = None, expand: str = None) -> None:
         self.type = type
         self.user_name = user_name
         self.content = content
+        self.emote = emote
+        self.action = action
         self.expand = expand
 
     def to_dict(self):
@@ -27,6 +31,8 @@ class InsightMessage():
             "type": self.type,
             "user_name": self.user_name,
             "content": self.content,
+            "emote": self.emote,
+            "action": self.action,
             "expand": self.expand
         }
 
@@ -41,13 +47,14 @@ def send_message():
         try:
             message = insight_message_queue.get()
             if (message != None and message != ''):
-                if (message.type == "chat"):
+                if (message.type == "danmaku"):
                     content = format_user_chat_text(text=message.content)
                     realtime_message_queue.put_message(realtime_message_queue.RealtimeMessage(
                         type=message.type,
                         user_name=message.user_name,
                         content=content,
-                        emote="neutral"
+                        emote=message.emote,
+                        action=message.action
                     ))
                     process_core.chat(
                         you_name=message.user_name, query=message.content)

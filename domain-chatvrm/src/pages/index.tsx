@@ -16,7 +16,7 @@ import { GitHubLink } from "@/components/githubLink";
 import { Meta } from "@/components/meta";
 import { GlobalConfig, getConfig, initialFormData } from "@/features/config/configApi";
 import { buildUrl } from "@/utils/buildUrl";
-import { generateMediaUrl } from "@/features/media/mediaApi";
+import { generateMediaUrl, vrmModelData } from "@/features/media/mediaApi";
 
 
 // const m_plus_2 = M_PLUS_2({
@@ -48,7 +48,6 @@ export default function Home() {
     const [globalConfig, setGlobalConfig] = useState<GlobalConfig>(initialFormData);
     const [subtitle, setSubtitle] = useState("");
     const [displayedSubtitle, setDisplayedSubtitle] = useState("");
-    const [vrmModels, setVrmModels] = useState([vrmModelData]);
     const [backgroundImageUrl, setBackgroundImageUrl] = useState<string>(buildUrl("/bg-c.png"));
     const typingDelay = 100; // 每个字的延迟时间，可以根据需要进行调整
     const MAX_SUBTITLES = 30;
@@ -63,11 +62,6 @@ export default function Home() {
             return updatedSubtitle;
         });
     };
-
-    useEffect(() => {
-        vrmModelList().then(data => setVrmModels(data))
-        console.log("vrmModelList")
-    }, [])
 
     useEffect(() => {
         getConfig().then(data => {
@@ -121,7 +115,7 @@ export default function Home() {
         [viewer]
     );
 
-    const handleChatMessage = useCallback((
+    const handleUserMessage = useCallback((
         globalConfig: GlobalConfig,
         type: string,
         user_name: string,
@@ -159,6 +153,62 @@ export default function Home() {
         });
     }, [])
 
+    const handleDanmakuMessage = (
+        globalConfig: GlobalConfig,
+        type: string,
+        user_name: string,
+        content: string,
+        emote: string,
+        action: string) => {
+
+        console.log("DanmakuMessage:" + content + " emote:" + emote)
+        // 如果content为空，不进行处理
+        // 如果与上一句content完全相同，不进行处理
+        if (content == null || content == '' || content == ' ') {
+            return
+        }
+
+        // 如果有，则播放相应动作
+        if (action != null && action != '') {
+            handleBehaviorAction(
+                "behavior_action",
+                action,
+                emote,
+            );
+        }
+
+        let aiTextLog = "";
+        const sentences = new Array<string>();
+        const aiText = content;
+        const aiTalks = textsToScreenplay([aiText], koeiroParam, emote);
+        aiTextLog += aiText;
+        // 文ごとに音声を生成 & 再生、返答を表示
+        setSubtitle(aiTextLog);
+        handleSpeakAi(globalConfig, aiTalks[0], () => {
+            // setAssistantMessage(currentAssistantMessage);
+            startTypewriterEffect(aiTextLog);
+            // アシスタントの返答をログに追加
+            const params = JSON.parse(
+                window.localStorage.getItem("chatVRMParams") as string
+            );
+            const messageLog: Message[] = [
+                ...params.chatLog,
+                { role: "user", content: content, "user_name": user_name },
+            ];
+            setChatLog(messageLog);
+
+        }, () => {
+            // 语音播放完后需要恢复到原动画
+            if (action != null && action != '') {
+                handleBehaviorAction(
+                    "behavior_action",
+                    "idle_happy_03",
+                    "neutral",
+                );
+            }
+        });
+    }
+
     const handleBehaviorAction = (
         type: string,
         content: string,
@@ -186,11 +236,18 @@ export default function Home() {
      * アシスタントとの会話を行う
      */
     const handleSendChat = useCallback(
-        async (globalConfig: GlobalConfig,type: string, user_name: string, content: string) => {
+        async (globalConfig: GlobalConfig, type: string, user_name: string, content: string) => {
 
             console.log("UserMessage:" + content)
 
             setChatProcessing(true);
+
+            handleBehaviorAction(
+                "behavior_action",
+                "thinking",
+                "happy",
+            );
+
             const yourName = user_name == null || user_name == '' ? globalConfig?.characterConfig?.yourName : user_name
             // ユーザーの発言を追加して表示
             const messageLog: Message[] = [
@@ -198,12 +255,20 @@ export default function Home() {
                 { role: "user", content: content, "user_name": yourName },
             ];
             setChatLog(messageLog);
+
             await chat(content, yourName).catch(
                 (e) => {
                     console.error(e);
                     return null;
                 }
             );
+
+            handleBehaviorAction(
+                "behavior_action",
+                "idle_happy_03",
+                "neutral",
+            );
+
             setChatProcessing(false);
         },
         [systemPrompt, chatLog, setChatLog, handleSpeakAi, setImageUrl, openAiKey, koeiroParam]
@@ -213,16 +278,16 @@ export default function Home() {
 
     const onChangeGlobalConfig = useCallback((
         globalConfig: GlobalConfig) => {
-            setGlobalConfig(globalConfig);
-            webGlobalConfig = globalConfig;
-        },[])
+        setGlobalConfig(globalConfig);
+        webGlobalConfig = globalConfig;
+    }, [])
 
     const handleWebSocketMessage = (event: MessageEvent) => {
         const data = event.data;
         const chatMessage = JSON.parse(data);
         const type = chatMessage.message.type;
         if (type === "user") {
-            handleChatMessage(
+            handleUserMessage(
                 webGlobalConfig,
                 chatMessage.message.type,
                 chatMessage.message.user_name,
@@ -234,6 +299,15 @@ export default function Home() {
                 chatMessage.message.type,
                 chatMessage.message.content,
                 chatMessage.message.emote,
+            );
+        } else if (type === "danmaku") {
+            handleDanmakuMessage(
+                webGlobalConfig,
+                chatMessage.message.type,
+                chatMessage.message.user_name,
+                chatMessage.message.content,
+                chatMessage.message.emote,
+                chatMessage.message.action
             );
         }
     };
