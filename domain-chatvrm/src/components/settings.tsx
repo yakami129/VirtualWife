@@ -5,7 +5,7 @@ import { IconButton } from "./iconButton";
 import { TextButton } from "./textButton";
 import { Message } from "@/features/messages/messages";
 import { custoRoleFormData, customrolEdit, customroleCreate, customroleDelete, customroleList } from "@/features/customRole/customRoleApi";
-import { uploadBackground, queryBackground, backgroundModelData, deleteBackground,uploadVrmModel,queryUserVrmModels,querySystemVrmModels,vrmModelData,deleteVrmModel, generateMediaUrl, buildVrmModelUrl } from "@/features/media/mediaApi";
+import { uploadBackground, queryBackground, backgroundModelData, deleteBackground, uploadVrmModel, queryUserVrmModels, querySystemVrmModels, vrmModelData, deleteVrmModel, generateMediaUrl, buildVrmModelUrl } from "@/features/media/mediaApi";
 import { getConfig, saveConfig, GlobalConfig } from "@/features/config/configApi";
 import {
   KoeiroParam,
@@ -17,7 +17,7 @@ import {
 import { Link } from "./link";
 import { damp } from 'three/src/math/MathUtils';
 import { join } from 'path';
-import { voiceData,getVoices } from '@/features/tts/ttsApi';
+import { voiceData, getVoices } from '@/features/tts/ttsApi';
 
 const tabNames = ['基础设置', '自定义角色设置', '大语言模型设置', '记忆模块设置', '高级设置'];
 const llm_enums = ["openai", "text_generation"]
@@ -71,7 +71,7 @@ export const Settings = ({
   const [customRoles, setCustomRoles] = useState([custoRoleFormData]);
   const [enableProxy, setEnableProxy] = useState(false);
   const [conversationType, setConversationType] = useState('default');
- 
+
   const [enableLongMemory, setEnableLongMemory] = useState(false);
   const [enableSummary, setEnableSummary] = useState(false);
   const [enableReflection, setEnableReflection] = useState(false);
@@ -186,9 +186,9 @@ export const Settings = ({
               onChange={e => {
                 const selectedVrmModelType = e.target.options[e.target.selectedIndex].getAttribute('data-type');
                 formData.characterConfig.vrmModel = e.target.value;
-                formData.characterConfig.vrmModelType = selectedVrmModelType+"";
+                formData.characterConfig.vrmModelType = selectedVrmModelType + "";
                 setFormData(formData);
-                const vrm_url = buildVrmModelUrl(formData.characterConfig.vrmModel,selectedVrmModelType+"")
+                const vrm_url = buildVrmModelUrl(formData.characterConfig.vrmModel, selectedVrmModelType + "")
                 remoteLoadVrmFile(vrm_url)
               }}>
               {
@@ -225,26 +225,26 @@ export const Settings = ({
               checked={ttsType === 'Bert-VITS2'}
             /> Bert-VITS2
           </div>
-          
+
           <div className="field">
             <label>选择语音模型:</label>
             <select
-                defaultValue={formData.ttsConfig.ttsVoiceId + ''}
-                onChange={e => {
-                  const selectedVoiceId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
-                  formData.ttsConfig.ttsVoiceId= selectedVoiceId + "";
-                  if (selectedVoiceId != '-1') {
-                    setFormData(formData);
-                    setVoiceId(formData.ttsConfig.ttsVoiceId);
-                  }
-                }}>
-                <option key="-1" value="-1" data-key="-1">请选择</option>
-                {voices.map(voice => (
-                  <option key={voice.id} value={voice.id} data-key={voice.id}>
-                    {voice.name}
-                  </option>
-                ))}
-              </select >
+              defaultValue={formData.ttsConfig.ttsVoiceId + ''}
+              onChange={e => {
+                const selectedVoiceId = e.target.options[e.target.selectedIndex].getAttribute('data-key');
+                formData.ttsConfig.ttsVoiceId = selectedVoiceId + "";
+                if (selectedVoiceId != '-1') {
+                  setFormData(formData);
+                  setVoiceId(formData.ttsConfig.ttsVoiceId);
+                }
+              }}>
+              <option key="-1" value="-1" data-key="-1">请选择</option>
+              {voices.map(voice => (
+                <option key={voice.id} value={voice.id} data-key={voice.id}>
+                  {voice.name}
+                </option>
+              ))}
+            </select >
           </div>
         </div>
 
@@ -268,7 +268,7 @@ export const Settings = ({
               checked={conversationType === 'thought_chain'}
             /> 推理+生成对话模式 */}
           </div>
-          
+
           <div className="field">
             <label>选择大语言模型:</label>
             <select
@@ -346,17 +346,19 @@ export const Settings = ({
     backgroundFileInputRef?.current?.click();
   };
 
-  const handleBackgroundFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    if (!selectedFile) {
-      return;
+  const handleBackgroundFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target && event.target.files) {
+      const selectedFile = event.target.files[0];
+      if (!selectedFile) {
+        return;
+      }
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+      uploadBackground(formData)
+        .then(data => {
+          queryBackground().then(data => setBackgroundModels(data))
+        })
     }
-    const formData = new FormData();
-    formData.append('image', selectedFile);
-    uploadBackground(formData)
-      .then(data => {
-        queryBackground().then(data => setBackgroundModels(data))
-      })
   };
 
   const handleDeleteBackground = (selectedBackgroundId: number) => {
@@ -373,17 +375,19 @@ export const Settings = ({
     VrmModelFileInputRef?.current?.click();
   };
 
-  const handleVrmModelFileChange = (event) => {
-    const selectedFile = event.target.files[0];
-    if (!selectedFile) {
-      return;
+  const handleVrmModelFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target && event.target.files) {
+      const selectedFile = event.target.files[0];
+      if (!selectedFile) {
+        return;
+      }
+      const formData = new FormData();
+      formData.append('vrm', selectedFile);
+      uploadVrmModel(formData)
+        .then(data => {
+          queryUserVrmModels().then(data => setUserVrmModels(data))
+        })
     }
-    const formData = new FormData();
-    formData.append('vrm', selectedFile);
-    uploadVrmModel(formData)
-      .then(data => {
-        queryUserVrmModels().then(data => setUserVrmModels(data))
-      })
   };
 
   const handleDeleteVrmModel = (selectedVrmModelId: number) => {
