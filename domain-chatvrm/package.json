@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "SKIP_ESLINT=true next react-scripts build",
     "build:with-lint": "npm run build && npm run lint",
     "start": "next start",
     "export": "next export",

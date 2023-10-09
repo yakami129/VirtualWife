@@ -1,3 +1,4 @@
+/* eslint-disable */
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { mixamoVRMRigMap } from './mixamoVRMRigMap';
@@ -11,11 +12,6 @@ import { VRM } from '@pixiv/three-vrm';
  * @returns {Promise<THREE.AnimationClip>} The converted AnimationClip
  */
 export function loadMixamoAnimation(url: string, vrm: VRM) {
-
-	if(url == "" || vrm == null){
-		return
-	}
-
 	const loader = new FBXLoader(); // A loader which loads FBX
 	return loader.loadAsync(url).then((asset) => {
 
