@@ -86,12 +86,12 @@ export const Settings = ({
   const [voices, setVoices] = useState([voiceData]);
   const [ttsType, setTTSType] = useState('Edge');
   const [voiceId, setVoiceId] = useState('xiaoyi');
-  const backgroundFileInputRef = useRef(null);
+  const backgroundFileInputRef = useRef<HTMLInputElement | null>(null);
   const [selectedVrmModelId, setSelectedVrmModelId] = useState(-1);
   const [userVrmModels, setUserVrmModels] = useState([vrmModelData]);
   const [systemVrmModels, setSystemVrmModels] = useState([vrmModelData]);
   const [deleteVrmModelLog, setDeleteVrmModelLog] = useState("");
-  const VrmModelFileInputRef = useRef(null);
+  const VrmModelFileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     customroleList().then(data => {
