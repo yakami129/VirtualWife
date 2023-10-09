@@ -91,6 +91,7 @@ class TextGeneration():
                 match incoming_data['event']:
                     case 'text_stream':
                         text = incoming_data['text']
+                        print("chat:",text)
                         if text:
                             # 过滤空格和制表符
                             text = remove_spaces_and_tabs(text)

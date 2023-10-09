@@ -29,8 +29,8 @@ class IdleActionManagement():
     emote: []
 
     def __init__(self) -> None:
-        self.idle_action = ["daily/idle_01.fbx"]
-        self.emote = ["neutral", "happy"]
+        self.idle_action = ["daily/standing_greeting.fbx"]
+        self.emote = ["happy"]
 
     def random_action(self) -> BehaviorActionMessage:
         # 使用random.choice()函数选择一个随机元素

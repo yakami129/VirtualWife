@@ -98,11 +98,11 @@ export class Model {
 
    // 给动作切换时加一个淡入淡出效果，避免角色抖动
    public async crossPlay(curAction: THREE.AnimationAction, newAction: THREE.AnimationAction) {
-    curAction.fadeOut(0.5);
+    curAction.fadeOut(1);
     newAction.reset();
     newAction.setEffectiveWeight(1);
     newAction.play();
-    newAction.fadeIn(0.5);
+    newAction.fadeIn(1);
   }
 
   /**

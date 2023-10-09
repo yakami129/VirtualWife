@@ -24,7 +24,7 @@ from django.urls import path
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VirtualWife.settings')
 
 bili_live_client_main()
-# run_idle_action_job(5, idle_action_job)
+# run_idle_action_job(15, idle_action_job)
 RealtimeMessageQueryJobTask.start()
 ChatHistoryMessageQueryJobTask.start()
 InsightMessageQueryJobTask.start()
