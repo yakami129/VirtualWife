@@ -6,6 +6,8 @@ WORKDIR /app
 COPY ../domain-chatvrm .
 
 RUN npm config set registry https://registry.npmmirror.com && \
+    rm -rf .next && \
+    rm -rf .node_modules && \
     npm install && \
     npm run build --no-lint
 

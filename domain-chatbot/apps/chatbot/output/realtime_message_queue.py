@@ -59,7 +59,6 @@ def send_message():
         try:
             message = chat_queue.get()
             if (message is not None and message != ''):
-                print("message:",message.to_dict())
                 chat_message = {"type": "chat_message",
                                 "message": message.to_dict()}
                 send_message_exe(chat_channel, chat_message)
