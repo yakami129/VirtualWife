@@ -14,6 +14,7 @@ from apps.chatbot.output.realtime_message_queue import RealtimeMessageQueryJobTa
 from apps.chatbot.chat.chat_history_queue import ChatHistoryMessageQueryJobTask
 from apps.chatbot.insight.insight_message_queue import InsightMessageQueryJobTask
 from apps.chatbot.insight.bilibili.bili_live_client import bili_live_client_main
+from apps.chatbot.schedule.Idle_schedule import run_idle_action_job,idle_action_job
 from channels.auth import AuthMiddlewareStack
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
@@ -22,7 +23,8 @@ from django.urls import path
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VirtualWife.settings')
 
-bili_live_client_main();
+bili_live_client_main()
+# run_idle_action_job(15, idle_action_job)
 RealtimeMessageQueryJobTask.start()
 ChatHistoryMessageQueryJobTask.start()
 InsightMessageQueryJobTask.start()

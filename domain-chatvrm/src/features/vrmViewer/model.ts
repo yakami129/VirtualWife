@@ -6,6 +6,11 @@ import { VRMLookAtSmootherLoaderPlugin } from "@/lib/VRMLookAtSmootherLoaderPlug
 import { LipSync } from "../lipSync/lipSync";
 import { EmoteController } from "../emoteController/emoteController";
 import { Screenplay, EmotionType } from "../messages/messages";
+import { loadMixamoAnimation } from "../mixamo/loadMixamoAnimation";
+import { buildUrl } from "@/utils/buildUrl";
+
+
+
 
 /**
  * 3Dキャラクターを管理するクラス
@@ -14,6 +19,9 @@ export class Model {
   public vrm?: VRM | null;
   public mixer?: THREE.AnimationMixer;
   public emoteController?: EmoteController;
+  public clipMap: Map<string, THREE.AnimationClip> = new Map();
+  public blendTime: number = 0.5; // 这是混合时间，可以根据需要调整
+  public current_clipMap: Map<string, THREE.AnimationClip> = new Map();
 
   private _lookAtTargetParent: THREE.Object3D;
   private _lipSync?: LipSync;
@@ -41,6 +49,7 @@ export class Model {
     this.mixer = new THREE.AnimationMixer(vrm.scene);
 
     this.emoteController = new EmoteController(vrm, this._lookAtTargetParent);
+
   }
 
   public unLoadVrm() {
@@ -64,6 +73,36 @@ export class Model {
     const clip = vrmAnimation.createAnimationClip(vrm);
     const action = mixer.clipAction(clip);
     action.play();
+  }
+
+  // mixamo animation
+  public async loadFBX(animationUrl: string) {
+    const { vrm, mixer, clipMap, blendTime,current_clipMap } = this;
+
+    const animationClip = clipMap.get(animationUrl)
+    const currentClip = current_clipMap.get("current")
+    if (vrm == null || mixer == null || animationClip == null) {
+      throw new Error("You have to load VRM first");
+    }
+
+    if (currentClip != null) {
+
+      const currentClipAction = mixer.clipAction(currentClip)
+      const animationClipAction = mixer.clipAction(animationClip)
+      this.crossPlay(currentClipAction,animationClipAction)
+    } else {
+      mixer.clipAction(animationClip)?.play();
+    }
+    current_clipMap?.set("current", animationClip)
+  }
+
+   // 给动作切换时加一个淡入淡出效果，避免角色抖动
+   public async crossPlay(curAction: THREE.AnimationAction, newAction: THREE.AnimationAction) {
+    curAction.fadeOut(1);
+    newAction.reset();
+    newAction.setEffectiveWeight(1);
+    newAction.play();
+    newAction.fadeIn(1);
   }
 
   /**

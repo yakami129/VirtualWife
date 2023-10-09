@@ -21,8 +21,10 @@ VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很
     - [ ] 提高记忆检索的准确度
     - [ ] 支持记忆遗忘机制，去除不重要的记忆，让AI更加专注
 - [ ] 情感涌现模块优化
-    - [ ] 支持模型肢体动作控制
-    - [ ] 支持人物的语气、语速控制
+    - [x] 支持模型肢体动作控制
+    - [ ] ~~支持人物的语气、语速控制~~
+- [ ] 语音模块
+    - [x] 支持Edge（微软）、Bert-VITS2语音切换
 - [ ] 角色扮演深化
     - [ ] LoRA微调RWKV，完成猫娘、傲娇、御姐等性格塑造
 - [ ] 反思模块开发
@@ -79,8 +81,8 @@ mv env_example .env
 B_STATION_ID=27892212
 # 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
 B_UID=38ccccc
-# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie
-B_COOKIE="buvid3=Fggggg28116infoc"
+# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie，一定要复制完整的cookie
+B_COOKIE="buvid3=Fggggg28116infoc;xxxxxxxxxxxxxxxxxxxxxxxxxx";....... 此处略去其他的
 
 # 时区
 TIMEZONE=Asia/Shanghai
@@ -153,7 +155,7 @@ http://localhost/
 
 | 技术交流群 | 打赏入股 |
 |-------|------|
-| ![winxin04.jpg](docs/winxin04.jpg)  | ![wx-skm.jpg](docs/wx-skm.jpg) |
+| ![winxin05.jpg](docs/winxin05.jpg)  | ![wx-skm.jpg](docs/wx-skm.jpg) |
 
 
 

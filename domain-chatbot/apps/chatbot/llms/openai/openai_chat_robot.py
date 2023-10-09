@@ -47,7 +47,7 @@ class OpenAIGeneration():
             message = {"role": "assistant", "content": item["ai"]}
             messages.append(message)
         messages.append({'role': 'system', 'content': prompt})
-        messages.append({'role': 'user', 'content': you_name+"说"+query})
+        messages.append({'role': 'user', 'content': you_name + "说" + query})
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
             messages=messages,
@@ -63,6 +63,8 @@ class OpenAIGeneration():
                 content = part["choices"][0]["delta"]["content"]
                 # 过滤空格和制表符
                 content = remove_spaces_and_tabs(content)
+                if content == "":
+                    continue
                 answer += content
                 if realtime_callback:
                     realtime_callback(role_name, you_name,

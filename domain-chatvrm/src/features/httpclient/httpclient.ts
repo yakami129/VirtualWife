@@ -6,11 +6,14 @@ const environment = process.env.NODE_ENV;
 
 // 定义基础URL
 let baseUrl = "";
+let mediaUrl = "";
 
 if (environment === "development") {
   baseUrl = "http://localhost:8000";
+  mediaUrl = "http://localhost:8000";
 } else if (environment === "production") {
   baseUrl = "/api/chatbot";
+  mediaUrl = "/api/media";
 } else {
   throw new Error("未知环境变量");
 }
@@ -33,4 +36,8 @@ export async function postRequestArraybuffer(endpoint: string, headers: Record<s
 export async function getRequest(endpoint: string, headers: Record<string, string>): Promise<any> {
   const response = await axios.get(`${baseUrl}${endpoint}`, { headers });
   return response.data; // 返回响应对象
+}
+
+export function buildMediaUrl(imageUrl: string) {
+    return `${mediaUrl}${imageUrl}`
 }
