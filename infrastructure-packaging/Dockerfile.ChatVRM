@@ -9,7 +9,6 @@ RUN npm config set registry https://registry.npmmirror.com && \
     rm -rf .next && \
     rm -rf .node_modules && \
     npm install && \
-    SKIP_ESLINT=true && \
     npm run build --no-lint
 
 
