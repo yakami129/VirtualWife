@@ -13,7 +13,7 @@ if (environment === "development") {
   mediaUrl = "http://localhost:8000";
 } else if (environment === "production") {
   baseUrl = "/api/chatbot";
-  baseUrl = "/api/media";
+  mediaUrl = "/api/media";
 } else {
   throw new Error("未知环境变量");
 }
