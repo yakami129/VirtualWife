@@ -1,8 +1,7 @@
-/* eslint-disable */
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { mixamoVRMRigMap } from './mixamoVRMRigMap';
-import { VRM } from '@pixiv/three-vrm';
+import { VRM, VRMHumanBoneName } from '@pixiv/three-vrm';
 
 /**
  * Load Mixamo animation, convert for three-vrm use, and return it.
@@ -13,11 +12,11 @@ import { VRM } from '@pixiv/three-vrm';
  */
 export function loadMixamoAnimation(url: string, vrm: VRM) {
 	const loader = new FBXLoader(); // A loader which loads FBX
-	return loader.loadAsync(url).then((asset) => {
+	return loader.loadAsync(url).then((asset: THREE.Group) => {
 
 		const clip = THREE.AnimationClip.findByName(asset.animations, 'mixamo.com'); // extract the AnimationClip
 
-		const tracks = []; // KeyframeTracks compatible with VRM will be added here
+		const tracks: THREE.KeyframeTrack[] | undefined = []; // KeyframeTracks compatible with VRM will be added here
 
 		const restRotationInverse = new THREE.Quaternion();
 		const parentRestWorldRotation = new THREE.Quaternion();
@@ -25,9 +24,15 @@ export function loadMixamoAnimation(url: string, vrm: VRM) {
 		const _vec3 = new THREE.Vector3();
 
 		// Adjust with reference to hips height.
-		const motionHipsHeight = asset.getObjectByName('mixamorigHips').position.y;
-		const vrmHipsY = vrm.humanoid?.getNormalizedBoneNode('hips').getWorldPosition(_vec3).y;
-		const vrmRootY = vrm.scene.getWorldPosition(_vec3).y;
+		let motionHipsHeight = asset.getObjectByName('mixamorigHips')?.position.y;
+		if(motionHipsHeight == null){
+			motionHipsHeight = 1
+		}
+		let vrmHipsY = vrm.humanoid?.getNormalizedBoneNode('hips')?.getWorldPosition(_vec3).y;
+		if(vrmHipsY == null){
+			vrmHipsY = 1
+		}
+		const vrmRootY = vrm.scene?.getWorldPosition(_vec3).y;
 		const vrmHipsHeight = Math.abs(vrmHipsY - vrmRootY);
 		const hipsPositionScale = vrmHipsHeight / motionHipsHeight;
 
@@ -37,7 +42,7 @@ export function loadMixamoAnimation(url: string, vrm: VRM) {
 			const trackSplitted = track.name.split('.');
 			const mixamoRigName = trackSplitted[0];
 			const vrmBoneName = mixamoVRMRigMap[mixamoRigName];
-			const vrmNodeName = vrm.humanoid?.getNormalizedBoneNode(vrmBoneName)?.name;
+			const vrmNodeName = vrm.humanoid?.getNormalizedBoneNode(vrmBoneName as VRMHumanBoneName)?.name;
 			const mixamoRigNode = asset.getObjectByName(mixamoRigName);
 
 			if (vrmNodeName != null) {
@@ -45,8 +50,8 @@ export function loadMixamoAnimation(url: string, vrm: VRM) {
 				const propertyName = trackSplitted[1];
 
 				// Store rotations of rest-pose.
-				mixamoRigNode.getWorldQuaternion(restRotationInverse).invert();
-				mixamoRigNode.parent.getWorldQuaternion(parentRestWorldRotation);
+				mixamoRigNode?.getWorldQuaternion(restRotationInverse).invert();
+				mixamoRigNode?.parent?.getWorldQuaternion(parentRestWorldRotation);
 
 				if (track instanceof THREE.QuaternionKeyframeTrack) {
 
