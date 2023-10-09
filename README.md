@@ -155,7 +155,7 @@ http://localhost/
 
 | 技术交流群 | 打赏入股 |
 |-------|------|
-| ![winxin04.jpg](docs/winxin04.jpg)  | ![wx-skm.jpg](docs/wx-skm.jpg) |
+| ![winxin05.jpg](docs/winxin05.jpg)  | ![wx-skm.jpg](docs/wx-skm.jpg) |
 
 
 
