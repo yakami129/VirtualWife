@@ -8,11 +8,13 @@ import os
 import logging
 import json
 from ...utils.str_utils import remove_special_characters, remove_emojis, remove_spaces_and_tabs
+
+logger = logging.getLogger(__name__)
+
 try:
     import websockets
 except ImportError:
-    print("Websockets package not found. Make sure it's installed.")
-
+     logger.error("Websockets package not found. Make sure it's installed.")
 
 class TextGeneration():
 
@@ -30,14 +32,15 @@ class TextGeneration():
         self.chat_api_url = self.text_generation_api_url + '/api/v1/generate'
         self.text_generation_web_socket_url = os.getenv(
             "TEXT_GENERATION_WEB_SOCKET_URL")
-        print("=> init TextGeneration")
-        print('text_generation_api_url:', self.text_generation_api_url)
-        print('text_generation_web_socket_url:',
-              self.text_generation_web_socket_url)
-        print('chat_api_url:', self.chat_api_url)
-        print('max_new_tokens:', self.max_new_tokens)
-        print('temperature:', self.temperature)
-        print('top_p:', self.top_p)
+        logger.debug("======================== Init TextGenerationWebUiApi ========================")
+        logger.debug(f'=> text_generation_api_url:{self.text_generation_api_url}')
+        logger.debug(f'=> text_generation_web_socket_url:{self.text_generation_web_socket_url}')
+        logger.debug(f'=> chat_api_url:{self.chat_api_url}')
+        logger.debug(f'=> max_new_tokens:{self.max_new_tokens}' )
+        logger.debug(f'=> temperature:{self.temperature}')
+        logger.debug(f'=> top_p:{self.top_p}')
+        logger.info('=> Init TextGenerationWebUiApi Success')
+
 
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         body = self.build_body(prompt=prompt, role_name=role_name, you_name=you_name,
@@ -46,13 +49,13 @@ class TextGeneration():
             response = requests.post(self.chat_api_url, json=body)
             if response.status_code == 200:
                 result = response.json()['results'][0]['text'].strip()
-                print("=> result:"+result)
+                logger.debug("=> result:"+result)
                 if result != '':
                     return result
                 else:
-                    print("Received empty response. Retrying...")
+                    logger.debug("Received empty response. Retrying...")
             else:
-                print(f"text_generation error response is ", response)
+                logger.error(f"text_generation error response is ", response)
 
     async def handle_realtime_data(self, role_name: str, you_name: str, realtime_callback=None, data: str = ""):
         if realtime_callback:
@@ -105,7 +108,7 @@ class TextGeneration():
     def build_body(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> dict[str, Any]:
         input_prompt = query+"[/INST]"
         prompt = prompt + input_prompt
-        logging.info(f"prompt:{prompt}")
+        logger.debug(f"prompt:{prompt}")
         # 构建短期记忆数据
         history_item = []
         for item in short_history:

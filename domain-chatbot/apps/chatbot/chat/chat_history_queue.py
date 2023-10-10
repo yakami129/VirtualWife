@@ -1,9 +1,11 @@
 
+import logging
 import queue
 import threading
 import traceback
 from ..config import singleton_sys_config
 
+logger = logging.getLogger(__name__)
 
 # 创建一个线程安全的优先级队列
 chat_history_queue = queue.SimpleQueue()
@@ -66,4 +68,4 @@ class ChatHistoryMessageQueryJobTask():
         background_thread.daemon = True
         # 启动后台线程
         background_thread.start()
-        print("=> ChatHistoryMessageQueryJobTask start")
+        logger.info("=> Start ChatHistoryMessageQueryJobTask Success")

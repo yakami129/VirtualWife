@@ -1,3 +1,4 @@
+import logging
 import queue
 import threading
 import traceback
@@ -7,7 +8,7 @@ from ..output import realtime_message_queue
 
 # 创建一个线程安全的队列
 insight_message_queue = queue.SimpleQueue()
-
+logger = logging.getLogger(__name__)
 
 class InsightMessage():
 
@@ -72,4 +73,4 @@ class InsightMessageQueryJobTask():
         background_thread.daemon = True
         # 启动后台线程
         background_thread.start()
-        print("=> InsightMessageQueryJobTask start")
+        logger.info("=> Start InsightMessageQueryJobTask Success")

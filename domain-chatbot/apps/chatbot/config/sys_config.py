@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from ..llms.llm_model_strategy import LlmModelDriver
 from ..models import CustomRoleModel, SysConfigModel
@@ -7,6 +8,8 @@ from ..character.sys.aili_zh import aili_zh
 config_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(config_dir, 'sys_config.json')
 sys_code = "adminSettings"
+
+logger = logging.getLogger(__name__)
 
 
 def lazy_memory_storage(sys_config_json: any, sys_cofnig: any):
@@ -19,7 +22,7 @@ def lazy_memory_storage(sys_config_json: any, sys_cofnig: any):
         "password": sys_config_json["memoryStorageConfig"]["milvusMemory"]["password"],
         "db_name": sys_config_json["memoryStorageConfig"]["milvusMemory"]["dbName"],
     }
-    print(f"memory_storage_config:{memory_storage_config}")
+    logger.debug(f"=> memory_storage_config:{memory_storage_config}")
     # 加载记忆模块驱动
     return MemoryStorageDriver(memory_storage_config=memory_storage_config, sys_config=sys_cofnig)
 
@@ -51,7 +54,7 @@ class SysConfig():
             sys_config_obj = SysConfigModel.objects.filter(
                 code=sys_code).first()
             if sys_config_obj == None:
-                print("=> save sys config to db")
+                logger.debug("=> save sys config to db")
                 sys_config_model = SysConfigModel(
                     code=sys_code,
                     config=json.dumps(sys_config_json)
@@ -60,7 +63,7 @@ class SysConfig():
             else:
                 sys_config_json = json.loads(sys_config_obj.config)
         except Exception as e:
-            print("=> load sys config error: %s" % str(e))
+            logger.debug("=> load sys config error: %s" % str(e))
         return sys_config_json
 
     def save(self, sys_config_json: any):
@@ -70,7 +73,8 @@ class SysConfig():
 
     def load(self):
 
-        print("========================load sys config ========================")
+        logger.debug(
+            "======================== Load SysConfig ========================")
 
         sys_config_json = self.get()
 
@@ -78,7 +82,7 @@ class SysConfig():
         try:
             result = CustomRoleModel.objects.all()
             if len(result) == 0:
-                print("=> load default character")
+                logger.debug("=> load default character")
                 custom_role = CustomRoleModel(
                     role_name=aili_zh.role_name,
                     persona=aili_zh.persona,
@@ -89,14 +93,14 @@ class SysConfig():
                 )
                 custom_role.save()
         except Exception as e:
-            print("=> load default character ERROR: %s" % str(e))
+            logger.debug("=> load default character ERROR: %s" % str(e))
 
         # 加载角色配置
         character = sys_config_json["characterConfig"]["character"]
         yourName = sys_config_json["characterConfig"]["yourName"]
-        print("=> character Config")
-        print(f"character:{character}")
-        print(f"yourName:{yourName}")
+        logger.debug("=> character Config")
+        logger.debug(f"character:{character}")
+        logger.debug(f"yourName:{yourName}")
         self.character = character
         self.yourName = yourName
 
@@ -104,58 +108,61 @@ class SysConfig():
         os.environ['OPENAI_API_KEY'] = sys_config_json["languageModelConfig"]["openai"]["OPENAI_API_KEY"]
         os.environ['OPENAI_BASE_URL'] = sys_config_json["languageModelConfig"]["openai"]["OPENAI_BASE_URL"]
         os.environ['TEXT_GENERATION_API_URL'] = sys_config_json["languageModelConfig"]["textGeneration"]["TEXT_GENERATION_API_URL"]
-        os.environ['TEXT_GENERATION_WEB_SOCKET_URL'] = sys_config_json["languageModelConfig"]["textGeneration"].get("TEXT_GENERATION_WEB_SOCKET_URL","ws://127.0.0.1:5005/api/v1/stream")
+        os.environ['TEXT_GENERATION_WEB_SOCKET_URL'] = sys_config_json["languageModelConfig"]["textGeneration"].get(
+            "TEXT_GENERATION_WEB_SOCKET_URL", "ws://127.0.0.1:5005/api/v1/stream")
 
         # 是否开启proxy
         enableProxy = sys_config_json["enableProxy"]
-        print("=> Proxy Config ")
-        print(f"enableProxy:{enableProxy}")
+        logger.debug("=> Proxy Config ")
+        logger.debug(f"enableProxy:{enableProxy}")
         if enableProxy:
             os.environ['HTTP_PROXY'] = sys_config_json["httpProxy"]
             os.environ['HTTPS_PROXY'] = sys_config_json["httpsProxy"]
             os.environ['SOCKS5_PROXY'] = sys_config_json["socks5Proxy"]
-            print(f"HTTP_PROXY:" + os.environ['HTTP_PROXY'])
-            print(f"HTTPS_PROXY:"+os.environ['HTTPS_PROXY'])
-            print(f"SOCKS5_PROXY:"+os.environ['SOCKS5_PROXY'])
+            logger.debug(f"=> HTTP_PROXY:" + os.environ['HTTP_PROXY'])
+            logger.debug(f"=> HTTPS_PROXY:"+os.environ['HTTPS_PROXY'])
+            logger.debug(f"=> SOCKS5_PROXY:"+os.environ['SOCKS5_PROXY'])
         else:
             os.environ['HTTP_PROXY'] = ""
             os.environ['HTTPS_PROXY'] = ""
             os.environ['SOCKS5_PROXY'] = ""
 
         # 加载对话模块配置
-        print("=> Chat Config")
+        logger.debug("=> Chat Config")
         self.llm_model_driver = LlmModelDriver()
         self.conversation_llm_model_driver_type = sys_config_json[
             "conversationConfig"]["languageModel"]
-        print(f"conversation_llm_model_driver_type:" +
-              self.conversation_llm_model_driver_type)
+        logger.debug(f"conversation_llm_model_driver_type:" +
+                     self.conversation_llm_model_driver_type)
 
         # 是否开启记忆摘要
-        print("=> Memory Config")
+        logger.debug("=> Memory Config")
         self.enable_summary = sys_config_json["memoryStorageConfig"]["enableSummary"]
         self.enable_longMemory = sys_config_json["memoryStorageConfig"]["enableLongMemory"]
-        print("enable_longMemory："+str(self.enable_longMemory))
-        print("enable_summary："+str(self.enable_summary))
+        logger.debug("=> enable_longMemory："+str(self.enable_longMemory))
+        logger.debug("=> enable_summary："+str(self.enable_summary))
         if (self.enable_summary):
             self.summary_llm_model_driver_type = sys_config_json[
                 "memoryStorageConfig"]["languageModelForSummary"]
-            print("summary_llm_model_driver_type：" +
-                  self.summary_llm_model_driver_type)
+            logger.debug("=> summary_llm_model_driver_type：" +
+                         self.summary_llm_model_driver_type)
 
         self.enable_reflection = sys_config_json["memoryStorageConfig"]["enableReflection"]
-        print("enableReflection："+str(self.enable_reflection))
+        logger.debug("=> enableReflection："+str(self.enable_reflection))
         if (self.enable_reflection):
             self.reflection_llm_model_driver_type = sys_config_json[
                 "memoryStorageConfig"]["languageModelForReflection"]
-            print("reflection_llm_model_driver_type" +
-                  self.summary_llm_model_driver_type)
+            logger.debug("=> reflection_llm_model_driver_type" +
+                         self.summary_llm_model_driver_type)
 
         # 懒加载记忆模块
         try:
             self.memory_storage_driver = lazy_memory_storage(
                 sys_config_json=sys_config_json, sys_cofnig=self)
         except Exception as e:
-            print("[ERROR] init memory_storage error: %s" % str(e))
+            logger.error("init memory_storage error: %s" % str(e))
+
+        logger.info("=> Load SysConfig Success")
 
         # 加载直播配置
         # if self.bili_live_client != None:
