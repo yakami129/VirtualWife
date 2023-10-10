@@ -5,6 +5,7 @@ from ..utils.chat_message_utils import format_user_chat_text
 
 logger = logging.getLogger(__name__)
 
+
 class EmotionRecognition():
 
     """情感识别"""
@@ -64,7 +65,7 @@ class EmotionRecognition():
             input=f"{you_name}说{query}")+self.output_prompt
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
-        logger.debug("=> recognition:", result)
+        logger.debug(f"=> recognition:{result}")
         start_idx = result.find('{')
         end_idx = result.rfind('}')
         intent = ""
@@ -107,7 +108,7 @@ class EmotionRespond():
             you_name=you_name, query=query, intent=intent, histroy=long_history)+self.output_prompt
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
-        logger.debug("=> respond:", result)
+        logger.debug(f"=> respond:{result}")
         start_idx = result.find('{')
         end_idx = result.rfind('}')
         intent = ""
@@ -160,10 +161,10 @@ class GenerationEmote():
         self.llm_model_driver_type = llm_model_driver_type
 
     def generation_emote(self, query: str) -> str:
-        prompt =  self.input_prompt + self.output_prompt
+        prompt = self.input_prompt + self.output_prompt
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query=f"text:{query}", short_history=[], long_history="")
-        logger.debug("=> emote:", result)
+        logger.debug(f"=> emote:{result}")
         emote = "neutral"
         try:
             start_idx = result.find('{')

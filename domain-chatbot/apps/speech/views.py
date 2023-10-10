@@ -33,7 +33,7 @@ def generate(request):
             audio_file.write(file.read())
 
         delete_file(file_path)
-        logger.debug("delete file :", file_path)
+        logger.debug(f"delete file :{file_path}")
 
         audio_file.seek(0)
 

@@ -32,15 +32,14 @@ class TextGeneration():
         self.chat_api_url = self.text_generation_api_url + '/api/v1/generate'
         self.text_generation_web_socket_url = os.getenv(
             "TEXT_GENERATION_WEB_SOCKET_URL")
-        logger.debug("=> init TextGenerationWebUiApi")
-        logger.debug('text_generation_api_url:', self.text_generation_api_url)
-        logger.debug('text_generation_web_socket_url:',
-              self.text_generation_web_socket_url)
-        logger.debug('chat_api_url:', self.chat_api_url)
-        logger.debug('max_new_tokens:', self.max_new_tokens)
-        logger.debug('temperature:', self.temperature)
-        logger.debug('top_p:', self.top_p)
-        logger.info('=> Init TextGenerationWebUiApi success')
+        logger.debug("======================== Init TextGenerationWebUiApi ========================")
+        logger.debug(f'=> text_generation_api_url:{self.text_generation_api_url}')
+        logger.debug(f'=> text_generation_web_socket_url:{self.text_generation_web_socket_url}')
+        logger.debug(f'=> chat_api_url:{self.chat_api_url}')
+        logger.debug(f'=> max_new_tokens:{self.max_new_tokens}' )
+        logger.debug(f'=> temperature:{self.temperature}')
+        logger.debug(f'=> top_p:{self.top_p}')
+        logger.info('=> Init TextGenerationWebUiApi Success')
 
 
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:

@@ -186,12 +186,12 @@ LOGGING = {
             'encoding': 'utf-8',  # 放置中文乱码
         },
         "console": {  # 打印到终端console
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
     },
-    "root": {"level": "INFO", "handlers": ["console"]},
+    "root": {"level": "INFO", "handlers": ["console","file"]},
     "loggers": {
         "django.request": {  # Django的request发生error会自动记录
             "handlers": ["mail_admins"],
