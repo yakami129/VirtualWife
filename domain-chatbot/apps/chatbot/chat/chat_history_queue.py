@@ -68,4 +68,4 @@ class ChatHistoryMessageQueryJobTask():
         background_thread.daemon = True
         # 启动后台线程
         background_thread.start()
-        logger.info("=> ChatHistoryMessageQueryJobTask start")
+        logger.info("=> Start ChatHistoryMessageQueryJobTask Success")
