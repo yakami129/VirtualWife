@@ -1,3 +1,4 @@
+import logging
 import queue
 import re
 import threading
@@ -15,10 +16,9 @@ import threading
 
 # 聊天消息通道
 chat_channel = "chat_channel"
-
 # 创建一个线程安全的队列
 chat_queue = queue.SimpleQueue()
-
+logger = logging.getLogger(__name__)
 
 class RealtimeMessage():
     type: str
@@ -105,4 +105,4 @@ class RealtimeMessageQueryJobTask():
         background_thread.daemon = True
         # 启动后台线程
         background_thread.start()
-        print("=> RealtimeMessageQueryJobTask start")
+        logger.info("=> RealtimeMessageQueryJobTask start success")

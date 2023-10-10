@@ -11,8 +11,7 @@ from rest_framework.response import Response
 from .tts import single_tts_driver
 from django.http import HttpResponse, StreamingHttpResponse
 
-logging.basicConfig(level=logging.INFO)
-
+logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 def generate(request):
@@ -34,7 +33,7 @@ def generate(request):
             audio_file.write(file.read())
 
         delete_file(file_path)
-        print("delete file :", file_path)
+        logger.debug("delete file :", file_path)
 
         audio_file.seek(0)
 
@@ -44,7 +43,7 @@ def generate(request):
         response.write(audio_file.getvalue())
         return response
     except Exception as e:
-        print(f"generate_audio error: {e}")
+        logger.error(f"generate_audio error: {e}")
         return HttpResponse(status=500, content="Failed to generate audio.")
 
 
@@ -70,5 +69,5 @@ def translation(request):
             text=text, target_language=target_language)
         return Response({"response": target_result, "code": "200"})
     except Exception as e:
-        print(f"translation error: {e}")
+        logger.error(f"translation error: {e}")
         return HttpResponse(status=500, content="Failed to translation error.")

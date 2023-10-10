@@ -1,8 +1,10 @@
+import logging
 import os
 import subprocess
 
 from ..utils.uuid_generator import generate
 
+logger = logging.getLogger(__name__)
 
 edge_voices = [
     {"id": "zh-CN-XiaoxiaoNeural", "name": "xiaoxiao"},
@@ -34,7 +36,6 @@ class Edge():
     @staticmethod
     def create_audio(text, voiceId):
         new_text = Edge.remove_html(text)
-        print(f"Text without html tags: {new_text}")
         pwdPath = os.getcwd()
         file_name = generate() + ".mp3"
         filePath = pwdPath + "/tmp/" + file_name

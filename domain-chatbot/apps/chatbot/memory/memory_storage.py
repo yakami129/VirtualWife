@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Tuple
 
 from ..config.sys_config import SysConfig
@@ -9,6 +10,7 @@ from .base_storage import BaseStorage
 from ..utils.snowflake_utils import SnowFlake
 from typing import Any, Dict, List
 
+logger = logging.getLogger(__name__)
 
 class MemoryStorageDriver():
 
@@ -122,7 +124,7 @@ class MemorySummary():
     def summary(self, llm_model_type: str, input: str) -> str:
         result = self.sys_config.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
                                                        you_name="", query=f"input:{input}", short_history=[], long_history="")
-        print("=> summary:", result)
+        logger.debug("=> summary:", result)
         summary = input
         if result:
             # 寻找 JSON 子串的开始和结束位置
@@ -133,7 +135,7 @@ class MemorySummary():
                 json_data = json.loads(json_str)
                 summary = json_data["Summary"]
             else:
-                print("未找到匹配的JSON字符串")
+                logger.warn("未找到匹配的JSON字符串")
         return summary
 
 
@@ -156,7 +158,7 @@ class MemoryImportance():
     def importance(self, llm_model_type: str, input: str) -> int:
         result = self.sys_config.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
                                                        you_name="", query=f"memory:{input}", short_history=[], long_history="")
-        print("=> score:", result)
+        logger.debug("=> score:", result)
         # 寻找 JSON 子串的开始和结束位置
         start_idx = result.find('{')
         end_idx = result.rfind('}')
@@ -166,5 +168,5 @@ class MemoryImportance():
             json_data = json.loads(json_str)
             score = int(json_data["score"])
         else:
-            print("未找到匹配的JSON字符串")
+            logger.warn("未找到匹配的JSON字符串")
         return score

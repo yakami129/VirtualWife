@@ -1,7 +1,9 @@
 import json
+import logging
 from ..llms.llm_model_strategy import LlmModelDriver
 from ..utils.chat_message_utils import format_user_chat_text
 
+logger = logging.getLogger(__name__)
 
 class EmotionRecognition():
 
@@ -62,7 +64,7 @@ class EmotionRecognition():
             input=f"{you_name}说{query}")+self.output_prompt
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
-        print("=> recognition:", result)
+        logger.debug("=> recognition:", result)
         start_idx = result.find('{')
         end_idx = result.rfind('}')
         intent = ""
@@ -71,7 +73,7 @@ class EmotionRecognition():
             json_data = json.loads(json_str)
             intent = json_data["intent"]
         else:
-            print("未找到匹配的JSON字符串")
+            logger.warn("未找到匹配的JSON字符串")
         return intent
 
 
@@ -105,7 +107,7 @@ class EmotionRespond():
             you_name=you_name, query=query, intent=intent, histroy=long_history)+self.output_prompt
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
-        print("=> respond:", result)
+        logger.debug("=> respond:", result)
         start_idx = result.find('{')
         end_idx = result.rfind('}')
         intent = ""
@@ -114,7 +116,7 @@ class EmotionRespond():
             json_data = json.loads(json_str)
             intent = json_data["respond"]
         else:
-            print("未找到匹配的JSON字符串")
+            logger.warn("未找到匹配的JSON字符串")
         return intent
 
 
@@ -128,16 +130,6 @@ class GenerationEmotionRespondChatPropmt():
         {you_name}当前的情绪状态：{}
         <</SYS>>
         """
-
-    # prompt: str = """
-    #    <s>[INST] <<SYS>>
-    #     下面是{role_name}的角色扮演信息
-    #     ```
-    #     {character_prompt}
-    #     ```
-    #     {role_name}需要按照“{respond}”这条指导思想，调整自己的语气和对话策略
-    #     <</SYS>>
-    #     """
 
     def generation_propmt(self, role_name: str, character_prompt: str, respond: str):
         return self.prompt.format(role_name=role_name, character_prompt=character_prompt, respond=respond)
@@ -171,7 +163,7 @@ class GenerationEmote():
         prompt =  self.input_prompt + self.output_prompt
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query=f"text:{query}", short_history=[], long_history="")
-        print("=> emote:", result)
+        logger.debug("=> emote:", result)
         emote = "neutral"
         try:
             start_idx = result.find('{')
@@ -181,7 +173,7 @@ class GenerationEmote():
                 json_data = json.loads(json_str)
                 emote = json_data["emote"]
             else:
-                print("未找到匹配的JSON字符串")
+                logger.warn("未找到匹配的JSON字符串")
         except Exception as e:
-            print("GenerationEmote error: %s" % str(e))
+            logger.error("GenerationEmote error: %s" % str(e))
         return emote

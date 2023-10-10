@@ -1,9 +1,10 @@
 import json
+import logging
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
 
 chat_channel = "chat_channel"
-
+logger = logging.getLogger(__name__)
 
 class ChatConsumer(WebsocketConsumer):
 
@@ -14,7 +15,7 @@ class ChatConsumer(WebsocketConsumer):
             chat_channel,  # 设置频道名称
             self.channel_name
         )
-        print('=> ws connect group :', chat_channel)
+        logger.info('=> ws connect group :', chat_channel)
 
     def disconnect(self, close_code):
         # 在客户端断开连接时从频道中移除
@@ -24,12 +25,12 @@ class ChatConsumer(WebsocketConsumer):
         )
 
     def receive(self, text_data):
-        print("=> run receive: ", text_data)
+        logger.info("=> run receive: ", text_data)
         #self.send(text_data=json.dumps({"message": text_data}))
 
       # Receive message from room group
     def chat_message(self, event):
         message = event["message"]
         text_data = json.dumps({"message": message})
-        print("=> run chat_message :", text_data)
+        logger.info("=> run chat_message :", text_data)
         self.send(text_data=text_data)

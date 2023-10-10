@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
+import logging
 from .edge_tts import Edge, edge_voices
 from .bert_vits2 import BertVits2
 
+logger = logging.getLogger(__name__)
 
 class BaseTTS(ABC):
 
@@ -23,8 +25,6 @@ class EdgeTTS(BaseTTS):
     '''Edge 微软语音合成类'''
 
     def synthesis(self, text: str, voice_id: str, **kwargs) -> str:
-        print("voiceId:", voice_id)
-        print("text:", text)
         return Edge.create_audio(text=text, voiceId=voice_id)
 
     def get_voices(self) -> list[dict[str, str]]:
@@ -51,7 +51,9 @@ class TTSDriver:
 
     def synthesis(self, type: str, text: str, voice_id: str, **kwargs) -> str:
         tts = self.get_strategy(type)
-        return tts.synthesis(text=text, voice_id=voice_id, kwargs=kwargs)
+        file_name = tts.synthesis(text=text, voice_id=voice_id, kwargs=kwargs)
+        logger.info(f"TTS synthesis # type:{type} text:{text} => file_name: {file_name} #")
+        return file_name;
 
     def get_voices(self, type: str) -> list[dict[str, str]]:
         tts = self.get_strategy(type)

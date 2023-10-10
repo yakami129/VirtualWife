@@ -9,7 +9,7 @@ from .sdk.models import (HeartbeatMessage, DanmakuMessage, GiftMessage, GuardBuy
                          SuperChatMessage, LikeInfoV3ClickMessage, InteractWordMessage)
 from ..insight_message_queue import InsightMessage, put_message
 import logging
-logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -22,15 +22,17 @@ class BiliLiveClient():
     cookie_str: str
 
     def __init__(self) -> None:
-        print("====================== init BLiveClient ====================== ")
+        logger.debug(
+            "====================== init BLiveClient ====================== ")
         self.room_id = os.environ['B_STATION_ID']
         uid = os.environ['B_UID']
         if uid:
             self.uid = int(uid)
         self.cookie_str = os.environ['B_COOKIE']
-        print("=> room_id:", self.room_id)
-        print("=> uid:", self.uid)
-        print("=> cookie_str:",  self.cookie_str)
+        logger.debug(f"=> room_id:{ self.room_id}")
+        logger.debug(f"=> uid:{self.uid}")
+        logger.debug(f"=> cookie_str:{self.cookie_str}")
+        logger.info("=> Init BLiveClient success")
 
     async def start(self):
         self.client = BLiveClient(
@@ -38,7 +40,7 @@ class BiliLiveClient():
         handler = BiliHandler(room_id=self.room_id)
         self.client.add_handler(handler)
         self.client.start()
-        print("=> start BLiveClient success")
+        logger.info("=> Start BLiveClient success")
         enable = True
         while (enable):
             await asyncio.sleep(60)
@@ -46,7 +48,7 @@ class BiliLiveClient():
     async def stop(self):
         self.client.join()
         self.client.stop_and_close()
-        print("=> stop BLiveClient success")
+        logger.info("=> Stop BLiveClient success")
 
 
 class BiliHandler(BaseHandler):
@@ -66,7 +68,6 @@ class BiliHandler(BaseHandler):
         }
 
     async def _on_danmaku(self, client: BLiveClient, message: DanmakuMessage):
-        print(message.msg)
         put_message(InsightMessage(
             type="danmaku", user_name=message.uname, content=message.msg, emote="neutral", action=""))
 
@@ -81,7 +82,7 @@ class BiliHandler(BaseHandler):
             type="danmaku", user_name=message.gift_name, content=message_str, emote="happy", action=""))
 
     async def _on_super_chat(self, client: BLiveClient, message: SuperChatMessage):
-        print(
+        logger.debug(
             f'[{client.room_id}] 醒目留言 ¥{message.price} {message.uname}：{message.message}')
 
     async def _on_like_click(self, client: BLiveClient, message: LikeInfoV3ClickMessage):
@@ -110,7 +111,7 @@ def bili_live_client_main():
         # 启动后台线程
         background_thread.start()
         enable_bili_live = True
-        print("=> biliLiveClient start")
+        logger.info("=> biliLiveClient start")
 
 
 def start_bili_live_client():

@@ -1,4 +1,5 @@
 import datetime
+import logging
 import jieba
 import jieba.analyse
 from django.db.models import Q
@@ -6,12 +7,12 @@ from ..base_storage import BaseStorage
 from ...models import LocalMemoryModel
 
 # TODO 搜索方式待整改
-
+logger = logging.getLogger(__name__)
 
 class LocalStorage(BaseStorage):
 
     def __init__(self, memory_storage_config: dict[str, str]):
-        print("========================load LocalStorage ========================")
+        logger.info("=> load LocalStorage success")
 
     def search(self, query_text: str, limit: int, owner: str) -> list[str]:
         # 使用 Q 对象组合查询条件，

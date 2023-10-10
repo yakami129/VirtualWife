@@ -1,3 +1,4 @@
+import logging
 import os
 from ...utils.str_utils import remove_spaces_and_tabs
 from langchain.chat_models import ChatOpenAI
@@ -6,6 +7,7 @@ from langchain.schema import (
 )
 import openai
 
+logger = logging.getLogger(__name__)
 
 class OpenAIGeneration():
 
@@ -25,7 +27,7 @@ class OpenAIGeneration():
 
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         prompt = prompt + query
-        print(f"prompt:{prompt}")
+        logger.debug(f"prompt:{prompt}")
         llm_result = self.llm.generate(
             messages=[[HumanMessage(content=prompt)]])
         llm_result_text = llm_result.generations[0][0].text
@@ -39,7 +41,7 @@ class OpenAIGeneration():
                          history: list[dict[str, str]],
                          realtime_callback=None,
                          conversation_end_callback=None):
-        print(f"prompt:{prompt}")
+        logger.debug(f"prompt:{prompt}")
         messages = []
         for item in history:
             message = {"role": "user", "content": item["human"]}
