@@ -105,4 +105,4 @@ class RealtimeMessageQueryJobTask():
         background_thread.daemon = True
         # 启动后台线程
         background_thread.start()
-        logger.info("=> RealtimeMessageQueryJobTask start success")
+        logger.info("=> Start RealtimeMessageQueryJobTask Success")

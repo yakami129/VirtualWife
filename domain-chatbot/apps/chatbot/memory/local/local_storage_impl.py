@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 class LocalStorage(BaseStorage):
 
     def __init__(self, memory_storage_config: dict[str, str]):
-        logger.info("=> load LocalStorage success")
+        logger.info("=> Load LocalStorage Success")
 
     def search(self, query_text: str, limit: int, owner: str) -> list[str]:
         # 使用 Q 对象组合查询条件，

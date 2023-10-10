@@ -73,4 +73,4 @@ class InsightMessageQueryJobTask():
         background_thread.daemon = True
         # 启动后台线程
         background_thread.start()
-        logger.info("=> InsightMessageQueryJobTask start")
+        logger.info("=> Start InsightMessageQueryJobTask Success")

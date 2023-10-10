@@ -144,7 +144,7 @@ class SysConfig():
         if (self.enable_summary):
             self.summary_llm_model_driver_type = sys_config_json[
                 "memoryStorageConfig"]["languageModelForSummary"]
-            logger.debug("summary_llm_model_driver_type：" +
+            logger.debug("=> summary_llm_model_driver_type：" +
                          self.summary_llm_model_driver_type)
 
         self.enable_reflection = sys_config_json["memoryStorageConfig"]["enableReflection"]
@@ -152,7 +152,7 @@ class SysConfig():
         if (self.enable_reflection):
             self.reflection_llm_model_driver_type = sys_config_json[
                 "memoryStorageConfig"]["languageModelForReflection"]
-            logger.debug("reflection_llm_model_driver_type" +
+            logger.debug("=> reflection_llm_model_driver_type" +
                          self.summary_llm_model_driver_type)
 
         # 懒加载记忆模块
@@ -162,7 +162,7 @@ class SysConfig():
         except Exception as e:
             logger.error("init memory_storage error: %s" % str(e))
 
-        logger.info("=> Load SysConfig success")
+        logger.info("=> Load SysConfig Success")
 
         # 加载直播配置
         # if self.bili_live_client != None:

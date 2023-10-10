@@ -32,7 +32,7 @@ class BiliLiveClient():
         logger.debug(f"=> room_id:{ self.room_id}")
         logger.debug(f"=> uid:{self.uid}")
         logger.debug(f"=> cookie_str:{self.cookie_str}")
-        logger.info("=> Init BLiveClient success")
+        logger.info("=> Init BLiveClient Success")
 
     async def start(self):
         self.client = BLiveClient(
@@ -40,7 +40,7 @@ class BiliLiveClient():
         handler = BiliHandler(room_id=self.room_id)
         self.client.add_handler(handler)
         self.client.start()
-        logger.info("=> Start BLiveClient success")
+        logger.info("=> Start BLiveClient Success")
         enable = True
         while (enable):
             await asyncio.sleep(60)
@@ -48,7 +48,7 @@ class BiliLiveClient():
     async def stop(self):
         self.client.join()
         self.client.stop_and_close()
-        logger.info("=> Stop BLiveClient success")
+        logger.info("=> Stop BLiveClient Success")
 
 
 class BiliHandler(BaseHandler):
@@ -111,7 +111,7 @@ def bili_live_client_main():
         # 启动后台线程
         background_thread.start()
         enable_bili_live = True
-        logger.info("=> biliLiveClient start")
+        logger.info("=> Start BiliLiveClient Success")
 
 
 def start_bili_live_client():
