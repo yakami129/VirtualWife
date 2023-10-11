@@ -160,9 +160,9 @@ http://localhost/
 
 ## 联系我们
 
-| 技术交流群 | 打赏入股(注意备注姓名)                   |
-|-------|--------------------------------|
-| ![winxin05.jpg](docs/winxin05.jpg)  | ![wx-skm.jpg](docs/wx-skm.jpg) |
+| 技术交流群 | 打赏入股(注意备注姓名)  | 外包定制开发(注明来意)                    |
+|-------|-------------------------------|---------------------------------|
+| ![winxin05.jpg](docs/winxin05.jpg)  | ![wx-skm.jpg](docs/wx-skm.jpg) | ![wx-skm.jpg](docs/wx-alan.jpg) |
 
 
 
