@@ -9,10 +9,15 @@ VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很
 - 支持更换角色模型，可从VRM模型市场[Vroid](https://hub.vroid.com/)下载
 - 支持长短期记忆功能
 - 支持多LLM模型切换，并且支持私有化模型，具体使用说明请查阅[FAQ](FAQ.md)
-- 支持角色拥有简单的表情表达
+- 支持文字驱动表情，文字驱动动作
 - 支持B站进行直播，具体使用说明请查阅[FAQ](FAQ.md)
 - 支持通过中文进行语音对话
+- 支持Edge（微软）、Bert-VITS2语音切换
 - 流式传输数据，拥有更快的响应速度
+
+# Example Video
+
+https://github.com/yakami129/VirtualWife/assets/36467094/51de1c07-f468-4987-8648-dc6b810550ad
 
 # Roadmap
 
