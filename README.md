@@ -15,11 +15,9 @@ VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很
 - 支持Edge（微软）、Bert-VITS2语音切换
 - 流式传输数据，拥有更快的响应速度
 
-# example video
+# Example Video
 
-<video id="video" controls="" preload="none" poster="封面">
-      <source id="mp4" src="https://github.com/yakami129/VirtualWife/docs/demo01.MP4" type="video/mp4">
-</video>
+https://raw.githubusercontent.com/yakami129/VirtualWife/feature/docs/docs/demo01.MP4
 
 # Roadmap
 
