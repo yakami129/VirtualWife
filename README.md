@@ -17,7 +17,9 @@ VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很
 
 # example video
 
-https://github.com/yakami129/VirtualWife/docs/demo01.MP4
+<video id="video" controls="" preload="none" poster="封面">
+      <source id="mp4" src="https://github.com/yakami129/VirtualWife/docs/demo01.MP4" type="video/mp4">
+</video>
 
 # Roadmap
 
