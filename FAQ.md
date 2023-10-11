@@ -61,7 +61,9 @@ sudo docker compose up -d
 ```
 - 解决方案：
 ```
-rm domain-chatvrm/package-lock.json
+cd domain-chatvrm
+rm package-lock.json
+npm install
 npm run dev
 ```
 
