@@ -24,3 +24,4 @@ volcengine==1.0.103
 requests==2.31.0
 jieba==0.42.1
 websockets==11.0.3
+APScheduler==3.10.4

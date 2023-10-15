@@ -101,6 +101,7 @@ class TextGeneration():
                             realtime_callback(role_name, you_name, text)
                         yield text
                     case 'stream_end':
+                        realtime_callback(role_name, you_name, "。")
                         conversation_end_callback(
                             role_name, answer, you_name, query)
                         return

@@ -69,8 +69,8 @@ class InsightMessageQueryJobTask():
     def start():
         # 创建后台线程
         background_thread = threading.Thread(target=send_message)
-        # 将后台线程设置为守护线程，以便在主线程结束时自动退出
         background_thread.daemon = True
+        
         # 启动后台线程
         background_thread.start()
         logger.info("=> Start InsightMessageQueryJobTask Success")

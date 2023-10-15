@@ -149,7 +149,7 @@ export const Menu = ({
           onClickResetSystemPrompt={handleClickResetSystemPrompt}
         />
       )}
-      {/* {!showChatLog && assistantMessage && (
+       {/* {!showChatLog && assistantMessage && (
         <AssistantText message={assistantMessage} role_name={globalConfig.characterConfig.character+""} />
       )} */}
       <input
