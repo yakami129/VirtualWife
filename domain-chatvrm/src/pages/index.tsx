@@ -276,7 +276,7 @@ export default function Home() {
 
             handleBehaviorAction(
                 "behavior_action",
-                "idle_happy_03",
+                "idle_01",
                 "neutral",
             );
 
