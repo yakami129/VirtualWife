@@ -68,6 +68,7 @@ def send_message():
             traceback.print_exc()
 
 
+
 def realtime_callback(role_name: str, you_name: str, content: str):
     if not hasattr(realtime_callback, "message_buffer"):
         realtime_callback.message_buffer = ""
@@ -101,7 +102,6 @@ class RealtimeMessageQueryJobTask():
     def start():
         # 创建后台线程
         background_thread = threading.Thread(target=send_message)
-        # 将后台线程设置为守护线程，以便在主线程结束时自动退出
         background_thread.daemon = True
         # 启动后台线程
         background_thread.start()

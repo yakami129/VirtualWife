@@ -5,7 +5,7 @@ import threading
 from dotenv import load_dotenv
 from .sdk.handlers import BaseHandler
 from .sdk.client import BLiveClient
-from .sdk.models import (HeartbeatMessage, DanmakuMessage, GiftMessage, GuardBuyMessage,
+from .sdk.models import (EntryEffectMessage, HeartbeatMessage, DanmakuMessage, GiftMessage, GuardBuyMessage,
                          SuperChatMessage, LikeInfoV3ClickMessage, InteractWordMessage)
 from ..insight_message_queue import InsightMessage, put_message
 import logging
@@ -97,7 +97,14 @@ class BiliHandler(BaseHandler):
         message_str = f'{message.uname}进入了直播间，欢迎欢迎'
         put_message(InsightMessage(
             type="danmaku", user_name=message.uname, content=message_str, emote="happy", action="standing_greeting"))
-
+        
+    async def _on_entry_effect(self, client: BLiveClient, message: EntryEffectMessage):
+        """
+        用户进入直播间
+        """
+        message_str = message.copy_writing
+        put_message(InsightMessage(
+            type="danmaku", user_name="system", content=message_str, emote="happy", action="standing_greeting"))
 
 enable_bili_live = False
 

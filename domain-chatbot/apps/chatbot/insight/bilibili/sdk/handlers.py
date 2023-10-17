@@ -111,7 +111,7 @@ class BaseHandler(HandlerInterface):
          # 欢迎加入房间
         'WELCOME': __welcome_callback,
          # 舰长、高能榜、老爷进入直播间
-        'ENTRY_EFFECT': __entry_effect_callback,
+        'ENTRY_EFFECT_MUST_RECEIVE': __entry_effect_callback,
          # 用户进入直播间，用户关注直播间
         'INTERACT_WORD': __interact_word_callback,
     }
@@ -175,12 +175,12 @@ class BaseHandler(HandlerInterface):
 
     async def _on_welcome(self, client: client_.BLiveClient, message):
         """
-        xx进入房间
+        不生效了 xx进入房间
         """
 
     async def _on_entry_effect(self, client: client_.BLiveClient, message: models.EntryEffectMessage):
         """
-        舰长进入房间
+        xx进入房间
         """
 
     async def _on_interact_word(self, client: client_.BLiveClient, message: models.InteractWordMessage):
