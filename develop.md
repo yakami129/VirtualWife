@@ -7,6 +7,7 @@
 
 ### 先决条件
 - 安装conda，在Linux或WSL上，可以使用以下两个命令自动安装它（源代码）
+  - 其他安装方式：[anaconda](https://anaconda.org.cn/anaconda/install/windows/)
 ```shell
 curl -sL "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" > "Miniconda3.sh"
 bash Miniconda3.sh
