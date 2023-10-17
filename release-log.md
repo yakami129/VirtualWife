@@ -10,7 +10,7 @@ release:
 
 fixbug:
 - [ ] 1. 源码部署，修改代码时，会导致重复接收和发送消息
-
+- [x] 2. 修复text_generation_webui聊天过程中出现，不能正常回复（改为chat模式）
 
 # v2.0.5 发布日志
 
