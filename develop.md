@@ -3,7 +3,21 @@
 ### 环境要求
 
 - python: 3.10.12
-- node: 14.21.3
+- node: 15.14.0
+
+### 先决条件
+- 安装conda，在Linux或WSL上，可以使用以下两个命令自动安装它（源代码）
+  - 其他安装方式：[anaconda](https://anaconda.org.cn/anaconda/install/windows/)
+```shell
+curl -sL "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" > "Miniconda3.sh"
+bash Miniconda3.sh
+```
+- 初始化环境
+```shell
+conda create -n vw python=3.10.12
+conda activate vw
+conda install -c conda-forge nodejs=15.14.0
+```
 
 ### 如何启动domain-chatbot？
 
@@ -50,6 +64,7 @@ cd domain-chatvrm
 ```
 - 安装domain-chatvrm项目依赖
 ```shell
+rm package-lock.json
 npm install
 ```
 - 启动domain-chatvrm项目
