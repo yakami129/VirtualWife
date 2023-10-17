@@ -63,6 +63,7 @@ cd domain-chatvrm
 ```
 - 安装domain-chatvrm项目依赖
 ```shell
+rm package-lock.json
 npm install
 ```
 - 启动domain-chatvrm项目
