@@ -6,6 +6,7 @@ from .character import Character
 PROMPT = """
 <s>[INST] <<SYS>>
 Your response should be plain text, NOT IN JSON FORMAT, just response like a normal chatting.
+You need to role play now.
 Your character:
 {persona}
 {scenario}
