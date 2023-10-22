@@ -1,5 +1,6 @@
 import json
 import logging
+import traceback
 from typing import Tuple
 
 from ..config.sys_config import SysConfig
@@ -36,17 +37,22 @@ class MemoryStorageDriver():
 
     def search_lang_memory(self, query_text: str, you_name: str, role_name: str) -> str:
         if self.sys_config.enable_longMemory:
-            # 获取长期记忆，按照角色划分
-            long_memory = self.long_memory_storage.search(
-                query_text, 3, sender=you_name, owner=role_name)
-            long_history = ""
-            summary_historys = []
-            if len(long_memory) > 0:
-                # 将json字符串转换为字典
-                for i in range(len(long_memory)):
-                    summary_historys.append(long_memory[i])
-                long_history = ";".join(summary_historys)
-            return long_history
+            try:
+                # 获取长期记忆，按照角色划分
+                long_memory = self.long_memory_storage.search(
+                    query_text, 3, sender=you_name, owner=role_name)
+                long_history = ""
+                summary_historys = []
+                if len(long_memory) > 0:
+                    # 将json字符串转换为字典
+                    for i in range(len(long_memory)):
+                        summary_historys.append(long_memory[i])
+                    long_history = ";".join(summary_historys)
+                return long_history
+            except Exception as e:
+                traceback.print_exc()
+                logger.error("chat error: %s" % str(e))
+            return ""
         else:
             return ""
 

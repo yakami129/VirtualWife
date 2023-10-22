@@ -10,6 +10,7 @@ from ..utils.datatime_utils import get_current_time_str
 
 logger = logging.getLogger(__name__)
 
+
 class ProcessCore():
 
     generation_emotion_respond_chat_propmt: GenerationEmotionRespondChatPropmt
@@ -38,25 +39,22 @@ class ProcessCore():
             long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
                 query_text=query, you_name=you_name, role_name=role_name)
 
-
             current_time = get_current_time_str()
             prompt = prompt.format(
                 you_name=you_name, long_history=long_history, current_time=current_time)
 
             # 调用大语言模型流式生成对话
             singleton_sys_config.llm_model_driver.chatStream(prompt=prompt,
-                                                                type=singleton_sys_config.conversation_llm_model_driver_type,
-                                                                role_name=role_name,
-                                                                you_name=you_name,
-                                                                query=query,
-                                                                history=short_history,
-                                                                realtime_callback=realtime_callback,
-                                                                conversation_end_callback=conversation_end_callback)
+                                                             type=singleton_sys_config.conversation_llm_model_driver_type,
+                                                             role_name=role_name,
+                                                             you_name=you_name,
+                                                             query=query,
+                                                             history=short_history,
+                                                             realtime_callback=realtime_callback,
+                                                             conversation_end_callback=conversation_end_callback)
         except Exception as e:
             error_message = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
             traceback.print_exc()
             logger.error("chat error: %s" % str(e))
             realtime_callback(role_name=role_name,
-                              you_name=you_name, content=error_message)
-            
-
+                              you_name=you_name, content=error_message, end_bool=True)

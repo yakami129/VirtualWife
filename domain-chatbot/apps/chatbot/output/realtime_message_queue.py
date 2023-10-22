@@ -20,6 +20,7 @@ chat_channel = "chat_channel"
 chat_queue = queue.SimpleQueue()
 logger = logging.getLogger(__name__)
 
+
 class RealtimeMessage():
     type: str
     user_name: str
@@ -68,14 +69,13 @@ def send_message():
             traceback.print_exc()
 
 
-
-def realtime_callback(role_name: str, you_name: str, content: str):
+def realtime_callback(role_name: str, you_name: str, content: str, end_bool: bool):
     if not hasattr(realtime_callback, "message_buffer"):
         realtime_callback.message_buffer = ""
 
     realtime_callback.message_buffer += content
     # 如果 content 以结束标点符号或空结尾，打印并清空缓冲区
-    if re.match(r"^(.+[。．！？~\n]|.{5,}[、,])", realtime_callback.message_buffer):
+    if re.match(r"^(.+[。．！？\n]|.{10,}[、,])", realtime_callback.message_buffer) or end_bool:
         realtime_callback.message_buffer = format_chat_text(
             role_name, you_name, realtime_callback.message_buffer)
 
