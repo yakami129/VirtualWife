@@ -25,10 +25,11 @@
 - [text-generation-webui详细安装教程](https://www.bilibili.com/video/BV1gM4y1J7dD/?spm_id_from=333.788&vd_source=11f40bfaa73ba3e80ac4ad36fb18f359)
 > 注意整个安装过程中，一定需要挂梯子
 
-### 目前支持的llama2模型
+### 目前支持的LLM模型
 
 - ziqingyang_chinese-alpaca-2-13b
 - ziqingyang_chinese-alpaca-2-7b
+- Baichuan2-13B-Chat
 
 ### 关于长期记忆中的Milvus如何安装？
 ```

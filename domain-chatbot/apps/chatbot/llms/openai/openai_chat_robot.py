@@ -9,6 +9,7 @@ import openai
 
 logger = logging.getLogger(__name__)
 
+
 class OpenAIGeneration():
 
     llm: ChatOpenAI
@@ -70,7 +71,7 @@ class OpenAIGeneration():
                 answer += content
                 if realtime_callback:
                     realtime_callback(role_name, you_name,
-                                      content)  # 调用实时消息推送的回调函数
+                                      content, False)  # 调用实时消息推送的回调函数
             elif finish_reason:
                 if conversation_end_callback:
                     conversation_end_callback(role_name, answer, you_name,
