@@ -1,4 +1,6 @@
 import json
+import logging
+import traceback
 from typing import Tuple
 
 from ..config.sys_config import SysConfig
@@ -9,6 +11,7 @@ from .base_storage import BaseStorage
 from ..utils.snowflake_utils import SnowFlake
 from typing import Any, Dict, List
 
+logger = logging.getLogger(__name__)
 
 class MemoryStorageDriver():
 
@@ -34,17 +37,22 @@ class MemoryStorageDriver():
 
     def search_lang_memory(self, query_text: str, you_name: str, role_name: str) -> str:
         if self.sys_config.enable_longMemory:
-            # 获取长期记忆，按照角色划分
-            long_memory = self.long_memory_storage.search(
-                query_text, 3, sender=you_name, owner=role_name)
-            long_history = ""
-            summary_historys = []
-            if len(long_memory) > 0:
-                # 将json字符串转换为字典
-                for i in range(len(long_memory)):
-                    summary_historys.append(long_memory[i])
-                long_history = ";".join(summary_historys)
-            return long_history
+            try:
+                # 获取长期记忆，按照角色划分
+                long_memory = self.long_memory_storage.search(
+                    query_text, 3, sender=you_name, owner=role_name)
+                long_history = ""
+                summary_historys = []
+                if len(long_memory) > 0:
+                    # 将json字符串转换为字典
+                    for i in range(len(long_memory)):
+                        summary_historys.append(long_memory[i])
+                    long_history = ";".join(summary_historys)
+                return long_history
+            except Exception as e:
+                traceback.print_exc()
+                logger.error("chat error: %s" % str(e))
+            return ""
         else:
             return ""
 
@@ -122,7 +130,7 @@ class MemorySummary():
     def summary(self, llm_model_type: str, input: str) -> str:
         result = self.sys_config.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
                                                        you_name="", query=f"input:{input}", short_history=[], long_history="")
-        print("=> summary:", result)
+        logger.debug("=> summary:", result)
         summary = input
         if result:
             # 寻找 JSON 子串的开始和结束位置
@@ -133,7 +141,7 @@ class MemorySummary():
                 json_data = json.loads(json_str)
                 summary = json_data["Summary"]
             else:
-                print("未找到匹配的JSON字符串")
+                logger.warn("未找到匹配的JSON字符串")
         return summary
 
 
@@ -156,7 +164,7 @@ class MemoryImportance():
     def importance(self, llm_model_type: str, input: str) -> int:
         result = self.sys_config.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
                                                        you_name="", query=f"memory:{input}", short_history=[], long_history="")
-        print("=> score:", result)
+        logger.debug("=> score:", result)
         # 寻找 JSON 子串的开始和结束位置
         start_idx = result.find('{')
         end_idx = result.rfind('}')
@@ -166,5 +174,5 @@ class MemoryImportance():
             json_data = json.loads(json_str)
             score = int(json_data["score"])
         else:
-            print("未找到匹配的JSON字符串")
+            logger.warn("未找到匹配的JSON字符串")
         return score

@@ -412,11 +412,11 @@ class BLiveClient:
                 pass
             except AuthError:
                 # 认证失败了，应该重新获取token再重连
-                logger.exception('room=%d auth failed, trying init_room() again', self.room_id)
+                logger.exception('=> room=%d auth failed, trying init_room() again', self.room_id)
                 if not await self.init_room():
                     raise InitError('init_room() failed')
             except ssl_.SSLError:
-                logger.error('room=%d a SSLError happened, cannot reconnect', self.room_id)
+                logger.error('=> room=%d a SSLError happened, cannot reconnect', self.room_id)
                 raise
             finally:
                 self._websocket = None
@@ -424,7 +424,7 @@ class BLiveClient:
 
             # 准备重连
             retry_count += 1
-            logger.warning('room=%d is reconnecting, retry_count=%d', self.room_id, retry_count)
+            logger.warning('=> room=%d is reconnecting, retry_count=%d', self.room_id, retry_count)
             await asyncio.sleep(1)
 
     async def _on_ws_connect(self):
@@ -503,7 +503,7 @@ class BLiveClient:
             # 正常停止、认证失败，让外层处理
             raise
         except Exception:  # noqa
-            logger.exception('room=%d _parse_ws_message() error:', self.room_id)
+            logger.exception('=> room=%d _parse_ws_message() error:', self.room_id)
 
     async def _parse_ws_message(self, data: bytes):
         """
@@ -515,7 +515,7 @@ class BLiveClient:
         try:
             header = HeaderTuple(*HEADER_STRUCT.unpack_from(data, offset))
         except struct.error:
-            logger.exception('room=%d parsing header failed, offset=%d, data=%s', self.room_id, offset, data)
+            logger.exception('=> room=%d parsing header failed, offset=%d, data=%s', self.room_id, offset, data)
             return
 
         if header.operation in (Operation.SEND_MSG_REPLY, Operation.AUTH_REPLY):
@@ -551,7 +551,7 @@ class BLiveClient:
         else:
             # 未知消息
             body = data[offset + header.raw_header_size: offset + header.pack_len]
-            logger.warning('room=%d unknown message operation=%d, header=%s, body=%s', self.room_id,
+            logger.warning('=> room=%d unknown message operation=%d, header=%s, body=%s', self.room_id,
                            header.operation, header, body)
 
     async def _parse_business_message(self, header: HeaderTuple, body: bytes):

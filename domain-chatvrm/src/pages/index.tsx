@@ -62,8 +62,17 @@ export default function Home() {
             return updatedSubtitle;
         });
     };
+    
 
     useEffect(() => {
+        if(socketInstance != null){
+            socketInstance.close()
+        }
+        if (!bind_message_event) {
+            console.log(">>>> setupWebSocket")
+            bind_message_event = true;
+            setupWebSocket(); // Set up WebSocket when component mounts
+        }
         getConfig().then(data => {
             webGlobalConfig = data
             setGlobalConfig(data)
@@ -80,6 +89,7 @@ export default function Home() {
             setChatLog(params.chatLog);
         }
     }, []);
+
 
     useEffect(() => {
         process.nextTick(() =>
@@ -168,6 +178,7 @@ export default function Home() {
             return
         }
 
+
         // 如果有，则播放相应动作
         if (action != null && action != '') {
             handleBehaviorAction(
@@ -202,7 +213,7 @@ export default function Home() {
             if (action != null && action != '') {
                 handleBehaviorAction(
                     "behavior_action",
-                    "idle_happy_03",
+                    "idle_01",
                     "neutral",
                 );
             }
@@ -265,7 +276,7 @@ export default function Home() {
 
             handleBehaviorAction(
                 "behavior_action",
-                "idle_happy_03",
+                "idle_01",
                 "neutral",
             );
 
@@ -313,6 +324,7 @@ export default function Home() {
     };
 
     const setupWebSocket = () => {
+
         connect().then((webSocket) => {
             socketInstance = webSocket;
             socketInstance.onmessage = handleWebSocketMessage; // Set onmessage listener
@@ -323,14 +335,6 @@ export default function Home() {
             };
         });
     }
-
-    useEffect(() => {
-        if (!bind_message_event) {
-            console.log(">>>> setupWebSocket")
-            setupWebSocket(); // Set up WebSocket when component mounts
-            bind_message_event = true;
-        }
-    }, []);
 
     return (
         <div

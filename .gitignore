@@ -15,6 +15,7 @@
 
 domain-chatbot/tmp/
 domain-chatbot/media/
+installer/milvus/volumes
 
 .DS_Store
 

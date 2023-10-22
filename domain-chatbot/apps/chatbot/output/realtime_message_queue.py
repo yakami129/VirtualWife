@@ -1,3 +1,4 @@
+import logging
 import queue
 import re
 import threading
@@ -15,9 +16,9 @@ import threading
 
 # 聊天消息通道
 chat_channel = "chat_channel"
-
 # 创建一个线程安全的队列
 chat_queue = queue.SimpleQueue()
+logger = logging.getLogger(__name__)
 
 
 class RealtimeMessage():
@@ -68,13 +69,13 @@ def send_message():
             traceback.print_exc()
 
 
-def realtime_callback(role_name: str, you_name: str, content: str):
+def realtime_callback(role_name: str, you_name: str, content: str, end_bool: bool):
     if not hasattr(realtime_callback, "message_buffer"):
         realtime_callback.message_buffer = ""
 
     realtime_callback.message_buffer += content
     # 如果 content 以结束标点符号或空结尾，打印并清空缓冲区
-    if re.match(r"^(.+[。．！？~\n]|.{5,}[、,])", realtime_callback.message_buffer):
+    if re.match(r"^(.+[。．！？\n]|.{10,}[、,])", realtime_callback.message_buffer) or end_bool:
         realtime_callback.message_buffer = format_chat_text(
             role_name, you_name, realtime_callback.message_buffer)
 
@@ -101,8 +102,7 @@ class RealtimeMessageQueryJobTask():
     def start():
         # 创建后台线程
         background_thread = threading.Thread(target=send_message)
-        # 将后台线程设置为守护线程，以便在主线程结束时自动退出
         background_thread.daemon = True
         # 启动后台线程
         background_thread.start()
-        print("=> RealtimeMessageQueryJobTask start")
+        logger.info("=> Start RealtimeMessageQueryJobTask Success")

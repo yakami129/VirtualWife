@@ -14,8 +14,8 @@ from .models import CustomRoleModel, BackgroundImageModel, VrmModel
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import logging
-logging.basicConfig(level=logging.INFO)
 
+logger = logging.getLogger(__name__)
 
 @api_view(['POST'])
 def chat(request):
@@ -229,7 +229,7 @@ def upload_vrm_model(request):
         original_filename = uploaded_file.name
         serializer.save(original_name=original_filename, type="user")
         return Response({"response": "ok", "code": "200"})
-    print("=> errors:",serializer.errors)
+    logger.error(serializer.errors)
     return Response({"response": "no", "code": "500"})
 
 

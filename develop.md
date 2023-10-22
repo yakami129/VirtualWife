@@ -3,7 +3,21 @@
 ### 环境要求
 
 - python: 3.10.12
-- node: 14.21.3
+- node: 15.14.0
+
+### 先决条件
+- 安装conda，在Linux或WSL上，可以使用以下两个命令自动安装它（源代码）
+  - 其他安装方式：[anaconda](https://anaconda.org.cn/anaconda/install/windows/)
+```shell
+curl -sL "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh" > "Miniconda3.sh"
+bash Miniconda3.sh
+```
+- 初始化环境
+```shell
+conda create -n vw python=3.10.12
+conda activate vw
+conda install -c conda-forge nodejs=15.14.0
+```
 
 ### 如何启动domain-chatbot？
 
@@ -18,12 +32,14 @@ cd domain-chatbot
 ![](docs/16878718322092.jpg)
 - 创建.env文件，添加B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
 ```shell
-# B站直播间ID
-B_STATION_ID=27xxx
+# B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
+B_STATION_ID=27892212
 # 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
-B_UID=382xxxx
-# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie
-B_COOKIE="buvid3=Fggggg28116infoc"
+# 在页面上登录B站后，打开https://api.bilibili.com/x/web-interface/nav
+# 找到uid
+B_UID=38ccccc
+# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie，一定要复制完整的cookie
+B_COOKIE="buvid3=Fggggg28116infoc;xxxxxxxxxxxxxxxxxxxxxxxxxx....... 此处略去其他的"
 # 时区
 TIMEZONE=Asia/Shanghai
 ```
@@ -50,6 +66,7 @@ cd domain-chatvrm
 ```
 - 安装domain-chatvrm项目依赖
 ```shell
+rm package-lock.json
 npm install
 ```
 - 启动domain-chatvrm项目

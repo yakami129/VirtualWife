@@ -7,6 +7,7 @@ from .text_generation.text_generation_chat_robot import TextGeneration
 
 
 class LlmModelStrategy(ABC):
+    
     @abstractmethod
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
         pass

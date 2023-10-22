@@ -19,6 +19,10 @@ VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很
 
 https://github.com/yakami129/VirtualWife/assets/36467094/51de1c07-f468-4987-8648-dc6b810550ad
 
+# FAQ
+- 项目答疑以及部署中遇到问题的解决方案，请查阅[FAQ](FAQ.md)
+- 本地开发和源码部署请查阅[develop](develop.md)
+
 # Roadmap
 
 - [ ] 记忆模块优化
@@ -89,7 +93,7 @@ B_STATION_ID=27892212
 # 找到uid
 B_UID=38ccccc
 # 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie，一定要复制完整的cookie
-B_COOKIE="buvid3=Fggggg28116infoc;xxxxxxxxxxxxxxxxxxxxxxxxxx";....... 此处略去其他的
+B_COOKIE="buvid3=Fggggg28116infoc;xxxxxxxxxxxxxxxxxxxxxxxxxx....... 此处略去其他的"
 
 # 时区
 TIMEZONE=Asia/Shanghai
@@ -149,10 +153,6 @@ http://localhost/
 ![](docs/16925241544548.jpg)
 
 > 保存成功后，无需重启服务，可以开始聊天了，如果出现异常请查阅[FAQ](FAQ.md)
-
-# FAQ
-- 项目答疑以及部署中遇到问题的解决方案，请查阅[FAQ](FAQ.md)
-- 本地开发请查阅[develop](develop.md)
 
 # LICENSE
 
