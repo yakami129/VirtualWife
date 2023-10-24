@@ -8,6 +8,7 @@ release:
 
 fixbug:
 - [ ] 1. 源码部署，修改代码时，会导致重复接收和发送消息
+- [ ] 2. docker无法正常连接text-generation-webui
 
 
 # v2.0.6 发布日志
