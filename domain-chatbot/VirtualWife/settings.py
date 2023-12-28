@@ -191,7 +191,7 @@ LOGGING = {
             "formatter": "simple",
         },
     },
-    "root": {"level": "DEBUG", "handlers": ["console","file"]},
+    "root": {"level": "INFO", "handlers": ["console","file"]},
     "loggers": {
         "django.request": {  # Django的request发生error会自动记录
             "handlers": ["mail_admins"],

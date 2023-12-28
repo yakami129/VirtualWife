@@ -46,7 +46,7 @@ export class ExpressionController {
     const t = this._autoBlink?.setEnable(false) || 0;
     this._currentEmotion = preset;
     setTimeout(() => {
-      this._expressionManager?.setValue(preset, 1);
+      this._expressionManager?.setValue(preset, 1 * 0.8);
     }, t * 1000);
   }
 

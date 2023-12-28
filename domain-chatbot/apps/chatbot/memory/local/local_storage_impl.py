@@ -2,6 +2,7 @@ import datetime
 import logging
 import jieba
 import jieba.analyse
+import json
 from django.db.models import Q
 from ..base_storage import BaseStorage
 from ...models import LocalMemoryModel
@@ -21,7 +22,7 @@ class LocalStorage(BaseStorage):
         # 查询结果，并限制数量
         results = LocalMemoryModel.objects.filter(
             query).order_by('-timestamp')[:limit]
-
+      
         # 提取查询结果的 text 字段
         result_texts = [result.text for result in results]
         return result_texts
@@ -33,6 +34,7 @@ class LocalStorage(BaseStorage):
         # 分页查询，并提取 text 字段
         results = LocalMemoryModel.objects.filter(owner=owner).order_by('-timestamp').values_list(
             'text', flat=True)[offset:offset + page_size]
+        
         return list(results)
 
     def save(self, pk: int,  query_text: str, sender: str, owner: str, importance_score: int) -> None:

@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from ...utils.str_utils import remove_spaces_and_tabs
@@ -6,6 +7,7 @@ from langchain.schema import (
     HumanMessage,
 )
 import openai
+from ...utils.chat_message_utils import format_chat_text
 
 logger = logging.getLogger(__name__)
 
@@ -44,13 +46,14 @@ class OpenAIGeneration():
                          conversation_end_callback=None):
         logger.debug(f"prompt:{prompt}")
         messages = []
+        messages.append({'role': 'system', 'content': prompt})
         for item in history:
             message = {"role": "user", "content": item["human"]}
             messages.append(message)
             message = {"role": "assistant", "content": item["ai"]}
             messages.append(message)
-        messages.append({'role': 'system', 'content': prompt})
         messages.append({'role': 'user', 'content': you_name + "说" + query})
+        logger.info(json.dumps(messages,ensure_ascii=False))
         response = openai.ChatCompletion.create(
             model='gpt-3.5-turbo',
             messages=messages,
@@ -73,6 +76,7 @@ class OpenAIGeneration():
                     realtime_callback(role_name, you_name,
                                       content, False)  # 调用实时消息推送的回调函数
             elif finish_reason:
+                answer = format_chat_text(role_name,you_name,answer)
                 if conversation_end_callback:
                     conversation_end_callback(role_name, answer, you_name,
                                               query)  # 调用对话结束消息的回调函数

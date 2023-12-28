@@ -253,11 +253,11 @@ export default function Home() {
 
             setChatProcessing(true);
 
-            handleBehaviorAction(
-                "behavior_action",
-                "thinking",
-                "happy",
-            );
+            // handleBehaviorAction(
+            //     "behavior_action",
+            //     "thinking",
+            //     "happy",
+            // );
 
             const yourName = user_name == null || user_name == '' ? globalConfig?.characterConfig?.yourName : user_name
             // ユーザーの発言を追加して表示
@@ -274,11 +274,11 @@ export default function Home() {
                 }
             );
 
-            handleBehaviorAction(
-                "behavior_action",
-                "idle_01",
-                "neutral",
-            );
+            // handleBehaviorAction(
+            //     "behavior_action",
+            //     "idle_01",
+            //     "neutral",
+            // );
 
             setChatProcessing(false);
         },
