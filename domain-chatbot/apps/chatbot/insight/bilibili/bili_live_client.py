@@ -96,13 +96,15 @@ class BiliHandler(BaseHandler):
         """
         message_str = f'{message.uname}进入了直播间，欢迎欢迎'
         put_message(InsightMessage(
-            type="danmaku", user_name=message.uname, content=message_str, emote="happy", action="standing_greeting"))
+            type="danmaku", user_name=user_name, content=message_str, emote="happy", action="standing_greeting"))
         
     async def _on_entry_effect(self, client: BLiveClient, message: EntryEffectMessage):
         """
         用户进入直播间
         """
         message_str = message.copy_writing
+        message_str = message_str.replace("<%","")
+        message_str = message_str.replace("%>","")
         put_message(InsightMessage(
             type="danmaku", user_name="system", content=message_str, emote="happy", action="standing_greeting"))
 
