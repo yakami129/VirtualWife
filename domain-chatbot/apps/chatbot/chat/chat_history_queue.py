@@ -1,4 +1,3 @@
-
 import logging
 import queue
 import threading
@@ -50,7 +49,8 @@ def send_message():
             traceback.print_exc()
 
 
-def conversation_end_callback(role_name: str,  role_message: str, you_name: str, you_message: str):
+def conversation_end_callback(role_name: str, role_message: str, you_name: str, you_message: str):
+    # 异步存储记忆
     put_message(ChatHistoryMessage(
         role_name=role_name,
         role_message=role_message,
