@@ -26,16 +26,14 @@ edge_voices = [
 
 class Edge():
 
-    @staticmethod
-    def remove_html(text: str):
+    def remove_html(self, text: str):
         # TODO 待改成正则
         new_text = text.replace('[', "")
         new_text = new_text.replace(']', "")
         return new_text
-    
-    @staticmethod
-    def create_audio(text, voiceId):
-        new_text = Edge.remove_html(text)
+
+    def create_audio(self, text: str, voiceId: str):
+        new_text = self.remove_html(text)
         pwdPath = os.getcwd()
         file_name = generate() + ".mp3"
         filePath = pwdPath + "/tmp/" + file_name
