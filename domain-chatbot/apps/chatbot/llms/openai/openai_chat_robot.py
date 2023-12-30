@@ -69,4 +69,5 @@ class OpenAIGeneration():
 
         answer = format_chat_text(role_name, you_name, answer)
         if conversation_end_callback:
+            realtime_callback(role_name, you_name, "", True)
             conversation_end_callback(role_name, answer, you_name, query)  # 调用对话结束消息的回调函数
