@@ -36,7 +36,8 @@ class TopicBot:
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="",
             short_history=[], long_history="")
-        logger.debug(f"=> suggestion:{result}")
+        logger.info(f"topic prompt:{prompt}")
+        logger.info(f"=> suggestion:{result}")
         suggestion = ""
         try:
             start_idx = result.find('{')
