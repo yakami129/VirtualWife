@@ -5,8 +5,8 @@ from .bert_vits2 import BertVits2
 
 logger = logging.getLogger(__name__)
 
-class BaseTTS(ABC):
 
+class BaseTTS(ABC):
     '''合成语音统一抽象类'''
 
     @abstractmethod
@@ -21,32 +21,37 @@ class BaseTTS(ABC):
 
 
 class EdgeTTS(BaseTTS):
-
     '''Edge 微软语音合成类'''
+    client: Edge
+
+    def __init__(self):
+        self.client = Edge()
 
     def synthesis(self, text: str, voice_id: str, **kwargs) -> str:
-        return Edge.create_audio(text=text, voiceId=voice_id)
+        return self.client.create_audio(text=text, voiceId=voice_id)
 
     def get_voices(self) -> list[dict[str, str]]:
         return edge_voices
 
 
 class BertVITS2TTS(BaseTTS):
-
     '''Bert-VITS2 语音合成类'''
+    client: BertVits2
+
+    def __init__(self):
+        self.client = BertVits2()
 
     def synthesis(self, text: str, voice_id: str, **kwargs) -> str:
-        noise = kwargs.get("noise", "0.5")
-        noisew = kwargs.get("noisew", "0.9")
-        sdp_ratio = kwargs.get("sdp_ratio", "0.2")
-        return BertVits2.synthesis(text=text, speaker=voice_id, noise=noise, noisew=noisew, sdp_ratio=sdp_ratio)
+        noise = kwargs.get("noise", 0.6)
+        noisew = kwargs.get("noisew", 0.9)
+        sdp_ratio = kwargs.get("sdp_ratio", 0.5)
+        return self.client.synthesis(text=text, speaker=voice_id, noise=noise, noisew=noisew, sdp_ratio=sdp_ratio)
 
     def get_voices(self) -> list[dict[str, str]]:
-        return BertVits2.get_voices()
+        return self.client.get_voices()
 
 
 class TTSDriver:
-
     '''TTS驱动类'''
 
     def synthesis(self, type: str, text: str, voice_id: str, **kwargs) -> str:

@@ -9,6 +9,8 @@ release:
 fixbug:
 - [ ] 1. 源码部署，修改代码时，会导致重复接收和发送消息
 - [ ] 2. docker无法正常连接text-generation-webui
+- [X] 3. 适配最新版本的OpenAI SDK
+- [X] 4. 修复Bert_vits2语音合成错误问题
 
 
 # v2.0.6 发布日志
