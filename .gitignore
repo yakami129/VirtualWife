@@ -16,6 +16,7 @@
 domain-chatbot/tmp/
 domain-chatbot/media/
 installer/milvus/volumes
+installer/memory/config.yaml
 
 .DS_Store
 

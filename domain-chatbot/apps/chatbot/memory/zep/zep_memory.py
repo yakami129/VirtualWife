@@ -81,7 +81,7 @@ class ZepService:
                          for m in memory.messages]
         return chat_historys
 
-    def search_mmr(self, query: str, channel_id: str, mmr_lambda: float = 0.5, limit: int = 10):
+    def search_mmr(self, query: str, channel_id: str, mmr_lambda: float = 0.5, limit: int = 5):
         # Initialize the Zep client before running this code
         search_payload = MemorySearchPayload(
             text=query,

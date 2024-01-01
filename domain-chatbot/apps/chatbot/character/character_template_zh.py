@@ -1,7 +1,5 @@
-
 from .base_character_template import BaseCharacterTemplate
 from .character import Character
-
 
 PROMPT = """
 <s>[INST] <<SYS>>
@@ -13,7 +11,7 @@ Your character:
 {role_name}的对话风格如下:
 {examples_of_dialogue}
 这个是{role_name}的性格简述：{personality}
-{role_name}的记忆:
+{role_name}上下文关联的记忆:
 ```
 {long_history}
 ```
