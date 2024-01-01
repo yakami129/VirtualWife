@@ -5,6 +5,7 @@ from ..llms.llm_model_strategy import LlmModelDriver
 from ..models import CustomRoleModel, SysConfigModel
 from ..character.sys.aili_zh import aili_zh
 from ..memory.memory_storage import MemoryStorageDriver
+from ..reflection.reflection import ImportanceRating, PortraitAnalysis
 
 config_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(config_dir, 'sys_config.json')
@@ -25,9 +26,11 @@ class SysConfig():
     character: int
     your_name: str
     room_id: str
-    search_memory_size: int = 5
+    search_memory_size: int = 3
     zep_url: str
     zep_optional_api_key: str
+    importance_rating: ImportanceRating
+    portrait_analysis: PortraitAnalysis
 
     def __init__(self) -> None:
         self.load()
@@ -138,8 +141,14 @@ class SysConfig():
         self.memory_storage_driver = MemoryStorageDriver(zep_url=self.zep_url,
                                                          zep_optional_api_key=self.zep_optional_api_key,
                                                          search_memory_size=self.search_memory_size,
-                                                         enable_longMemory=self.enable_longMemory)
+                                                         enable_long_memory=self.enable_longMemory)
         logger.info("=> Load SysConfig Success")
+
+        self.importance_rating = ImportanceRating(llm_model_driver=self.llm_model_driver,
+                                                  llm_model_driver_type=self.conversation_llm_model_driver_type)
+
+        self.portrait_analysis = PortraitAnalysis(llm_model_driver=self.llm_model_driver,
+                                                  llm_model_driver_type=self.conversation_llm_model_driver_type)
 
         # if (self.enable_summary):
         #     self.summary_llm_model_driver_type = sys_config_json[

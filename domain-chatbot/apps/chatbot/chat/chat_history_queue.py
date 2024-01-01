@@ -3,6 +3,7 @@ import queue
 import threading
 import traceback
 from ..config import singleton_sys_config
+from ..memory.zep.zep_memory import ChatHistroy
 
 logger = logging.getLogger(__name__)
 
@@ -43,10 +44,41 @@ def send_message():
         try:
             message = chat_history_queue.get()
             if (message != None and message != ''):
+                # 判断当前记忆的重要性
+                memory = f"{message.you_name}说{message.you_message}"
+                rating = singleton_sys_config.importance_rating.rating(memory)
+                # 存储到记忆库中
                 singleton_sys_config.memory_storage_driver.save(
                     message.you_name, message.you_message, message.role_name, message.role_message)
+
+                # 如果当前重要性大于5，进行一次人物画像更新
+                if rating > 5:
+                    user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(
+                        message.you_name)
+                    portrait = user.metadata["portrait"]
+                    recently_memory = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_memorys(
+                        channel_id=message.you_name, limit=50)
+                    recently_memory_str = format_histroy(recently_memory)
+                    portrait = singleton_sys_config.portrait_analysis.analysis(message.you_name, portrait,
+                                                                               recently_memory_str)
+                    # 获取最新的人物画像信息，并且进行更新
+                    user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(
+                        message.you_name)
+                    user.metadata["portrait"] = portrait
+                    singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.update_user(
+                        message.you_name, user.metadata)
+                    logger.info(f"# user_id:{message.you_name} # update meta_data => {portrait}")
+
+
         except Exception as e:
             traceback.print_exc()
+
+
+def format_histroy(recently_memory: list[ChatHistroy]) -> str:
+    chat_histroy_str = []
+    for item in recently_memory:
+        chat_histroy_str.append(item.content)
+    return "\n".join(chat_histroy_str)
 
 
 def conversation_end_callback(role_name: str, role_message: str, you_name: str, you_message: str):

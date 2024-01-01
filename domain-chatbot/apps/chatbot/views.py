@@ -9,7 +9,6 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .config import singleton_sys_config
-from .reflection.reflection import ReflectionGeneration
 from .models import CustomRoleModel, BackgroundImageModel, VrmModel
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -55,19 +54,19 @@ def get_config(request):
     return Response({"response": singleton_sys_config.get(), "code": "200"})
 
 
-@api_view(['GET'])
-def reflection_generation(request):
-    '''
-      生成新记忆
-    :return:
-    '''
-    rg = ReflectionGeneration()
-    rg.generation(role_name="Maiko")
-    timestamp = time.time()
-    expr = f'timestamp <= {timestamp}'
-    result = singleton_sys_config.memory_storage_driver.pageQuery(
-        1, 100, expr=expr)
-    return Response({"response": result, "code": "200"})
+# @api_view(['GET'])
+# def reflection_generation(request):
+#     '''
+#       生成新记忆
+#     :return:
+#     '''
+#     rg = ReflectionGeneration()
+#     rg.generation(role_name="Maiko")
+#     timestamp = time.time()
+#     expr = f'timestamp <= {timestamp}'
+#     result = singleton_sys_config.memory_storage_driver.pageQuery(
+#         1, 100, expr=expr)
+#     return Response({"response": result, "code": "200"})
 
 
 @api_view(['GET'])

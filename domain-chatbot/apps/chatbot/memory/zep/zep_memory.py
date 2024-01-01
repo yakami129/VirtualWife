@@ -1,8 +1,9 @@
 import json
 import logging
+from typing import Optional
 
 from zep_python import ZepClient, Session, Message, Memory, MemorySearchPayload
-from zep_python.user import User, CreateUserRequest
+from zep_python.user import User, CreateUserRequest, UpdateUserRequest
 
 logger = logging.getLogger(__name__)
 
@@ -18,12 +19,10 @@ class ChatHistroy:
 
 class ZepService:
     zep_client: ZepClient
-    search_memory_size: int
 
-    def __init__(self, zep_url: str, zep_optional_api_key: str, search_memory_size: int = 10):
+    def __init__(self, zep_url: str, zep_optional_api_key: str):
         self.zep_client = ZepClient(
             base_url=zep_url, api_key=zep_optional_api_key)
-        self.search_memory_size = search_memory_size
         logger.info(f"ZEP_URL:{zep_url}")
         logger.info(f"ZEP_OPTIONAL_API_KEY:{zep_optional_api_key}")
         logger.info("Initialize ZepClient successfully")
@@ -34,6 +33,7 @@ class ZepService:
         email = f"{user_id}@example.com"
         first_name = user_id
         last_name = user_id
+        portrait = f"{user_id}的名字是{user_id};{user_id}的邮箱是{email};"
 
         # 创建用户
         user_request = CreateUserRequest(
@@ -41,9 +41,21 @@ class ZepService:
             email=email,
             first_name=first_name,
             last_name=last_name,
-            metadata={"foo": "bar"},
+            metadata={"portrait": portrait},
         )
         return self.zep_client.user.add(user_request)
+
+    def update_user(self, user_id: str, metadata: Optional[dict]):
+        user = self.get_user(user_id)
+        if user:
+            user_request = UpdateUserRequest(
+                user_id=user_id,
+                email=user.email,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                metadata=metadata,
+            )
+            self.zep_client.user.update(user_request)
 
     def get_user(self, user_id: str):
         try:
@@ -74,11 +86,12 @@ class ZepService:
         memory = Memory(messages=messages)
         self.zep_client.memory.add_memory(channel_id, memory)
 
-    def get_memorys(self, channel_id: str) -> list[ChatHistroy]:
+    def get_memorys(self, channel_id: str, limit: int = 5) -> list[ChatHistroy]:
         memory = self.zep_client.memory.get_memory(
-            session_id=channel_id, lastn=self.search_memory_size)
+            session_id=channel_id, lastn=limit)
         chat_historys = [ChatHistroy(role=m.role, content=m.content)
                          for m in memory.messages]
+        chat_historys.reverse()
         return chat_historys
 
     def search_mmr(self, query: str, channel_id: str, mmr_lambda: float = 0.5, limit: int = 5):
@@ -94,19 +107,20 @@ class ZepService:
         for item in search_results:
             message = item.dict()["message"]
             chat_histroys.append(ChatHistroy(role=message["role"], content=message["content"]))
+        chat_histroys.reverse()
         return chat_histroys
 
 
 class ChatHistroyService:
     zep_service: ZepService
 
-    def __init__(self, zep_url: str, zep_optional_api_key: str, search_memory_size: int):
-        self.zep_service = ZepService(zep_url, zep_optional_api_key, search_memory_size)
+    def __init__(self, zep_url: str, zep_optional_api_key: str):
+        self.zep_service = ZepService(zep_url, zep_optional_api_key)
 
-    def search(self, query: str, user_id: str, channel_id: str) -> list[ChatHistroy]:
+    def search(self, query: str, user_id: str, channel_id: str, limit: int == 5) -> list[ChatHistroy]:
         user_id = user_id
         channel_id = channel_id
-        return self.zep_service.search_mmr(query=query, channel_id=channel_id)
+        return self.zep_service.search_mmr(query=query, channel_id=channel_id, limit=limit)
 
     def push(self, user_id: str, channel_id: str, chat_histroy: ChatHistroy):
 
