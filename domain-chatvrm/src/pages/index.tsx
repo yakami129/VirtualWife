@@ -179,15 +179,6 @@ export default function Home() {
         }
 
 
-        // 如果有，则播放相应动作
-        if (action != null && action != '') {
-            handleBehaviorAction(
-                "behavior_action",
-                action,
-                emote,
-            );
-        }
-
         let aiTextLog = "";
         const sentences = new Array<string>();
         const aiText = content;
@@ -196,6 +187,16 @@ export default function Home() {
         // 文ごとに音声を生成 & 再生、返答を表示
         setSubtitle(aiTextLog);
         handleSpeakAi(globalConfig, aiTalks[0], () => {
+
+             // 如果有，则播放相应动作
+            if (action != null && action != '') {
+                handleBehaviorAction(
+                    "behavior_action",
+                    action,
+                    emote,
+                );
+            }
+
             // setAssistantMessage(currentAssistantMessage);
             startTypewriterEffect(aiTextLog);
             // アシスタントの返答をログに追加

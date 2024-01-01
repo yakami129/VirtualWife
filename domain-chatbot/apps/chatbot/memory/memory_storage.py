@@ -27,7 +27,7 @@ class MemoryStorageDriver():
             self.long_memory_storage = MilvusStorage(memory_storage_config)
 
     def search_short_memory(self, query_text: str, you_name: str, role_name: str) -> list[Dict[str, str]]:
-        local_memory = self.short_memory_storage.pageQuery(
+        local_memory = self.short_memory_storage.pageQueryByOwner(
             page_num=1, page_size=self.sys_config.local_memory_num, owner=role_name)
         dict_list = []
         for json_string in local_memory:

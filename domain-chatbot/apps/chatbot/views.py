@@ -9,7 +9,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .config import singleton_sys_config
-from .reflection.reflection_generation import ReflectionGeneration
+from .reflection.reflection import ReflectionGeneration
 from .models import CustomRoleModel, BackgroundImageModel, VrmModel
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
