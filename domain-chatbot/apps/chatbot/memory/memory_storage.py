@@ -24,8 +24,11 @@ class MemoryStorageDriver:
         if self.enable_longMemory:
             user_id = you_name
             channel_id = you_name
-            self.chat_histroy_service.search(user_id=user_id, channel_id=channel_id)
-            return ""
+            chat_histroys = self.chat_histroy_service.search(query=query_text, user_id=user_id, channel_id=channel_id)
+            chat_histroy_str = []
+            for item in chat_histroys:
+                chat_histroy_str.append(item.content)
+            return "\n".join(chat_histroy_str)
         else:
             return "无"
 

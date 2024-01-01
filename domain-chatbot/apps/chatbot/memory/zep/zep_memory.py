@@ -1,6 +1,7 @@
+import json
 import logging
 
-from zep_python import ZepClient, Session, Message, Memory
+from zep_python import ZepClient, Session, Message, Memory, MemorySearchPayload
 from zep_python.user import User, CreateUserRequest
 
 logger = logging.getLogger(__name__)
@@ -80,6 +81,21 @@ class ZepService:
                          for m in memory.messages]
         return chat_historys
 
+    def search_mmr(self, query: str, channel_id: str, mmr_lambda: float = 0.5, limit: int = 10):
+        # Initialize the Zep client before running this code
+        search_payload = MemorySearchPayload(
+            text=query,
+            search_scope="messages",  # This could be messages or summary
+            search_type="mmr",  # remove this if you'd prefer not to rerank results
+            mmr_lambda=mmr_lambda,  # tune diversity vs relevance
+        )
+        search_results = self.zep_client.memory.search_memory(channel_id, search_payload, limit)
+        chat_histroys = []
+        for item in search_results:
+            message = item.dict()["message"]
+            chat_histroys.append(ChatHistroy(role=message["role"], content=message["content"]))
+        return chat_histroys
+
 
 class ChatHistroyService:
     zep_service: ZepService
@@ -87,12 +103,10 @@ class ChatHistroyService:
     def __init__(self, zep_url: str, zep_optional_api_key: str, search_memory_size: int):
         self.zep_service = ZepService(zep_url, zep_optional_api_key, search_memory_size)
 
-    def search(self, user_id: str, channel_id: str) -> list[ChatHistroy]:
-
+    def search(self, query: str, user_id: str, channel_id: str) -> list[ChatHistroy]:
         user_id = user_id
         channel_id = channel_id
-
-        return []
+        return self.zep_service.search_mmr(query=query, channel_id=channel_id)
 
     def push(self, user_id: str, channel_id: str, chat_histroy: ChatHistroy):
 
@@ -114,5 +128,3 @@ class ChatHistroyService:
             return []
 
         return self.zep_service.get_memorys(channel_id)
-
-

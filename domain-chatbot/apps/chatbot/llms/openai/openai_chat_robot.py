@@ -47,7 +47,7 @@ class OpenAIGeneration():
                          history: list[ChatHistroy],
                          realtime_callback=None,
                          conversation_end_callback=None):
-        logger.debug(f"prompt:{prompt}")
+        logger.info(f"prompt:{prompt}")
         messages = []
         messages.append(SystemMessage(content=prompt))
         for item in history:
@@ -58,7 +58,6 @@ class OpenAIGeneration():
                 message = AIMessage(content=item.content)
                 messages.append(message)
         messages.append(HumanMessage(content=you_name + "说" + query))
-        print(messages)
         answer = ''
         for chunk in self.llm.stream(messages):
             content = chunk.content
