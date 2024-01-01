@@ -1,4 +1,3 @@
-
 import logging
 import traceback
 from ..character.character_generation import singleton_character_generation
@@ -12,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 class ProcessCore():
-
     generation_emotion_respond_chat_propmt: GenerationEmotionRespondChatPropmt
 
     def __init__(self) -> None:
