@@ -10,6 +10,7 @@ from langchain.schema import (
 
 from ...utils.chat_message_utils import format_chat_text
 from ...utils.str_utils import remove_spaces_and_tabs
+from ...memory.zep.zep_memory import ChatHistroy
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +30,7 @@ class OpenAIGeneration():
             self.llm = ChatOpenAI(
                 temperature=0.7, model_name="gpt-3.5-turbo", openai_api_key=OPENAI_API_KEY)
 
-    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]],
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[ChatHistroy],
              long_history: str) -> str:
         prompt = prompt + query
         logger.debug(f"prompt:{prompt}")
@@ -43,17 +44,19 @@ class OpenAIGeneration():
                          role_name: str,
                          you_name: str,
                          query: str,
-                         history: list[dict[str, str]],
+                         history: list[ChatHistroy],
                          realtime_callback=None,
                          conversation_end_callback=None):
-        logger.debug(f"prompt:{prompt}")
+        logger.info(f"prompt:{prompt}")
         messages = []
         messages.append(SystemMessage(content=prompt))
         for item in history:
-            message = HumanMessage(content=item["human"])
-            messages.append(message)
-            message = AIMessage(content=item["ai"])
-            messages.append(message)
+            if item.role == "human":
+                message = HumanMessage(content=item.content)
+                messages.append(message)
+            if item.role == "ai":
+                message = AIMessage(content=item.content)
+                messages.append(message)
         messages.append(HumanMessage(content=you_name + "说" + query))
         answer = ''
         for chunk in self.llm.stream(messages):

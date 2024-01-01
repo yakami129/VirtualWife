@@ -23,7 +23,7 @@ from django.urls import path
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'VirtualWife.settings')
 
 bili_live_client_main()
-run_observe_memory_job(180, observe_memory_job)
+# run_observe_memory_job(60, observe_memory_job)
 
 RealtimeMessageQueryJobTask.start()
 ChatHistoryMessageQueryJobTask.start()

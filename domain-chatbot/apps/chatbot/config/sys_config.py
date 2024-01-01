@@ -4,6 +4,8 @@ import os
 from ..llms.llm_model_strategy import LlmModelDriver
 from ..models import CustomRoleModel, SysConfigModel
 from ..character.sys.aili_zh import aili_zh
+from ..memory.memory_storage import MemoryStorageDriver
+from ..reflection.reflection import ImportanceRating, PortraitAnalysis
 
 config_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(config_dir, 'sys_config.json')
@@ -12,23 +14,7 @@ sys_code = "adminSettings"
 logger = logging.getLogger(__name__)
 
 
-def lazy_memory_storage(sys_config_json: any, sys_cofnig: any):
-    from ..memory.memory_storage import MemoryStorageDriver
-    # 加载记忆模块配置
-    memory_storage_config = {
-        "host": sys_config_json["memoryStorageConfig"]["milvusMemory"]["host"],
-        "port": sys_config_json["memoryStorageConfig"]["milvusMemory"]["port"],
-        "user": sys_config_json["memoryStorageConfig"]["milvusMemory"]["user"],
-        "password": sys_config_json["memoryStorageConfig"]["milvusMemory"]["password"],
-        "db_name": sys_config_json["memoryStorageConfig"]["milvusMemory"]["dbName"],
-    }
-    logger.debug(f"=> memory_storage_config:{memory_storage_config}")
-    # 加载记忆模块驱动
-    return MemoryStorageDriver(memory_storage_config=memory_storage_config, sys_config=sys_cofnig)
-
-
 class SysConfig():
-
     llm_model_driver: LlmModelDriver
     conversation_llm_model_driver_type: str
     enable_summary: bool
@@ -40,7 +26,11 @@ class SysConfig():
     character: int
     your_name: str
     room_id: str
-    local_memory_num: int = 5
+    search_memory_size: int = 3
+    zep_url: str
+    zep_optional_api_key: str
+    importance_rating: ImportanceRating
+    portrait_analysis: PortraitAnalysis
 
     def __init__(self) -> None:
         self.load()
@@ -107,7 +97,8 @@ class SysConfig():
         # 加载大语言模型配置
         os.environ['OPENAI_API_KEY'] = sys_config_json["languageModelConfig"]["openai"]["OPENAI_API_KEY"]
         os.environ['OPENAI_BASE_URL'] = sys_config_json["languageModelConfig"]["openai"]["OPENAI_BASE_URL"]
-        os.environ['TEXT_GENERATION_API_URL'] = sys_config_json["languageModelConfig"]["textGeneration"]["TEXT_GENERATION_API_URL"]
+        os.environ['TEXT_GENERATION_API_URL'] = sys_config_json["languageModelConfig"]["textGeneration"][
+            "TEXT_GENERATION_API_URL"]
         os.environ['TEXT_GENERATION_WEB_SOCKET_URL'] = sys_config_json["languageModelConfig"]["textGeneration"].get(
             "TEXT_GENERATION_WEB_SOCKET_URL", "ws://127.0.0.1:5005/api/v1/stream")
 
@@ -120,8 +111,8 @@ class SysConfig():
             os.environ['HTTPS_PROXY'] = sys_config_json["httpsProxy"]
             os.environ['SOCKS5_PROXY'] = sys_config_json["socks5Proxy"]
             logger.debug(f"=> HTTP_PROXY:" + os.environ['HTTP_PROXY'])
-            logger.debug(f"=> HTTPS_PROXY:"+os.environ['HTTPS_PROXY'])
-            logger.debug(f"=> SOCKS5_PROXY:"+os.environ['SOCKS5_PROXY'])
+            logger.debug(f"=> HTTPS_PROXY:" + os.environ['HTTPS_PROXY'])
+            logger.debug(f"=> SOCKS5_PROXY:" + os.environ['SOCKS5_PROXY'])
         else:
             os.environ['HTTP_PROXY'] = ""
             os.environ['HTTPS_PROXY'] = ""
@@ -139,30 +130,39 @@ class SysConfig():
         logger.debug("=> Memory Config")
         self.enable_summary = sys_config_json["memoryStorageConfig"]["enableSummary"]
         self.enable_longMemory = sys_config_json["memoryStorageConfig"]["enableLongMemory"]
-        logger.debug("=> enable_longMemory："+str(self.enable_longMemory))
-        logger.debug("=> enable_summary："+str(self.enable_summary))
-        if (self.enable_summary):
-            self.summary_llm_model_driver_type = sys_config_json[
-                "memoryStorageConfig"]["languageModelForSummary"]
-            logger.debug("=> summary_llm_model_driver_type：" +
-                         self.summary_llm_model_driver_type)
+        self.zep_url = sys_config_json["memoryStorageConfig"]["zep_memory"]["zep_url"]
+        self.zep_optional_api_key = sys_config_json["memoryStorageConfig"]["zep_memory"]["zep_optional_api_key"]
+        logger.debug("=> enable_longMemory：" + str(self.enable_longMemory))
+        logger.debug("=> enable_summary：" + str(self.enable_summary))
+        logger.debug("=> zep_url：" + self.zep_url)
+        logger.debug("=> zep_optional_api_key：" + self.zep_optional_api_key)
 
-        self.enable_reflection = sys_config_json["memoryStorageConfig"]["enableReflection"]
-        logger.debug("=> enableReflection："+str(self.enable_reflection))
-        if (self.enable_reflection):
-            self.reflection_llm_model_driver_type = sys_config_json[
-                "memoryStorageConfig"]["languageModelForReflection"]
-            logger.debug("=> reflection_llm_model_driver_type" +
-                         self.summary_llm_model_driver_type)
-
-        # 懒加载记忆模块
-        try:
-            self.memory_storage_driver = lazy_memory_storage(
-                sys_config_json=sys_config_json, sys_cofnig=self)
-        except Exception as e:
-            logger.error("init memory_storage error: %s" % str(e))
-
+        # 加载记忆模块
+        self.memory_storage_driver = MemoryStorageDriver(zep_url=self.zep_url,
+                                                         zep_optional_api_key=self.zep_optional_api_key,
+                                                         search_memory_size=self.search_memory_size,
+                                                         enable_long_memory=self.enable_longMemory)
         logger.info("=> Load SysConfig Success")
+
+        self.importance_rating = ImportanceRating(llm_model_driver=self.llm_model_driver,
+                                                  llm_model_driver_type=self.conversation_llm_model_driver_type)
+
+        self.portrait_analysis = PortraitAnalysis(llm_model_driver=self.llm_model_driver,
+                                                  llm_model_driver_type=self.conversation_llm_model_driver_type)
+
+        # if (self.enable_summary):
+        #     self.summary_llm_model_driver_type = sys_config_json[
+        #         "memoryStorageConfig"]["languageModelForSummary"]
+        #     logger.debug("=> summary_llm_model_driver_type：" +
+        #                  self.summary_llm_model_driver_type)
+        #
+        # self.enable_reflection = sys_config_json["memoryStorageConfig"]["enableReflection"]
+        # logger.debug("=> enableReflection：" + str(self.enable_reflection))
+        # if (self.enable_reflection):
+        #     self.reflection_llm_model_driver_type = sys_config_json[
+        #         "memoryStorageConfig"]["languageModelForReflection"]
+        #     logger.debug("=> reflection_llm_model_driver_type" +
+        #                  self.summary_llm_model_driver_type)
 
         # 加载直播配置
         # if self.bili_live_client != None:

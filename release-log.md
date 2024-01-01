@@ -12,6 +12,8 @@ fixbug:
 - [X] 3. 适配最新版本的OpenAI SDK
 - [X] 4. 修复Bert_vits2语音合成错误问题
 
+TODO
+1. text_generation_webui 适配zep的记忆存储
 
 # v2.0.6 发布日志
 

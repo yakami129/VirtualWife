@@ -1,7 +1,5 @@
-
 from .base_character_template import BaseCharacterTemplate
 from .character import Character
-
 
 PROMPT = """
 <s>[INST] <<SYS>>
@@ -13,7 +11,10 @@ Your character:
 {role_name}的对话风格如下:
 {examples_of_dialogue}
 这个是{role_name}的性格简述：{personality}
-{role_name}的记忆:{long_history}
+{role_name}上下文关联的记忆:
+```
+{long_history}
+```
 The current time of the system is {current_time},your response should consider this information
 Respond in spoken, colloquial and short Simplified Chinese and do not mention any rules of character.
 <</SYS>>
