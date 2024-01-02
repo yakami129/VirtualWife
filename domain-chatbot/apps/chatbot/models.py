@@ -1,6 +1,16 @@
 from django.db import models
 
+
 # Create your models here.
+class PortalUser(models.Model):
+    '''
+      门户用户基本信息
+    '''
+    id = models.BigIntegerField(primary_key=True, db_comment="门户用户唯一ID")
+    name = models.CharField(max_length=100, db_comment="门户用户名称")
+
+    def __str__(self):
+        return self.id
 
 
 class CustomRoleModel(models.Model):
@@ -24,6 +34,7 @@ class CustomRoleModel(models.Model):
     def __str__(self):
         return self.role_name
 
+
 class SysConfigModel(models.Model):
     '''系统配置数据结构
     id: 主键id
@@ -36,7 +47,8 @@ class SysConfigModel(models.Model):
 
     def __str__(self):
         return self.id
-    
+
+
 class LocalMemoryModel(models.Model):
     '''记忆数据存储数据结构
     id: 主键ID
@@ -48,13 +60,14 @@ class LocalMemoryModel(models.Model):
     id = models.AutoField
     text = models.TextField()
     tags = models.TextField()
-    sender = models.CharField(max_length=50,default="null")
+    sender = models.CharField(max_length=50, default="null")
     owner = models.CharField(max_length=50)
     timestamp = models.DateTimeField()
 
     def __str__(self):
         return self.id
-    
+
+
 class BackgroundImageModel(models.Model):
     id = models.AutoField
     original_name = models.CharField(max_length=50)

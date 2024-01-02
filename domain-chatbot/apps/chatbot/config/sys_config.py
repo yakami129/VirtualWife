@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import traceback
+
 from ..llms.llm_model_strategy import LlmModelDriver
 from ..models import CustomRoleModel, SysConfigModel
 from ..character.sys.aili_zh import aili_zh
@@ -138,17 +140,15 @@ class SysConfig():
         logger.debug("=> zep_optional_api_key：" + self.zep_optional_api_key)
 
         # 加载记忆模块
-        self.memory_storage_driver = MemoryStorageDriver(zep_url=self.zep_url,
-                                                         zep_optional_api_key=self.zep_optional_api_key,
-                                                         search_memory_size=self.search_memory_size,
-                                                         enable_long_memory=self.enable_longMemory)
-        logger.info("=> Load SysConfig Success")
+        self.init_memory_storage_driver()
 
         self.importance_rating = ImportanceRating(llm_model_driver=self.llm_model_driver,
                                                   llm_model_driver_type=self.conversation_llm_model_driver_type)
 
         self.portrait_analysis = PortraitAnalysis(llm_model_driver=self.llm_model_driver,
                                                   llm_model_driver_type=self.conversation_llm_model_driver_type)
+
+        logger.info("=> Load SysConfig Success")
 
         # if (self.enable_summary):
         #     self.summary_llm_model_driver_type = sys_config_json[
@@ -178,3 +178,16 @@ class SysConfig():
         # background_thread.daemon = True
         # # 启动后台线程
         # background_thread.start()
+
+    def init_memory_storage_driver(self):
+
+        try:
+            # 只能是偶数
+            memory_size = self.search_memory_size * 2
+            self.memory_storage_driver = MemoryStorageDriver(zep_url=self.zep_url,
+                                                             zep_optional_api_key=self.zep_optional_api_key,
+                                                             search_memory_size=memory_size,
+                                                             enable_long_memory=self.enable_longMemory)
+        except Exception as e:
+            logger.error(e)
+            traceback.print_exc()
