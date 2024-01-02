@@ -4,6 +4,7 @@ import threading
 import traceback
 from ..config import singleton_sys_config
 from ..memory.zep.zep_memory import ChatHistroy
+from ..service import portal_user_service
 
 logger = logging.getLogger(__name__)
 
@@ -53,20 +54,22 @@ def send_message():
 
                 # 如果当前重要性大于5，进行一次人物画像更新
                 if rating > 5:
-                    user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(
-                        message.you_name)
+                    portal_user = portal_user_service.get_and_create(message.you_name)
+                    user_id =  str(portal_user.id)
+                    channel_id = str(portal_user.id)
+                    user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(user_id)
                     portrait = user.metadata["portrait"]
                     recently_memory = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_memorys(
-                        channel_id=message.you_name, limit=50)
+                        channel_id=channel_id, limit=50)
                     recently_memory_str = format_histroy(recently_memory)
                     portrait = singleton_sys_config.portrait_analysis.analysis(message.you_name, portrait,
                                                                                recently_memory_str)
                     # 获取最新的人物画像信息，并且进行更新
                     user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(
-                        message.you_name)
+                        user_id)
                     user.metadata["portrait"] = portrait
                     singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.update_user(
-                        message.you_name, user.metadata)
+                        user_id, user.metadata)
                     logger.info(f"# user_id:{message.you_name} # update meta_data => {portrait}")
 
 
