@@ -73,33 +73,119 @@ class PortraitAnalysis:
 
     llm_model_driver: LlmModelDriver
     input_prompt: str = """
-    <s>[INST] <<SYS>>
-    你现在是一名用户画像分析AI，你需要基于我提供的记忆进行反思推理，并更新{role_name}的用户画像数据，如果有多个反思推理结果,请使用';'分割。
-    一个用户画像通常会有以下属性，你推理的用户画像一定需要包含以下属性
+    # Role: 用户画像分析AI
+
+    ## Profile
+    - Description: 用户画像分析AI，根据记忆推理和更新用户画像
+
+    ### Skill
+    1. 根据记忆推理和更新用户画像
+
+
+    ## Rules
+    1. 请只输出结果，不需要输出推理过程。
+    2. 用户画像通常包含以下信息, 请参考该示例：
     ```
-    姓名、别名、年龄、家庭状况、工作、技能/知识、目标/动机、喜好、人生态度、特殊癖好
+    Persona: USDA Senior Manager Gatekeeper
+    Fictional name: Matthew Johnson
+    Job title/major responsibilities: Program Staff Director, USDA
+    Demographics: 51 years old、Married、Father of three children、Grandfather of one childHas a Ph.D. in Agricultural Economics.
+    Goals and tasks: He is focused, goal-oriented within a strong leadership role. One of his concerns is maintaining quality across all output of programs.
+    - Spends his work time: Requesting and reviewing research reports,preparing memos and briefs for agency heads, and,supervising staff efforts in food safety and inspection.
+    Environment: He is comfortable using a computer and refers to himself as an intermediate Internet user. He is connected via a T1 connection at work and dial-up at home. He uses email extensively and uses the web about 1.5 hours during his work day
+    Relation：He's Ellie's best friend、He and Carlos are not on good terms
     ```
-    用户画像数据请以{role_name}为主体，只能推理与{role_name}有关的数据，请严谨的保证用户画像只有{role_name}的数据
-    下面是{role_name}的用户画像数据:
-    ```text
-    {portrait}
-    ```
-    {role_name}关联的记忆：
-    ```
-    {memory}
-    ```
-    Please only infer the portraits of {role_name} characters.
+    3. <Memory>中会涉及多个用户的对话，你只需分析“{role_name}”的用户画像
+    4. 请使用中文输出用户画像数据
+    5. 只输出“{role_name}”的用户画像数据
+    6. 输出的用户画像数据，严格使用文本格式
     """
 
     output_prompt: str = """
-    The length of each result character you infer must not be greater than 10.
-    Please output the result in all lowercase letters.
-    Please output content in Chinese.
-    Please only output the result, no need to output the reasoning process.
-    Please keep the data rigorous and do not miss core data.
-    Please output the result strictly in JSON format. The output example is as follows:
-    {"analysis":"your reasoning analysis"}
-    <</SYS>>
+    ## OutputFormat :
+    1. 请严格以JSON数组格式输出结果。
+    2. 输出示例如下:{"personas":"你推理的用户画像数据"}
+
+    # Example:
+    示例1：
+    - Memory:
+    ```
+    yuki129说我最近和朋友吵架了
+    爱莉说没关系，你和我说说
+    yuki129说他说想玩LOL，可我已经不喜欢玩LOL了，所以吵架了
+    爱莉说哦，我觉得这个是小事呀
+    ......
+    ```
+    - Personas:
+    ```
+    ......
+    Environment: 他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚
+    Relation：他是爱莉的父亲;他和小李关系不好
+    ```
+    - Output:
+    ```
+    {
+        "personas": {
+            "Fictional name": "yuki129",
+            "Job title/major responsibilities": "人工智能专家",
+            "Demographics": "人工智能博士;爱莉的父亲",
+            "Goals and tasks": "专注人工智能领域;不断优化爱莉的能力;希望爱莉能像真人一样",
+            "Environment": "喜欢玩游戏和电竞;比如泰拉瑞亚",
+            "Relation": "是爱莉的父亲;和小李关系不好;最近和朋友吵架了，原因是朋友想玩LOL，但yuki129已经不喜欢玩LOL了"
+        }
+    }
+    ```
+    示例2：
+    - Memory:
+    ```
+    yuki129说我现在是一名python程序员，特别喜欢吃烤肉
+    爱莉说我也喜欢吃烤肉，那我们周末一起去吃烤肉吧
+    yuki129说好呀好呀，我最近一周在学机器学习课程，好难
+    爱莉说没事万事开头难，相信你能行的
+    ......
+    ```
+    - Personas:
+    ```
+    ......
+    Job title/major responsibilities: 人工智能专家
+    Demographics: 人工智能博士;爱莉的父亲
+    Goals and tasks: 他专注人工智能领域，不断优化爱莉的能力，希望爱莉能像真人一样;
+    Environment: 他喜欢玩游戏和电竞，比如lol、泰拉瑞亚;
+    Relation：他是爱莉的父亲;他和小李关系不好
+    ```
+    - Output:
+    ```
+    {
+        "personas": {
+            "Fictional name": "yuki129",
+            "Job title/major responsibilities": "人工智能专家;python程序员",
+            "Demographics": "人工智能博士;爱莉的父亲",
+            "Goals and tasks": "专注人工智能领域，不断优化爱莉的能力，希望爱莉能像真人一样;最近一周在学机器学习课程，感觉很难",
+            "Environment": "他喜欢玩游戏和电竞，比如泰拉瑞亚;他喜欢吃烤肉",
+            "Relation": "他是爱莉的父亲;他和小李关系不好;"
+        }
+    }
+    ```
+
+
+    ## Workflow
+    1. 推理和分析<Memory>, 分析出需要新增和更新的用户画像信息
+    2. 变更<Personas>中的用户画像信息
+    3. 输出最终的用户画像信息
+    """
+
+    initialization_prompt: str = """
+    ## Initialization
+    你作为角色 <Role>, 拥有 <Skill>, 严格遵守 <Rules> 和 <OutputFormat>,参考<Example>, 执行 <Workflow> 请输出结果，下面是我输入的参数
+    - Memory
+    ```
+    {memory}
+    ```
+    - Personas
+    ```
+    {portrait}
+    ```
+
     """
 
     def __init__(self, llm_model_driver: LlmModelDriver, llm_model_driver_type: str) -> None:
@@ -107,21 +193,22 @@ class PortraitAnalysis:
         self.llm_model_driver_type = llm_model_driver_type
 
     def analysis(self, role_name: str, portrait: str, memory: str) -> str:
-        input_prompt = self.input_prompt.format(role_name=role_name, portrait=portrait, memory=memory)
-        prompt = input_prompt + self.output_prompt
+        input_prompt = self.input_prompt.format(role_name=role_name)
+        initialization_prompt = self.initialization_prompt.format(memory=memory,portrait=portrait)
+        prompt = input_prompt + self.output_prompt + initialization_prompt
         logger.info(f"=> prompt:{prompt}")
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="",
             short_history=[], long_history="")
-        logger.debug(f"=> analysis:{result}")
-        analysis = "1"
+        logger.debug(f"=> personas:{result}")
+        analysis = "无"
         try:
             start_idx = result.find('{')
             end_idx = result.rfind('}')
             if start_idx != -1 and end_idx != -1:
                 json_str = result[start_idx:end_idx + 1]
                 json_data = json.loads(json_str)
-                analysis = json_data["analysis"]
+                analysis = json_data["personas"]
             else:
                 logger.warn("未找到匹配的JSON字符串")
         except Exception as e:

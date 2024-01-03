@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   db:
-    image: ghcr.io/getzep/postgres:postgres-15
+    image: ghcr.io/getzep/postgres:latest
     container_name: zep-postgres
     restart: on-failure
     shm_size: "2048m"  # Increase this if vacuuming fails with a "no space left on device" error

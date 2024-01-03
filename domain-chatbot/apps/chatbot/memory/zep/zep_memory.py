@@ -34,17 +34,24 @@ class ZepService:
         first_name = user_name
         last_name = user_name
         portrait = f"""
-        姓名：{user_name}
-        别名：未知
-        年龄：未知
-        家庭状况：未知
-        工作：未知
-        技能/知识：未知
-        目标/动机：未知
-        喜好：未知
-        人生态度：未知
-        特殊癖好：未知
+        "Fictional name": "{user_name}",
+		"Job title/major responsibilities": "未知",
+		"Demographics": "未知",
+		"Goals and tasks": "未知",
+		"Environment": "未知",
+		"Relation": "未知"
         """
+
+        # if user_name == 'Yuki1345':
+        #     portrait ="""
+        #     Persona: 爱莉的创造者
+        #     Fictional name: yuki129
+        #     Job title/major responsibilities: 人工智能专家
+        #     Demographics: 人工智能博士;爱莉的父亲
+        #     Goals and tasks: 他专注人工智能领域，不断优化爱莉的能力，希望爱莉能像真人一样
+        #     Environment: 他喜欢玩游戏和电竞，比如lol、泰拉瑞亚
+        #     Relation：他是爱莉的父亲;
+        #     """
 
         # 创建用户
         user_request = CreateUserRequest(

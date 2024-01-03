@@ -1,3 +1,4 @@
+import json
 import logging
 
 from .zep.zep_memory import ChatHistroyService, ChatHistroy
@@ -43,7 +44,7 @@ class MemoryStorageDriver:
             portrait = ""
             if user:
                 portrait = user.metadata["portrait"]
-            return portrait + ";\n" + lang_memory
+            return json.dumps(portrait)  + ";\n" + lang_memory
         else:
             return "无"
 
