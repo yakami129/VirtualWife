@@ -1,5 +1,5 @@
 # Dockerfile
-FROM okapi0129/getzep/zep:v1.0.0 
+FROM okapi0129/getzep-zep:v1.0.0 
 
 # Your Dockerfile content here
 

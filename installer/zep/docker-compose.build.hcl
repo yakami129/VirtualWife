@@ -1,5 +1,5 @@
 variable "TAG" {
-  default = "latest"
+  default = "v1.0.0"
 }
 
 variable "DISTRO" {
@@ -15,7 +15,7 @@ target "postgres" {
     TAG = null
   }
   dockerfile = "Dockerfile.postgres"
-  tags = ["${DISTRO}/getzep/postgres:${TAG}"]
+  tags = ["${DISTRO}/getzep-postgres:${TAG}"]
 }
 
 target "zep" {
@@ -23,7 +23,7 @@ target "zep" {
     TAG = null
   }
   dockerfile = "Dockerfile.zep"
-  tags = ["${DISTRO}/getzep/zep:${TAG}"]
+  tags = ["${DISTRO}/getzep-zep:${TAG}"]
 }
 
 target "zep-nlp-server" {
@@ -31,7 +31,7 @@ target "zep-nlp-server" {
     TAG = null
   }
   dockerfile = "Dockerfile.zep-nlp-server"
-  tags = ["${DISTRO}/getzep/zep-nlp-server:${TAG}"]
+  tags = ["${DISTRO}/getzep-zep-nlp-server:${TAG}"]
 }
 
 target "postgres-release" {
