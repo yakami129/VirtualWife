@@ -1,3 +1,3 @@
 #!/bin/bash
-# 打标签并推送镜像
-docker buildx bake -f docker-compose.build.hcl postgres-release zep-release zep-nlp-server-release  --push
+docker buildx build --platform linux/amd64,linux/arm64 -t okapi0129/getzep-zep-nlp-server:v1.0.0 . --push
+
