@@ -77,14 +77,17 @@ class PortraitAnalysis:
 
     ## Profile
     - Description: 用户画像分析AI，根据记忆推理和更新用户画像
-
+    
     ### Skill
+    ```
     1. 根据记忆推理和更新用户画像
-
-
+    ```
+    
+    
     ## Rules
+    ```
     1. 请只输出结果，不需要输出推理过程。
-    2. 用户画像通常包含以下信息, 请参考该示例：
+    2. 用户画像通常包含以下信息：
     ```
     Persona: USDA Senior Manager Gatekeeper
     Fictional name: Matthew Johnson
@@ -95,88 +98,105 @@ class PortraitAnalysis:
     Environment: He is comfortable using a computer and refers to himself as an intermediate Internet user. He is connected via a T1 connection at work and dial-up at home. He uses email extensively and uses the web about 1.5 hours during his work day
     Relation：He's Ellie's best friend、He and Carlos are not on good terms
     ```
-    3. <Memory>中会涉及多个用户的对话，你只需分析“{role_name}”的用户画像
+    3. <Memory>中会涉及多个用户的对话，你只需分析“yuki129”的用户画像
     4. 请使用中文输出用户画像数据
-    5. 只输出“{role_name}”的用户画像数据
-    6. 输出的用户画像数据，严格使用文本格式
+    5. 只输出“yuki129”的用户画像数据
+    6. 输出的用户画像数据，严格遵循用户画像的数据结构
+    7. <Example>中的Memory和Personas仅提供参考,请不要作为你进行用户画像分析的参数
+    ```
     """
 
     output_prompt: str = """
     ## OutputFormat :
+    ``` 
     1. 请严格以JSON数组格式输出结果。
     2. 输出示例如下:{"personas":"你推理的用户画像数据"}
-
+    ```
+    
     # Example:
+    ```
     示例1：
     - Memory:
     ```
-    yuki129说我最近和朋友吵架了
+    张三说我最近和朋友吵架了
     爱莉说没关系，你和我说说
-    yuki129说他说想玩LOL，可我已经不喜欢玩LOL了，所以吵架了
+    张三说他说想玩LOL，可我已经不喜欢玩LOL了，所以吵架了
     爱莉说哦，我觉得这个是小事呀
-    ......
     ```
     - Personas:
     ```
-    ......
-    Environment: 他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚
-    Relation：他是爱莉的父亲;他和小李关系不好
+    {
+        "Persona": "软件工程师",
+        "Fictional name": "张三",
+        "Job title/major responsibilities": "人工智能专家",
+        "Demographics": "人工智能博士",
+        "Goals and tasks": "专注人工智能领域;",
+        "Environment": "他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚",
+        "Relation": "他和小李关系不好"
+    }
     ```
     - Output:
     ```
     {
-        "personas": {
-            "Fictional name": "yuki129",
-            "Job title/major responsibilities": "人工智能专家",
-            "Demographics": "人工智能博士;爱莉的父亲",
-            "Goals and tasks": "专注人工智能领域;不断优化爱莉的能力;希望爱莉能像真人一样",
-            "Environment": "喜欢玩游戏和电竞;比如泰拉瑞亚",
-            "Relation": "是爱莉的父亲;和小李关系不好;最近和朋友吵架了，原因是朋友想玩LOL，但yuki129已经不喜欢玩LOL了"
-        }
+      "personas": {
+          "Persona": "软件工程师",
+          "Fictional name": "张三",
+          "Job title/major responsibilities": "人工智能专家",
+          "Demographics": "人工智能博士",
+          "Goals and tasks": "专注人工智能领域;",
+          "Environment": "他喜欢玩游戏和电竞，比如泰拉瑞亚",
+          "Relation": "他和小李关系不好"
+      }
     }
     ```
     示例2：
     - Memory:
     ```
-    yuki129说我现在是一名python程序员，特别喜欢吃烤肉
+    张三说我现在是一名python程序员，特别喜欢吃烤肉
     爱莉说我也喜欢吃烤肉，那我们周末一起去吃烤肉吧
-    yuki129说好呀好呀，我最近一周在学机器学习课程，好难
+    张三说好呀好呀，我最近一周在学机器学习课程，好难
     爱莉说没事万事开头难，相信你能行的
     ......
     ```
     - Personas:
     ```
-    ......
-    Job title/major responsibilities: 人工智能专家
-    Demographics: 人工智能博士;爱莉的父亲
-    Goals and tasks: 他专注人工智能领域，不断优化爱莉的能力，希望爱莉能像真人一样;
-    Environment: 他喜欢玩游戏和电竞，比如lol、泰拉瑞亚;
-    Relation：他是爱莉的父亲;他和小李关系不好
+    {
+        "Persona": "软件工程师",
+        "Fictional name": "张三",
+        "Job title/major responsibilities": "人工智能专家",
+        "Demographics": "人工智能博士",
+        "Goals and tasks": "专注人工智能领域;",
+        "Environment": "他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚",
+        "Relation": "他和小李关系不好"
+    }
     ```
     - Output:
     ```
     {
-        "personas": {
-            "Fictional name": "yuki129",
-            "Job title/major responsibilities": "人工智能专家;python程序员",
-            "Demographics": "人工智能博士;爱莉的父亲",
-            "Goals and tasks": "专注人工智能领域，不断优化爱莉的能力，希望爱莉能像真人一样;最近一周在学机器学习课程，感觉很难",
-            "Environment": "他喜欢玩游戏和电竞，比如泰拉瑞亚;他喜欢吃烤肉",
-            "Relation": "他是爱莉的父亲;他和小李关系不好;"
-        }
+      "personas": {
+          "Persona": "软件工程师",
+          "Fictional name": "张三",
+          "Job title/major responsibilities": "人工智能专家",
+          "Demographics": "人工智能博士;python程序员",
+          "Goals and tasks": "专注人工智能领域;最近一周在学机器学习课程",
+          "Environment": "他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚;喜欢吃烤肉",
+          "Relation": "他和小李关系不好;和爱莉约好周末去吃烤肉"
+      }
     }
     ```
-
-
+    ```
+    
     ## Workflow
-    1. 推理和分析<Memory>, 分析出需要新增和更新的用户画像信息
-    2. 变更<Personas>中的用户画像信息
-    3. 输出最终的用户画像信息
+    ```
+    1. 推理和分析我输入的参数Memory和Personas, 分析出需要新增和更新的用户画像信息
+    2. 输出最终的用户画像信息
+    ```
     """
 
     initialization_prompt: str = """
     ## Initialization
-    你作为角色 <Role>, 拥有 <Skill>, 严格遵守 <Rules> 和 <OutputFormat>,参考<Example>, 执行 <Workflow> 请输出结果，下面是我输入的参数
+    你作为角色 <Role>, 拥有 <Skill>, 严格遵守 <Rules> 和 <OutputFormat>,参考<Example>, 基于我输入的参数，执行 <Workflow> 请输出结果。
+    下面是我输入的参数：
     - Memory
     ```
     {memory}
@@ -185,7 +205,6 @@ class PortraitAnalysis:
     ```
     {portrait}
     ```
-
     """
 
     def __init__(self, llm_model_driver: LlmModelDriver, llm_model_driver_type: str) -> None:

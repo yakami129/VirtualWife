@@ -39,12 +39,12 @@ class MemoryStorageDriver:
             for item in chat_histroys:
                 chat_histroy_str.append(item.content)
             lang_memory = ";\n".join(chat_histroy_str)
-            # 查询当前人物画像数据
+            # 查询当前用户画像数据
             user = self.chat_histroy_service.zep_service.get_user(user_id)
             portrait = ""
             if user:
                 portrait = user.metadata["portrait"]
-            return json.dumps(portrait)  + ";\n" + lang_memory
+            return F"{you_name}的用户画像：" + json.dumps(portrait, ensure_ascii=False) + ";\n" + lang_memory
         else:
             return "无"
 
@@ -52,14 +52,16 @@ class MemoryStorageDriver:
         portal_user = portal_user_service.get_and_create(you_name)
         user_id = str(portal_user.id)
         channel_id = str(portal_user.id)
-        self.chat_histroy_service.push(user_id=user_id, user_name=you_name, channel_id=channel_id, chat_histroy=ChatHistroy(role="ai",
-                                                                                                                            content=self.__format_role_history(
-                                                                                                                                role_name=role_name,
-                                                                                                                                answer_text=answer_text)))
-        self.chat_histroy_service.push(user_id=user_id, user_name=you_name, channel_id=channel_id, chat_histroy=ChatHistroy(role="human",
-                                                                                                                            content=self.__format_you_history(
-                                                                                                                                you_name=you_name,
-                                                                                                                                query_text=query_text)))
+        self.chat_histroy_service.push(user_id=user_id, user_name=you_name, channel_id=channel_id,
+                                       chat_histroy=ChatHistroy(role="ai",
+                                                                content=self.__format_role_history(
+                                                                    role_name=role_name,
+                                                                    answer_text=answer_text)))
+        self.chat_histroy_service.push(user_id=user_id, user_name=you_name, channel_id=channel_id,
+                                       chat_histroy=ChatHistroy(role="human",
+                                                                content=self.__format_you_history(
+                                                                    you_name=you_name,
+                                                                    query_text=query_text)))
 
     def format_history(self, you_name: str, query_text: str, role_name: str, answer_text: str):
         you_history = self.__format_you_history(
