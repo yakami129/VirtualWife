@@ -222,3 +222,4 @@ dmypy.json
 cython_debug/
 
 .DS_Store
+domain-chatbot/logs/*.log
