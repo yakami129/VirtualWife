@@ -2,6 +2,7 @@ import logging
 import traceback
 from ..character.character_generation import singleton_character_generation
 from ..config import singleton_sys_config
+from ..insight.insight import PortraitObservation
 from ..output.realtime_message_queue import realtime_callback
 from ..chat.chat_history_queue import conversation_end_callback
 from ..emotion.emotion_manage import EmotionRecognition, EmotionRespond, GenerationEmotionRespondChatPropmt
@@ -12,12 +13,17 @@ logger = logging.getLogger(__name__)
 
 class ProcessCore():
     generation_emotion_respond_chat_propmt: GenerationEmotionRespondChatPropmt
+    portrait_observation: PortraitObservation
 
     def __init__(self) -> None:
 
         # 加载自定义角色生成模块
         self.singleton_character_generation = singleton_character_generation
         self.generation_emotion_respond_chat_propmt = GenerationEmotionRespondChatPropmt()
+
+        # 加载用户画像识别模块
+        self.portrait_observation = PortraitObservation(llm_model_driver=singleton_sys_config.llm_model_driver,
+                                                        llm_model_driver_type=singleton_sys_config.conversation_llm_model_driver_type)
 
     def chat(self, you_name: str, query: str):
 
@@ -31,15 +37,32 @@ class ProcessCore():
             prompt = self.singleton_character_generation.output_prompt(
                 character)
 
-            # 检索关联的短期记忆和长期记忆
+            # 识别对话中的用户画像
+            portrait_entitys = self.portrait_observation.observation(text=query)
+
+            # 检索关联的短期记忆
             short_history = singleton_sys_config.memory_storage_driver.search_short_memory(
                 query_text=query, you_name=you_name, role_name=role_name)
-            long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
+
+            # 检索用户画像和长期记忆
+            long_history_strs = []
+            current_user_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
                 query_text=query, you_name=you_name, role_name=role_name)
+            long_history_strs.append(current_user_history)
+            for entity in portrait_entitys:
+                if entity != you_name:
+                    long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
+                        query_text=query, you_name=entity, role_name=role_name)
+                    if long_history != "":
+                        print("long_history?",long_history)
+                        print(long_history != "")
+                        long_history_strs.append(long_history)
+
+            long_history_str = "\n".join(long_history_strs)
 
             current_time = get_current_time_str()
             prompt = prompt.format(
-                you_name=you_name, long_history=long_history, current_time=current_time)
+                you_name=you_name, long_history=long_history_str, current_time=current_time)
 
             # 调用大语言模型流式生成对话
             singleton_sys_config.llm_model_driver.chatStream(prompt=prompt,

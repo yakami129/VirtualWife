@@ -52,7 +52,7 @@ class ImportanceRating:
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="",
             short_history=[], long_history="")
-        logger.info(f"=># ImportanceRating # => 当前记忆重要性评分:{result}")
+        logger.debug(f"=># ImportanceRating # => 当前记忆重要性评分:{result}")
         rating = "1"
         try:
             start_idx = result.find('{')
@@ -91,6 +91,7 @@ class PortraitAnalysis:
     ```
     Persona: USDA Senior Manager Gatekeeper
     Fictional name: Matthew Johnson
+    Sex：male
     Job title/major responsibilities: Program Staff Director, USDA
     Demographics: 51 years old、Married、Father of three children、Grandfather of one childHas a Ph.D. in Agricultural Economics.
     Goals and tasks: He is focused, goal-oriented within a strong leadership role. One of his concerns is maintaining quality across all output of programs.
@@ -128,6 +129,7 @@ class PortraitAnalysis:
     {
         "Persona": "软件工程师",
         "Fictional name": "张三",
+        "Sex":"男",
         "Job title/major responsibilities": "人工智能专家",
         "Demographics": "人工智能博士",
         "Goals and tasks": "专注人工智能领域;",
@@ -141,6 +143,7 @@ class PortraitAnalysis:
       "personas": {
           "Persona": "软件工程师",
           "Fictional name": "张三",
+          "Sex":"男",
           "Job title/major responsibilities": "人工智能专家",
           "Demographics": "人工智能博士",
           "Goals and tasks": "专注人工智能领域;",
@@ -163,6 +166,7 @@ class PortraitAnalysis:
     {
         "Persona": "软件工程师",
         "Fictional name": "张三",
+        "Sex":"男",
         "Job title/major responsibilities": "人工智能专家",
         "Demographics": "人工智能博士",
         "Goals and tasks": "专注人工智能领域;",
@@ -176,6 +180,7 @@ class PortraitAnalysis:
       "personas": {
           "Persona": "软件工程师",
           "Fictional name": "张三",
+          "Sex":"男",
           "Job title/major responsibilities": "人工智能专家",
           "Demographics": "人工智能博士;python程序员",
           "Goals and tasks": "专注人工智能领域;最近一周在学机器学习课程",
@@ -215,7 +220,7 @@ class PortraitAnalysis:
         input_prompt = self.input_prompt.format(role_name=role_name)
         initialization_prompt = self.initialization_prompt.format(memory=memory,portrait=portrait)
         prompt = input_prompt + self.output_prompt + initialization_prompt
-        logger.info(f"=> prompt:{prompt}")
+        logger.debug(f"=> prompt:{prompt}")
         result = self.llm_model_driver.chat(
             prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="",
             short_history=[], long_history="")

@@ -42,11 +42,13 @@ class MemoryStorageDriver:
             # 查询当前用户画像数据
             user = self.chat_histroy_service.zep_service.get_user(user_id)
             portrait = ""
-            if user:
+            if user is not None:
                 portrait = user.metadata["portrait"]
-            return F"{you_name}的用户画像：" + json.dumps(portrait, ensure_ascii=False) + ";\n" + lang_memory
+                return F"{you_name}的用户画像：" + json.dumps(portrait, ensure_ascii=False) + ";\n" + lang_memory
+            else:
+                return f"{you_name}不是{role_name}的老熟人"
         else:
-            return "无"
+            return ""
 
     def save(self, you_name: str, query_text: str, role_name: str, answer_text: str) -> None:
         portal_user = portal_user_service.get_and_create(you_name)
