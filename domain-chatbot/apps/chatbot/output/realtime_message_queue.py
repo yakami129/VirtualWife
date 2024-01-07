@@ -5,6 +5,7 @@ import threading
 import traceback
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from ..config import singleton_sys_config
 from ..utils.chat_message_utils import format_chat_text
 from ..utils.str_utils import remove_special_characters, remove_emojis
 from ..emotion.emotion_manage import GenerationEmote

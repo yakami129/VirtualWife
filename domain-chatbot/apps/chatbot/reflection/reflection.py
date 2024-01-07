@@ -87,31 +87,31 @@ class PortraitAnalysis:
     ## Rules
     ```
     1. 请只输出结果，不需要输出推理过程。
-    2. 用户画像通常包含以下信息：
-    ```
-    Persona: USDA Senior Manager Gatekeeper
-    Fictional name: Matthew Johnson
-    Sex：male
-    Job title/major responsibilities: Program Staff Director, USDA
-    Demographics: 51 years old、Married、Father of three children、Grandfather of one childHas a Ph.D. in Agricultural Economics.
-    Goals and tasks: He is focused, goal-oriented within a strong leadership role. One of his concerns is maintaining quality across all output of programs.
-    - Spends his work time: Requesting and reviewing research reports,preparing memos and briefs for agency heads, and,supervising staff efforts in food safety and inspection.
-    Environment: He is comfortable using a computer and refers to himself as an intermediate Internet user. He is connected via a T1 connection at work and dial-up at home. He uses email extensively and uses the web about 1.5 hours during his work day
-    Relation：He's Ellie's best friend、He and Carlos are not on good terms
-    ```
-    3. <Memory>中会涉及多个用户的对话，你只需分析“yuki129”的用户画像
-    4. 请使用中文输出用户画像数据
-    5. 只输出“yuki129”的用户画像数据
-    6. 输出的用户画像数据，严格遵循用户画像的数据结构
-    7. <Example>中的Memory和Personas仅提供参考,请不要作为你进行用户画像分析的参数
-    ```
+    2. 用户画像的信息不能出现重复
+    3. 请使用中文输出用户画像数据
+    4. 只输出“yuki129”的用户画像数据
+    5. 输出的用户画像数据，严格遵循用户画像的数据结构
+    6. <Example>中的Memory和Personas仅提供参考,请不要作为你进行用户画像分析的参数
     """
 
     output_prompt: str = """
     ## OutputFormat :
     ``` 
     1. 请严格以JSON数组格式输出结果。
-    2. 输出示例如下:{"personas":"你推理的用户画像数据"}
+    2. 输出示例如下:
+    {
+        "personas": {
+            "Persona": "描述用户的职业，如果没有设置为未知",
+            "Fictional name": "描述用户的名称，如果没有设置为未知",
+            "Sex": "描述用户的性别，如果没有设置为未知",
+            "Job title/major responsibilities": "描述用户的职责和工作内容，如果没有设置为未知",
+            "Demographics": "描述用户的人际关系，家庭关系，如果没有设置为未知",
+            "Goals and tasks": "描述用户最近目标和想法，如果没有设置为未知",
+            "hobby": "描述用户的爱好，如果没有设置为未知",
+            "promise": "描述用户与别人的约定，如果没有设置为未知",
+            "topic": "描述用户喜欢聊什么话题，如果没有设置为未知"
+        }
+    }
     ```
     
     # Example:
@@ -127,66 +127,31 @@ class PortraitAnalysis:
     - Personas:
     ```
     {
+      "Persona": "软件工程师",
+      "Fictional name": "张三",
+      "Sex":"男",
+      "Job title/major responsibilities": "人工智能专家",
+      "Demographics": "人工智能博士",
+      "Goals and tasks": "专注人工智能领域;",
+      "hobby": "他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚",
+      "promise": "和爱莉约好周末去吃烧烤",
+      "topic": "喜欢聊动漫的话题"
+    }
+    ```
+    - Output:
+    ```
+    {
+    "personas": {
         "Persona": "软件工程师",
         "Fictional name": "张三",
         "Sex":"男",
         "Job title/major responsibilities": "人工智能专家",
         "Demographics": "人工智能博士",
         "Goals and tasks": "专注人工智能领域;",
-        "Environment": "他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚",
-        "Relation": "他和小李关系不好"
+        "hobby": "他喜欢玩游戏和电竞，比如泰拉瑞亚",
+        "promise": "和爱莉约好周末去吃烧烤",
+        "topic": "喜欢聊动漫的话题"
     }
-    ```
-    - Output:
-    ```
-    {
-      "personas": {
-          "Persona": "软件工程师",
-          "Fictional name": "张三",
-          "Sex":"男",
-          "Job title/major responsibilities": "人工智能专家",
-          "Demographics": "人工智能博士",
-          "Goals and tasks": "专注人工智能领域;",
-          "Environment": "他喜欢玩游戏和电竞，比如泰拉瑞亚",
-          "Relation": "他和小李关系不好"
-      }
-    }
-    ```
-    示例2：
-    - Memory:
-    ```
-    张三说我现在是一名python程序员，特别喜欢吃烤肉
-    爱莉说我也喜欢吃烤肉，那我们周末一起去吃烤肉吧
-    张三说好呀好呀，我最近一周在学机器学习课程，好难
-    爱莉说没事万事开头难，相信你能行的
-    ......
-    ```
-    - Personas:
-    ```
-    {
-        "Persona": "软件工程师",
-        "Fictional name": "张三",
-        "Sex":"男",
-        "Job title/major responsibilities": "人工智能专家",
-        "Demographics": "人工智能博士",
-        "Goals and tasks": "专注人工智能领域;",
-        "Environment": "他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚",
-        "Relation": "他和小李关系不好"
-    }
-    ```
-    - Output:
-    ```
-    {
-      "personas": {
-          "Persona": "软件工程师",
-          "Fictional name": "张三",
-          "Sex":"男",
-          "Job title/major responsibilities": "人工智能专家",
-          "Demographics": "人工智能博士;python程序员",
-          "Goals and tasks": "专注人工智能领域;最近一周在学机器学习课程",
-          "Environment": "他喜欢玩游戏和电竞，比如LoL、泰拉瑞亚;喜欢吃烤肉",
-          "Relation": "他和小李关系不好;和爱莉约好周末去吃烤肉"
-      }
     }
     ```
     ```
