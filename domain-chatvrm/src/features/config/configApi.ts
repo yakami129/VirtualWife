@@ -3,9 +3,11 @@ import {getRequest, postRequest} from "../httpclient/httpclient";
 // 定义formData初始状态 shape
 export const initialFormData = {
     "liveStreamingConfig": {
-        "B_STATION_ID": "622909"
+        "B_ROOM_ID": "27892212",
+        "B_COOKIE": ""
     },
     "enableProxy": false,
+    "enableLive": false,
     "httpProxy": "http://host.docker.internal:23457",
     "httpsProxy": "https://host.docker.internal:23457",
     "socks5Proxy": "socks5://host.docker.internal:23457",

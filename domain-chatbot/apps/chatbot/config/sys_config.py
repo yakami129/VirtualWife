@@ -35,6 +35,8 @@ class SysConfig():
     portrait_analysis: PortraitAnalysis
 
     def __init__(self) -> None:
+        self.bilibili_live_listener = None
+        self.thread_pool_manager = None
         self.load()
 
     def get(self):
@@ -148,8 +150,6 @@ class SysConfig():
         self.portrait_analysis = PortraitAnalysis(llm_model_driver=self.llm_model_driver,
                                                   llm_model_driver_type=self.conversation_llm_model_driver_type)
 
-        logger.info("=> Load SysConfig Success")
-
         # if (self.enable_summary):
         #     self.summary_llm_model_driver_type = sys_config_json[
         #         "memoryStorageConfig"]["languageModelForSummary"]
@@ -163,21 +163,6 @@ class SysConfig():
         #         "memoryStorageConfig"]["languageModelForReflection"]
         #     logger.debug("=> reflection_llm_model_driver_type" +
         #                  self.summary_llm_model_driver_type)
-
-        # 加载直播配置
-        # if self.bili_live_client != None:
-        #     self.bili_live_client.stop()
-        # room_id = str(sys_config_json["liveStreamingConfig"]["B_STATION_ID"])
-        # print("=> liveStreaming Config")
-        # self.room_id = room_id
-        # self.bili_live_client = BiliLiveClient(room_id=room_id)
-        # # 创建后台线程
-        # background_thread = threading.Thread(
-        #     target=asyncio.run(self.bili_live_client.start()))
-        # # 将后台线程设置为守护线程，以便在主线程结束时自动退出
-        # background_thread.daemon = True
-        # # 启动后台线程
-        # background_thread.start()
 
     def init_memory_storage_driver(self):
 

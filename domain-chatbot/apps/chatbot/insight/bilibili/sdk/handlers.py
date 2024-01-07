@@ -73,13 +73,13 @@ class BaseHandler(HandlerInterface):
 
     def __super_chat_message_delete_callback(self, client: client_.BLiveClient, command: dict):
         return self._on_super_chat_delete(client, models.SuperChatDeleteMessage.from_command(command['data']))
-    
+
     def __like_info_v3_click_callback(self, client: client_.BLiveClient, command: dict):
         return self._on_like_click(client, models.LikeInfoV3ClickMessage.from_command(command['data']))
-    
+
     def __welcome_callback(self, client: client_.BLiveClient, command: dict):
         return self._on_welcome(client, models.LikeInfoV3ClickMessage.from_command(command['data']))
-    
+
     def __entry_effect_callback(self, client: client_.BLiveClient, command: dict):
         return self._on_entry_effect(client, models.EntryEffectMessage.from_command(command['data']))
 
@@ -106,13 +106,13 @@ class BaseHandler(HandlerInterface):
         'SUPER_CHAT_MESSAGE': __super_chat_message_callback,
         # 删除醒目留言
         'SUPER_CHAT_MESSAGE_DELETE': __super_chat_message_delete_callback,
-         # 删除醒目留言
+        # 点赞
         'LIKE_INFO_V3_CLICK': __like_info_v3_click_callback,
-         # 欢迎加入房间
+        # 欢迎加入房间
         'WELCOME': __welcome_callback,
-         # 舰长、高能榜、老爷进入直播间
+        # 舰长、高能榜、老爷进入直播间
         'ENTRY_EFFECT_MUST_RECEIVE': __entry_effect_callback,
-         # 用户进入直播间，用户关注直播间
+        # 用户进入直播间，用户关注直播间
         'INTERACT_WORD': __interact_word_callback,
     }
     """cmd -> 处理回调"""
