@@ -27,3 +27,4 @@ websockets==11.0.3
 APScheduler==3.10.4
 zep-python==1.5.0
 pypinyin==0.50.0
+bilibili-api-python==16.1.1
