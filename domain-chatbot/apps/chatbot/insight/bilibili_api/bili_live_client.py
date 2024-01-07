@@ -16,10 +16,12 @@ logger = logging.getLogger(__name__)
 class BilibiliLiveListener:
     credential: Credential
     live_danmaku: LiveDanmaku
+    character_name: str
 
-    def __init__(self, room_id: str, credential: Credential):
+    def __init__(self, room_id: str, credential: Credential, character_name: str):
         from ..insight_message_queue import InsightMessage, put_message
         self.credential = credential
+        self.character_name = character_name
         room = live.LiveDanmaku(room_display_id=room_id, credential=credential)
 
         @room.on('DANMU_MSG')
@@ -48,7 +50,7 @@ class BilibiliLiveListener:
             user_id = data_info["uid"]
             logging.info(f"{user_name}进入直播间")
             put_message(InsightMessage(
-                type="danmaku", user_id=user_id, user_name=user_name, content=f"{user_name}进入直播间", emote="relaxed",
+                type="welcome", user_id=user_id, user_name=user_name, content=f"{user_name}进入直播间", emote="relaxed",
                 action="standing_greeting"))
 
         @room.on('ROOM_REAL_TIME_MESSAGE_UPDATE')
@@ -60,9 +62,11 @@ class BilibiliLiveListener:
         async def on_like_click(event):
             data_info = event["data"]["data"]
             user_name = data_info["uname"]
-            message_str = f'{user_name}偷偷摸了摸主播的头'
+            user_id = data_info["uid"]
+            message_str = f'{user_name}偷偷摸了摸{self.character_name}的头'
             put_message(InsightMessage(
-                type="danmaku", user_name=user_name, content=message_str, emote="relaxed", action="excited"))
+                type="danmaku", user_id=user_id, user_name=user_name, content=message_str, emote="relaxed",
+                action="excited"))
 
         self.live_danmaku = room
 
@@ -123,7 +127,11 @@ def lazy_bilibili_live(sys_config_json: any, sys_cofnig: any):
         dedeuserid = cookie.get("DedeUserID").value
         credential = Credential(sessdata=sessdata, bili_jct=bili_jct, buvid3="", dedeuserid=dedeuserid)
         sys_cofnig.bilibili_live_listener = bilibili_live_listener = BilibiliLiveListener(room_id=room_id,
-                                                                                          credential=credential)
+                                                                                          credential=credential,
+                                                                                          character_name=
+                                                                                          sys_config_json[
+                                                                                              "characterConfig"][
+                                                                                              "character_name"])
         sys_cofnig.thread_pool_manager = thread_pool_manager = ThreadPoolManager(max_workers=1)
         thread_pool_manager.run_in_thread(start, bilibili_live_listener)
         logger.info(f"开启B站直播 room_id:{room_id}")

@@ -19,9 +19,10 @@ class InsightMessage():
     emote: str
     action: str
     expand: str
+    is_recite: bool
 
     def __init__(self, type: str, user_id: str, user_name: str, content: str, emote: str, action: str = None,
-                 expand: str = None) -> None:
+                 expand: str = None, is_recite: bool = True) -> None:
         self.type = type
         self.user_id = user_id
         self.user_name = user_name
@@ -29,6 +30,7 @@ class InsightMessage():
         self.emote = emote
         self.action = action
         self.expand = expand
+        self.is_recite = is_recite
 
     def to_dict(self):
         return {
@@ -37,7 +39,8 @@ class InsightMessage():
             "content": self.content,
             "emote": self.emote,
             "action": self.action,
-            "expand": self.expand
+            "expand": self.expand,
+            "is_recite": self.is_recite
         }
 
 

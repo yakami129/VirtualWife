@@ -120,7 +120,7 @@ class ZepService:
         # Initialize the Zep client before running this code
         search_payload = MemorySearchPayload(
             text=query,
-            search_scope="summary",  # This could be messages or summary
+            search_scope="messages",  # This could be messages or summary
             search_type="mmr",  # remove this if you'd prefer not to rerank results
             mmr_lambda=mmr_lambda,  # tune diversity vs relevance
         )

@@ -26,6 +26,7 @@ class SysConfig():
     reflection_llm_model_driver_type: str
     memory_storage_driver: any
     character: int
+    character_name: str
     your_name: str
     room_id: str
     search_memory_size: int = 3
@@ -92,10 +93,13 @@ class SysConfig():
         # 加载角色配置
         character = sys_config_json["characterConfig"]["character"]
         yourName = sys_config_json["characterConfig"]["yourName"]
+        character_name = sys_config_json["characterConfig"]["character_name"]
         logger.debug("=> character Config")
         logger.debug(f"character:{character}")
+        logger.debug(f"character_name:{character_name}")
         logger.debug(f"yourName:{yourName}")
         self.character = character
+        self.character_name = character_name
         self.yourName = yourName
 
         # 加载大语言模型配置
