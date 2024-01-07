@@ -21,7 +21,7 @@ services:
       timeout: 5s
       retries: 5
   nlp:
-    image: okapi0129/getzep-zep-nlp-server:v1.0.0
+    image: okapi0129/getzep-zep-nlp-server:latest
     container_name: zep-nlp
     env_file:
       - .env # You can set your embedding-related variables here

@@ -48,6 +48,7 @@ class ProcessCore():
             long_history_strs = []
             current_user_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
                 query_text=query, you_name=you_name, role_name=role_name)
+            logger.info(f"long_history_strs:{long_history_strs}")
             long_history_strs.append(current_user_history)
             for entity in portrait_entitys:
                 if entity != you_name:

@@ -61,7 +61,7 @@ def send_message():
                     user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(user_id)
                     portrait = user.metadata["portrait"]
                     recently_memory = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_memorys(
-                        channel_id=channel_id, limit=5)
+                        channel_id=channel_id, limit=10)
                     recently_memory.reverse()
                     recently_memory_str = format_histroy(recently_memory)
                     portrait = singleton_sys_config.portrait_analysis.analysis(message.you_name, portrait,

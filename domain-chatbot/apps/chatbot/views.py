@@ -1,20 +1,19 @@
 import os
-import time
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 import json
-from .serializers import CustomRoleSerializer, UploadedImageSerializer, UploadedVrmModelSerializer
+
+from .insight.bilibili_api.bili_live_client import lazy_bilibili_live
 from .process import process_core
+from .serializers import CustomRoleSerializer, UploadedImageSerializer, UploadedVrmModelSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
 from .config import singleton_sys_config
 from .models import CustomRoleModel, BackgroundImageModel, VrmModel
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 @api_view(['POST'])
 def chat(request):
@@ -41,6 +40,11 @@ def save_config(request):
     config = data["config"]
     singleton_sys_config.save(config)
     singleton_sys_config.load()
+
+    # 加载直播配置
+    lazy_bilibili_live(config, singleton_sys_config)
+    logger.info("=> Load SysConfig Success")
+
     return Response({"response": config, "code": "200"})
 
 
@@ -156,7 +160,6 @@ def delete_custom_role(request, pk):
 
 @api_view(['POST'])
 def delete_background_image(request, pk):
-
     # 删除数据
     background_image_model = get_object_or_404(BackgroundImageModel, pk=pk)
     background_image_model.delete()
@@ -240,6 +243,7 @@ def show_user_vrm_models(request):
     vrm_models = VrmModel.objects.all()
     serializer = UploadedVrmModelSerializer(vrm_models, many=True)
     return Response({"response": serializer.data, "code": "200"})
+
 
 @api_view(['GET'])
 def show_system_vrm_models(request):

@@ -46,7 +46,7 @@ class MemoryStorageDriver:
                 portrait = user.metadata["portrait"]
                 return F"{you_name}的用户画像：" + json.dumps(portrait, ensure_ascii=False) + ";\n" + lang_memory
             else:
-                return f"{you_name}不是{role_name}的老熟人"
+                return ""
         else:
             return ""
 
