@@ -3,13 +3,15 @@ from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 import json
 
+from .character import role_package_manage
 from .insight.bilibili_api.bili_live_client import lazy_bilibili_live
 from .process import process_core
-from .serializers import CustomRoleSerializer, UploadedImageSerializer, UploadedVrmModelSerializer
+from .serializers import CustomRoleSerializer, UploadedImageSerializer, UploadedVrmModelSerializer, \
+    UploadedRolePackageModelSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .config import singleton_sys_config
-from .models import CustomRoleModel, BackgroundImageModel, VrmModel
+from .models import CustomRoleModel, BackgroundImageModel, VrmModel, RolePackageModel
 import logging
 
 logger = logging.getLogger(__name__)
@@ -117,7 +119,8 @@ def create_custom_role(request):
         personality=personality,
         scenario=scenario,
         examples_of_dialogue=examples_of_dialogue,
-        custom_role_template_type=custom_role_template_type
+        custom_role_template_type=custom_role_template_type,
+        role_package_id=-1
     )
     custom_role.save()
 
@@ -129,7 +132,6 @@ def edit_custom_role(request, pk):
     data = request.data  # 获取请求的 JSON 数据
     # 从 JSON 数据中提取字段值
     id = data.get('id')
-    role_name = data.get('role_name')
     role_name = data.get('role_name')
     persona = data.get('persona')
     personality = data.get('personality')
@@ -230,6 +232,53 @@ def upload_vrm_model(request):
         # 获取上传文件的原始文件名
         original_filename = uploaded_file.name
         serializer.save(original_name=original_filename, type="user")
+        return Response({"response": "ok", "code": "200"})
+    logger.error(serializer.errors)
+    return Response({"response": "no", "code": "500"})
+
+
+@api_view(['POST'])
+def upload_role_package(request):
+    """
+    上传角色安装包
+    """
+    serializer = UploadedRolePackageModelSerializer(data=request.data)
+    if serializer.is_valid():
+        # 获取上传角色安装包
+        role_package_model = serializer.save(role_name="", dataset_json_path="", embed_index_idx_path="",
+                                             system_prompt_txt_path="")
+
+        # 解压和安装角色包
+        role_package_path = role_package_model.role_package.path
+        role_name, dataset_json_path, embed_index_idx_path, system_prompt_txt_path = role_package_manage.install(
+            role_package_path)
+        db_role_package_model = get_object_or_404(RolePackageModel, pk=role_package_model.id)
+        db_role_package_model.role_name = role_name
+        db_role_package_model.dataset_json_path = dataset_json_path
+        db_role_package_model.embed_index_idx_path = embed_index_idx_path
+        db_role_package_model.system_prompt_txt_path = system_prompt_txt_path
+        db_role_package_model.save()
+
+        # 保存为新角色
+        role_name = role_name
+        persona = role_package_manage.load_system_prompt(system_prompt_txt_path)
+        personality = ""
+        scenario = ""
+        examples_of_dialogue = "此参数会动态从角色安装包中获取，请勿修改"
+        custom_role_template_type = "zh"
+
+        # 创建 CustomRoleModel 实例并保存到数据库
+        custom_role = CustomRoleModel(
+            role_name=role_name,
+            persona=persona,
+            personality=personality,
+            scenario=scenario,
+            examples_of_dialogue=examples_of_dialogue,
+            custom_role_template_type=custom_role_template_type,
+            role_package_id=role_package_model.id
+        )
+        custom_role.save()
+
         return Response({"response": "ok", "code": "200"})
     logger.error(serializer.errors)
     return Response({"response": "no", "code": "500"})

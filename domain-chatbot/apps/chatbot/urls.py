@@ -21,4 +21,5 @@ urlpatterns = [
     path('config/vrm/upload', views.upload_vrm_model, name='upload_vrm_model'),
     path('config/vrm/user/show', views.show_user_vrm_models, name='show_user_vrm_models'),
     path('config/vrm/system/show', views.show_system_vrm_models, name='show_system_vrm_models'),
+    path('rolepackage/upload', views.upload_role_package, name='upload_role_package'),
 ]

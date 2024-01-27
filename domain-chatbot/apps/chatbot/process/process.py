@@ -1,8 +1,13 @@
 import logging
 import traceback
+
+from rest_framework.generics import get_object_or_404
+
+from ..character import role_dialogue_example
 from ..character.character_generation import singleton_character_generation
 from ..config import singleton_sys_config
 from ..insight.insight import PortraitObservation
+from ..models import RolePackageModel
 from ..output.realtime_message_queue import realtime_callback
 from ..chat.chat_history_queue import conversation_end_callback
 from ..emotion.emotion_manage import EmotionRecognition, EmotionRespond, GenerationEmotionRespondChatPropmt
@@ -34,6 +39,13 @@ class ProcessCore():
 
         try:
 
+            # 判断是否有角色安装包？如果有动态获取对话示例
+            if character.role_package_id != -1:
+                db_role_package_model = get_object_or_404(RolePackageModel, pk=character.role_package_id)
+                character.examples_of_dialogue = role_dialogue_example.generate(query, you_name, role_name,
+                                                                                db_role_package_model.dataset_json_path,
+                                                                                db_role_package_model.embed_index_idx_path)
+
             prompt = self.singleton_character_generation.output_prompt(
                 character)
 
@@ -55,7 +67,7 @@ class ProcessCore():
                     long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
                         query_text=query, you_name=entity, role_name=role_name)
                     if long_history != "":
-                        print("long_history?",long_history)
+                        print("long_history?", long_history)
                         print(long_history != "")
                         long_history_strs.append(long_history)
 
@@ -75,7 +87,7 @@ class ProcessCore():
                                                              realtime_callback=realtime_callback,
                                                              conversation_end_callback=conversation_end_callback)
         except Exception as e:
-            error_message = "小蜜蜂告诉我,她刚刚在路上遇到一团奇怪的迷雾,导致消息晚点到达,请耐心等待!"
+            error_message = "我的大脑出现了问题，请通知开发者修复我!"
             traceback.print_exc()
             logger.error("chat error: %s" % str(e))
             realtime_callback(role_name=role_name,
