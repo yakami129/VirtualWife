@@ -1,5 +1,3 @@
-
-
 from django.shortcuts import get_object_or_404
 from ..models import CustomRoleModel
 # from .character_template_en import EnglishCharacterTemplate
@@ -10,7 +8,6 @@ from .sys.aili_zh import aili_zh
 
 
 class CharacterGeneration():
-
     character_template_dict: dict[str, BaseCharacterTemplate] = {}
 
     def __init__(self) -> None:
@@ -32,7 +29,8 @@ class CharacterGeneration():
                 personality=character_model.personality,
                 scenario=character_model.scenario,
                 examples_of_dialogue=character_model.examples_of_dialogue,
-                custom_role_template_type=character_model.custom_role_template_type
+                custom_role_template_type=character_model.custom_role_template_type,
+                role_package_id=character_model.role_package_id
             )
         return character
 

@@ -72,6 +72,17 @@ export async function uploadVrmModel(formData: FormData) {
     return chatRes.response;
 }
 
+export async function uploadRolePackage(formData: FormData) {
+    const headers: Record<string, string> = {
+        "Content-Type": "multipart/form-data"
+    };
+    const chatRes = await postRequest("/chatbot/rolepackage/upload", headers, formData);
+    if (chatRes.code !== '200') {
+        throw new Error("Something went wrong");
+    }
+    return chatRes.response;
+}
+
 export async function queryUserVrmModels() {
     const headers: Record<string, string> = {
         "Content-Type": "application/json"

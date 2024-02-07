@@ -73,6 +73,8 @@ class SysConfig():
 
         sys_config_json = self.get()
 
+        os.environ['TOKENIZERS_PARALLELISM'] = "false"
+
         # 初始化默认角色
         try:
             result = CustomRoleModel.objects.all()

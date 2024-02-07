@@ -50,8 +50,8 @@ class ZepService:
                 "Job title/major responsibilities": "人工智能专家",
                 "Demographics": "人工智能博士;爱莉的父亲",
                 "Goals and tasks": "他专注人工智能领域，不断优化爱莉的能力，希望爱莉能像真人一样",
-                "Environment": "他喜欢玩游戏和电竞，比如lol、泰拉瑞亚",
-                "Relation": "他是爱莉的父亲;"
+                "hobby": "他喜欢玩游戏和电竞，比如lol、泰拉瑞亚",
+                "promise": ""
             }
 
         print(portrait)
@@ -120,7 +120,7 @@ class ZepService:
         # Initialize the Zep client before running this code
         search_payload = MemorySearchPayload(
             text=query,
-            search_scope="messages",  # This could be messages or summary
+            search_scope="summary",  # This could be messages or summary
             search_type="mmr",  # remove this if you'd prefer not to rerank results
             mmr_lambda=mmr_lambda,  # tune diversity vs relevance
         )

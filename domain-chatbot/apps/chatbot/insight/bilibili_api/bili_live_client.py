@@ -22,7 +22,7 @@ class BilibiliLiveListener:
         from ..insight_message_queue import InsightMessage, put_message
         self.credential = credential
         self.character_name = character_name
-        room = live.LiveDanmaku(room_display_id=room_id, credential=credential)
+        room = live.LiveDanmaku(room_display_id=room_id, credential=credential, max_retry=3)
 
         @room.on('DANMU_MSG')
         async def on_danmaku(event):
@@ -50,7 +50,8 @@ class BilibiliLiveListener:
             user_id = data_info["uid"]
             logging.info(f"{user_name}进入直播间")
             put_message(InsightMessage(
-                type="danmaku", user_id=user_id, user_name=user_name, content=f"欢迎{user_name}进入直播间", emote="relaxed",
+                type="danmaku", user_id=user_id, user_name=user_name, content=f"欢迎{user_name}进入直播间",
+                emote="relaxed",
                 action="standing_greeting"))
 
         @room.on('ROOM_REAL_TIME_MESSAGE_UPDATE')

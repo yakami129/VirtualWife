@@ -3,8 +3,8 @@ openai==1.6.1
 langchain==0.0.353
 python-dotenv==1.0.0
 Django==4.2.1
-aiohttp==3.8.3
-Brotli==1.0.9
+aiohttp<=3.8.6,<4.0.0
+Brotli==1.1.0
 flask==2.3.3
 gunicorn==21.2.0
 gevent==23.9.0.post1
@@ -17,7 +17,7 @@ schedule==1.2.0
 drf-yasg==1.21.7
 pymilvus==2.2.12
 datetime==5.2
-transformers==4.33.1
+transformers>=4.36.2
 sentence-transformers==2.2.2
 easygoogletranslate==0.0.4
 volcengine==1.0.103
@@ -27,3 +27,6 @@ websockets==11.0.3
 APScheduler==3.10.4
 zep-python==1.5.0
 pypinyin==0.50.0
+bilibili-api-python==16.1.1
+faiss-cpu==1.7.4
+FlagEmbedding==1.1.7
