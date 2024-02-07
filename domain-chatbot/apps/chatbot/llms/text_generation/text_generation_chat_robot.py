@@ -4,7 +4,8 @@ import requests
 import os
 import logging
 import json
-from ...utils.str_utils import remove_special_characters, remove_emojis, remove_spaces_and_tabs
+from ...utils.str_utils import remove_spaces_and_tabs
+from ...memory.zep.zep_memory import ChatHistroy
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,6 @@ except ImportError:
 
 
 class TextGeneration():
-
     max_new_tokens: int = 2048
     temperature: float = 0.7
     top_p: float = 0.9
@@ -42,7 +42,8 @@ class TextGeneration():
         logger.debug(f'=> top_p:{self.top_p}')
         logger.info('=> Init TextGenerationWebUiApi Success')
 
-    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> str:
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[ChatHistroy],
+             long_history: str) -> str:
         body = self.build_body(prompt=prompt, role_name=role_name, you_name=you_name,
                                query=query, short_history=short_history, long_history=long_history)
         for _ in range(self.max_retries + 1):
@@ -50,7 +51,7 @@ class TextGeneration():
             if response.status_code == 200:
                 result = response.json()[
                     'results'][0]['history']['visible'][-1][1]
-                logger.debug("=> result:"+result)
+                logger.debug("=> result:" + result)
                 if result != '':
                     return result
                 else:
@@ -63,11 +64,13 @@ class TextGeneration():
                          role_name: str,
                          you_name: str,
                          query: str,
-                         history: list[dict[str, str]],
+                         history: list[ChatHistroy],
                          realtime_callback=None,
                          conversation_end_callback=None
                          ):
-        async for response in self.stream(prompt=prompt, role_name=role_name, you_name=you_name, query=query, history=history, realtime_callback=realtime_callback, conversation_end_callback=conversation_end_callback):
+        async for response in self.stream(prompt=prompt, role_name=role_name, you_name=you_name, query=query,
+                                          history=history, realtime_callback=realtime_callback,
+                                          conversation_end_callback=conversation_end_callback):
             sys.stdout.flush()
 
     async def stream(self,
@@ -75,7 +78,7 @@ class TextGeneration():
                      role_name: str,
                      you_name: str,
                      query: str,
-                     history: list[dict[str, str]],
+                     history: list[ChatHistroy],
                      realtime_callback=None,
                      conversation_end_callback=None
                      ):
@@ -106,7 +109,8 @@ class TextGeneration():
                             role_name, answer, you_name, query)
                         return
 
-    def build_chat_body(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> dict[str, Any]:
+    def build_chat_body(self, prompt: str, role_name: str, you_name: str, query: str,
+                        short_history: list[ChatHistroy], long_history: str) -> dict[str, Any]:
         logger.debug(f"prompt:{prompt}")
         # 构建短期记忆数据
         history_item = []
@@ -172,8 +176,9 @@ class TextGeneration():
         }
         return body
 
-    def build_body(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[dict[str, str]], long_history: str) -> dict[str, Any]:
-        input_prompt = query+"[/INST]"
+    def build_body(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[ChatHistroy],
+                   long_history: str) -> dict[str, Any]:
+        input_prompt = query + "[/INST]"
         prompt = prompt + input_prompt
         logger.debug(f"prompt:{prompt}")
         # 构建短期记忆数据

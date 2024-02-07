@@ -1,21 +1,21 @@
 import os
-import time
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404
 import json
-from .serializers import CustomRoleSerializer, UploadedImageSerializer, UploadedVrmModelSerializer
+
+from .character import role_package_manage
+from .insight.bilibili_api.bili_live_client import lazy_bilibili_live
 from .process import process_core
+from .serializers import CustomRoleSerializer, UploadedImageSerializer, UploadedVrmModelSerializer, \
+    UploadedRolePackageModelSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
 from .config import singleton_sys_config
-from .reflection.reflection_generation import ReflectionGeneration
-from .models import CustomRoleModel, BackgroundImageModel, VrmModel
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+from .models import CustomRoleModel, BackgroundImageModel, VrmModel, RolePackageModel
 import logging
 
 logger = logging.getLogger(__name__)
+
 
 @api_view(['POST'])
 def chat(request):
@@ -42,6 +42,11 @@ def save_config(request):
     config = data["config"]
     singleton_sys_config.save(config)
     singleton_sys_config.load()
+
+    # 加载直播配置
+    lazy_bilibili_live(config, singleton_sys_config)
+    logger.info("=> Load SysConfig Success")
+
     return Response({"response": config, "code": "200"})
 
 
@@ -55,19 +60,19 @@ def get_config(request):
     return Response({"response": singleton_sys_config.get(), "code": "200"})
 
 
-@api_view(['GET'])
-def reflection_generation(request):
-    '''
-      生成新记忆
-    :return:
-    '''
-    rg = ReflectionGeneration()
-    rg.generation(role_name="Maiko")
-    timestamp = time.time()
-    expr = f'timestamp <= {timestamp}'
-    result = singleton_sys_config.memory_storage_driver.pageQuery(
-        1, 100, expr=expr)
-    return Response({"response": result, "code": "200"})
+# @api_view(['GET'])
+# def reflection_generation(request):
+#     '''
+#       生成新记忆
+#     :return:
+#     '''
+#     rg = ReflectionGeneration()
+#     rg.generation(role_name="Maiko")
+#     timestamp = time.time()
+#     expr = f'timestamp <= {timestamp}'
+#     result = singleton_sys_config.memory_storage_driver.pageQuery(
+#         1, 100, expr=expr)
+#     return Response({"response": result, "code": "200"})
 
 
 @api_view(['GET'])
@@ -114,7 +119,8 @@ def create_custom_role(request):
         personality=personality,
         scenario=scenario,
         examples_of_dialogue=examples_of_dialogue,
-        custom_role_template_type=custom_role_template_type
+        custom_role_template_type=custom_role_template_type,
+        role_package_id=-1
     )
     custom_role.save()
 
@@ -126,7 +132,6 @@ def edit_custom_role(request, pk):
     data = request.data  # 获取请求的 JSON 数据
     # 从 JSON 数据中提取字段值
     id = data.get('id')
-    role_name = data.get('role_name')
     role_name = data.get('role_name')
     persona = data.get('persona')
     personality = data.get('personality')
@@ -151,13 +156,21 @@ def edit_custom_role(request, pk):
 @api_view(['POST'])
 def delete_custom_role(request, pk):
     role = get_object_or_404(CustomRoleModel, pk=pk)
+    # 删除对应的角色安装包
+    if role.role_package_id != -1:
+        # 删除角色安装包数据
+        role_package = get_object_or_404(RolePackageModel, pk=role.role_package_id)
+        role_package_path = role_package.role_package.path
+        # 删除角色安装包文件
+        role_package_manage.uninstall(role_package_path)
+        role_package.delete()
     role.delete()
+
     return Response({"response": "ok", "code": "200"})
 
 
 @api_view(['POST'])
 def delete_background_image(request, pk):
-
     # 删除数据
     background_image_model = get_object_or_404(BackgroundImageModel, pk=pk)
     background_image_model.delete()
@@ -233,6 +246,53 @@ def upload_vrm_model(request):
     return Response({"response": "no", "code": "500"})
 
 
+@api_view(['POST'])
+def upload_role_package(request):
+    """
+    上传角色安装包
+    """
+    serializer = UploadedRolePackageModelSerializer(data=request.data)
+    if serializer.is_valid():
+        # 获取上传角色安装包
+        role_package_model = serializer.save(role_name="", dataset_json_path="", embed_index_idx_path="",
+                                             system_prompt_txt_path="")
+
+        # 解压和安装角色包
+        role_package_path = role_package_model.role_package.path
+        role_name, dataset_json_path, embed_index_idx_path, system_prompt_txt_path = role_package_manage.install(
+            role_package_path)
+        db_role_package_model = get_object_or_404(RolePackageModel, pk=role_package_model.id)
+        db_role_package_model.role_name = role_name
+        db_role_package_model.dataset_json_path = dataset_json_path
+        db_role_package_model.embed_index_idx_path = embed_index_idx_path
+        db_role_package_model.system_prompt_txt_path = system_prompt_txt_path
+        db_role_package_model.save()
+
+        # 保存为新角色
+        role_name = role_name
+        persona = role_package_manage.load_system_prompt(system_prompt_txt_path)
+        personality = ""
+        scenario = ""
+        examples_of_dialogue = "此参数会动态从角色安装包中获取，请勿修改"
+        custom_role_template_type = "zh"
+
+        # 创建 CustomRoleModel 实例并保存到数据库
+        custom_role = CustomRoleModel(
+            role_name=role_name,
+            persona=persona,
+            personality=personality,
+            scenario=scenario,
+            examples_of_dialogue=examples_of_dialogue,
+            custom_role_template_type=custom_role_template_type,
+            role_package_id=role_package_model.id
+        )
+        custom_role.save()
+
+        return Response({"response": "ok", "code": "200"})
+    logger.error(serializer.errors)
+    return Response({"response": "no", "code": "500"})
+
+
 @api_view(['GET'])
 def show_user_vrm_models(request):
     """
@@ -241,6 +301,7 @@ def show_user_vrm_models(request):
     vrm_models = VrmModel.objects.all()
     serializer = UploadedVrmModelSerializer(vrm_models, many=True)
     return Response({"response": serializer.data, "code": "200"})
+
 
 @api_view(['GET'])
 def show_system_vrm_models(request):

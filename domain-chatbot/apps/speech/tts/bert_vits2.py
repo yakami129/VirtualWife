@@ -623,9 +623,6 @@ class BertVits2API:
         # 合成语音
         body = json.dumps(params, ensure_ascii=False).encode('utf-8')
         response = requests.post(url, headers=headers, data=body)
-        print(url)
-        print(params)
-        print(response.text)
         voice_result = json.loads(response.text)["data"]
         file_path = voice_result[1]["name"]
         # 下载文件

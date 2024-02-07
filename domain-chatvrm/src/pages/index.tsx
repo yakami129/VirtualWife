@@ -1,22 +1,22 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import {createContext, useCallback, useContext, useEffect, useRef, useState} from "react";
 import VrmViewer from "@/components/vrmViewer";
-import { ViewerContext } from "@/features/vrmViewer/viewerContext";
-import { EmotionType, Message, Screenplay, textsToScreenplay, } from "@/features/messages/messages";
-import { speakCharacter } from "@/features/messages/speakCharacter";
-import { MessageInputContainer } from "@/components/messageInputContainer";
-import { SYSTEM_PROMPT } from "@/features/constants/systemPromptConstants";
-import { DEFAULT_PARAM, KoeiroParam } from "@/features/constants/koeiroParam";
-import { chat } from "@/features/chat/openAiChat";
-import { connect } from "@/features/blivedm/blivedm";
+import {ViewerContext} from "@/features/vrmViewer/viewerContext";
+import {EmotionType, Message, Screenplay, textsToScreenplay,} from "@/features/messages/messages";
+import {speakCharacter} from "@/features/messages/speakCharacter";
+import {MessageInputContainer} from "@/components/messageInputContainer";
+import {SYSTEM_PROMPT} from "@/features/constants/systemPromptConstants";
+import {DEFAULT_PARAM, KoeiroParam} from "@/features/constants/koeiroParam";
+import {chat} from "@/features/chat/openAiChat";
+import {connect} from "@/features/blivedm/blivedm";
 // import { PhotoFrame } from '@/features/game/photoFrame';
 // import { M_PLUS_2, Montserrat } from "next/font/google";
-import { Introduction } from "@/components/introduction";
-import { Menu } from "@/components/menu";
-import { GitHubLink } from "@/components/githubLink";
-import { Meta } from "@/components/meta";
-import { GlobalConfig, getConfig, initialFormData } from "@/features/config/configApi";
-import { buildUrl } from "@/utils/buildUrl";
-import { generateMediaUrl, vrmModelData } from "@/features/media/mediaApi";
+import {Introduction} from "@/components/introduction";
+import {Menu} from "@/components/menu";
+import {GitHubLink} from "@/components/githubLink";
+import {Meta} from "@/components/meta";
+import {GlobalConfig, getConfig, initialFormData} from "@/features/config/configApi";
+import {buildUrl} from "@/utils/buildUrl";
+import {generateMediaUrl, vrmModelData} from "@/features/media/mediaApi";
 
 
 // const m_plus_2 = M_PLUS_2({
@@ -37,7 +37,7 @@ let webGlobalConfig = initialFormData
 
 export default function Home() {
 
-    const { viewer } = useContext(ViewerContext);
+    const {viewer} = useContext(ViewerContext);
     const [systemPrompt, setSystemPrompt] = useState(SYSTEM_PROMPT);
     const [openAiKey, setOpenAiKey] = useState("");
     const [koeiroParam, setKoeiroParam] = useState<KoeiroParam>(DEFAULT_PARAM);
@@ -62,10 +62,10 @@ export default function Home() {
             return updatedSubtitle;
         });
     };
-    
+
 
     useEffect(() => {
-        if(socketInstance != null){
+        if (socketInstance != null) {
             socketInstance.close()
         }
         if (!bind_message_event) {
@@ -95,7 +95,7 @@ export default function Home() {
         process.nextTick(() =>
             window.localStorage.setItem(
                 "chatVRMParams",
-                JSON.stringify({ systemPrompt, koeiroParam, chatLog })
+                JSON.stringify({systemPrompt, koeiroParam, chatLog})
             )
         );
     }, [systemPrompt, koeiroParam, chatLog]);
@@ -103,7 +103,7 @@ export default function Home() {
     const handleChangeChatLog = useCallback(
         (targetIndex: number, text: string) => {
             const newChatLog = chatLog.map((v: Message, i) => {
-                return i === targetIndex ? { role: v.role, content: text, user_name: v.user_name } : v;
+                return i === targetIndex ? {role: v.role, content: text, user_name: v.user_name} : v;
             });
             setChatLog(newChatLog);
         },
@@ -157,7 +157,7 @@ export default function Home() {
             );
             const messageLogAssistant: Message[] = [
                 ...params.chatLog,
-                { role: "assistant", content: aiTextLog, "user_name": user_name },
+                {role: "assistant", content: aiTextLog, "user_name": user_name},
             ];
             setChatLog(messageLogAssistant);
         });
@@ -172,21 +172,11 @@ export default function Home() {
         action: string) => {
 
         console.log("DanmakuMessage:" + content + " emote:" + emote)
-        // 如果content为空，不进行处理
         // 如果与上一句content完全相同，不进行处理
         if (content == null || content == '' || content == ' ') {
             return
         }
 
-
-        // 如果有，则播放相应动作
-        if (action != null && action != '') {
-            handleBehaviorAction(
-                "behavior_action",
-                action,
-                emote,
-            );
-        }
 
         let aiTextLog = "";
         const sentences = new Array<string>();
@@ -196,6 +186,16 @@ export default function Home() {
         // 文ごとに音声を生成 & 再生、返答を表示
         setSubtitle(aiTextLog);
         handleSpeakAi(globalConfig, aiTalks[0], () => {
+
+            // 如果有，则播放相应动作
+            if (action != null && action != '') {
+                handleBehaviorAction(
+                    "behavior_action",
+                    action,
+                    emote,
+                );
+            }
+
             // setAssistantMessage(currentAssistantMessage);
             startTypewriterEffect(aiTextLog);
             // アシスタントの返答をログに追加
@@ -204,7 +204,7 @@ export default function Home() {
             );
             const messageLog: Message[] = [
                 ...params.chatLog,
-                { role: "user", content: content, "user_name": user_name },
+                {role: "user", content: content, "user_name": user_name},
             ];
             setChatLog(messageLog);
 
@@ -263,7 +263,7 @@ export default function Home() {
             // ユーザーの発言を追加して表示
             const messageLog: Message[] = [
                 ...chatLog,
-                { role: "user", content: content, "user_name": yourName },
+                {role: "user", content: content, "user_name": yourName},
             ];
             setChatLog(messageLog);
 
@@ -311,7 +311,7 @@ export default function Home() {
                 chatMessage.message.content,
                 chatMessage.message.emote,
             );
-        } else if (type === "danmaku") {
+        } else if (type === "danmaku" || type === "welcome") {
             handleDanmakuMessage(
                 webGlobalConfig,
                 chatMessage.message.type,
@@ -347,9 +347,9 @@ export default function Home() {
                 zIndex: 1,
             }}>
             <div>
-                <Meta />
-                <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey} />
-                <VrmViewer globalConfig={globalConfig} />
+                <Meta/>
+                <Introduction openAiKey={openAiKey} onChangeAiKey={setOpenAiKey}/>
+                <VrmViewer globalConfig={globalConfig}/>
                 <div className="flex items-center justify-center">
                     <div className="absolute bottom-1/4 z-10" style={{
                         fontFamily: "fzfs",
@@ -382,7 +382,7 @@ export default function Home() {
                     handleClickResetChatLog={() => setChatLog([])}
                     handleClickResetSystemPrompt={() => setSystemPrompt(SYSTEM_PROMPT)}
                 />
-                <GitHubLink />
+                <GitHubLink/>
             </div>
         </div>
     )

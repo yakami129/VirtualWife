@@ -44,7 +44,7 @@ class BertVITS2TTS(BaseTTS):
     def synthesis(self, text: str, voice_id: str, **kwargs) -> str:
         noise = kwargs.get("noise", 0.6)
         noisew = kwargs.get("noisew", 0.9)
-        sdp_ratio = kwargs.get("sdp_ratio", 0.5)
+        sdp_ratio = kwargs.get("sdp_ratio", 0.2)
         return self.client.synthesis(text=text, speaker=voice_id, noise=noise, noisew=noisew, sdp_ratio=sdp_ratio)
 
     def get_voices(self) -> list[dict[str, str]]:
