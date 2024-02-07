@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import zipfile
 from typing import Optional
 import faiss
@@ -106,7 +107,14 @@ class RolePackageManage:
         return dirname, dataset_json_path, embed_index_idx_path, system_prompt_txt_path
 
     def uninstall(self, role_package_path: str):
-        return
+        base_name = os.path.basename(role_package_path)
+        base_path = os.path.dirname(role_package_path)
+        # 然后，使用 os.path.splitext 分离文件名和扩展名，并取第一个元素作为文件名
+        file_name_without_extension = os.path.splitext(base_name)[0]
+        role_package_dir_path = base_path + "/" + file_name_without_extension
+        print(role_package_dir_path)
+        shutil.rmtree(role_package_dir_path)
+        os.remove(role_package_path)
 
     def __unzip_role_package(self, role_package_path: str):
         # 获取 ZIP 文件所在的目录

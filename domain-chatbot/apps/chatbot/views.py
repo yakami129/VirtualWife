@@ -156,7 +156,16 @@ def edit_custom_role(request, pk):
 @api_view(['POST'])
 def delete_custom_role(request, pk):
     role = get_object_or_404(CustomRoleModel, pk=pk)
+    # 删除对应的角色安装包
+    if role.role_package_id != -1:
+        # 删除角色安装包数据
+        role_package = get_object_or_404(RolePackageModel, pk=role.role_package_id)
+        role_package_path = role_package.role_package.path
+        # 删除角色安装包文件
+        role_package_manage.uninstall(role_package_path)
+        role_package.delete()
     role.delete()
+
     return Response({"response": "ok", "code": "200"})
 
 

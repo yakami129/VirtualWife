@@ -22,7 +22,7 @@ import {
     vrmModelData,
     deleteVrmModel,
     generateMediaUrl,
-    buildVrmModelUrl
+    buildVrmModelUrl, uploadRolePackage
 } from "@/features/media/mediaApi";
 import {getConfig, saveConfig, GlobalConfig} from "@/features/config/configApi";
 import {
@@ -110,7 +110,9 @@ export const Settings = ({
     const [userVrmModels, setUserVrmModels] = useState([vrmModelData]);
     const [systemVrmModels, setSystemVrmModels] = useState([vrmModelData]);
     const [deleteVrmModelLog, setDeleteVrmModelLog] = useState("");
+    const [uploadRolePackageLog, setUploadRolePackageLog] = useState("");
     const VrmModelFileInputRef = useRef<HTMLInputElement | null>(null);
+    const RolePackagelFileInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         customroleList().then(data => {
@@ -398,6 +400,10 @@ export const Settings = ({
         VrmModelFileInputRef?.current?.click();
     };
 
+    const handleRolePackageButtonClick = () => {
+        RolePackagelFileInputRef?.current?.click();
+    };
+
     const handleVrmModelFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target && event.target.files) {
             const selectedFile = event.target.files[0];
@@ -409,6 +415,24 @@ export const Settings = ({
             uploadVrmModel(formData)
                 .then(data => {
                     queryUserVrmModels().then(data => setUserVrmModels(data))
+                })
+        }
+    };
+
+    const handleRolePackageFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (event.target && event.target.files) {
+            const selectedFile = event.target.files[0];
+            if (!selectedFile) {
+                return;
+            }
+            const formData = new FormData();
+            formData.append('role_package', selectedFile);
+            uploadRolePackage(formData)
+                .then(data => {
+                    setUploadRolePackageLog("上传成功")
+                    customroleList().then(roleData => {
+                        setCustomRoles(roleData)
+                    })
                 })
         }
     };
@@ -811,10 +835,6 @@ export const Settings = ({
                     </div>
                 </div>
                 <div className="section">
-                    {/* <div className="title">自定义VRM模型</div>
-          <div className="my-8">
-            <TextButton onClick={onClickOpenVrmFile}>上传VRM</TextButton>
-          </div> */}
                     <div className="title">自定义VRM模型</div>
                     <div className="field">
                         <label>上传VRM模型</label>
@@ -842,13 +862,13 @@ export const Settings = ({
                             />
                             <IconButton
                                 iconName="16/Add"
-                                label='上传模型'
+                                label=''
                                 isProcessing={false}
                                 onClick={handleVrmModelButtonClick}
                             ></IconButton>
                             <IconButton
                                 iconName="16/Remove"
-                                label='删除模型'
+                                label=''
                                 isProcessing={false}
                                 onClick={e => {
                                     if (selectedVrmModelId !== -1) {
@@ -858,6 +878,35 @@ export const Settings = ({
                             ></IconButton>
                             <div className="flex justify-end mt-4">
                                 {deleteVrmModelLog}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="section">
+                    <div className="my-16">
+                        角色安装包可以在
+                        <Link
+                            url="https://github.com/yakami129/virtualwife-llm-factory"
+                            label="virtualwife-llm-factory"
+                        />中使用gen_role_package_tool生成，请提前准备语料或者使用项目的工具自动生成
+                    </div>
+                    <div className="title">加载角色安装包</div>
+                    <div className="field">
+                        <div className="flex items-center justify-center space-x-4">
+                            <input
+                                type="file"
+                                ref={RolePackagelFileInputRef}
+                                style={{display: 'none'}}
+                                onChange={handleRolePackageFileChange}
+                            />
+                            <IconButton
+                                iconName="24/UploadAlt"
+                                label=''
+                                isProcessing={false}
+                                onClick={handleRolePackageButtonClick}
+                            ></IconButton>
+                            <div className="flex justify-end mt-4">
+                                {uploadRolePackageLog}
                             </div>
                         </div>
                     </div>
