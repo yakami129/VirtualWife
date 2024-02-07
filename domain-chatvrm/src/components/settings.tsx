@@ -888,7 +888,7 @@ export const Settings = ({
                         <Link
                             url="https://github.com/yakami129/virtualwife-llm-factory"
                             label="virtualwife-llm-factory"
-                        />中使用gen_role_package_tool生成，请提前准备语料或者使用项目的工具自动生成
+                        />中使用gen_role_package_tool生成，请提前准备语料或者使用项目的工具自动生成，此方式可以让AI更加符合人设
                     </div>
                     <div className="title">加载角色安装包</div>
                     <div className="field">
