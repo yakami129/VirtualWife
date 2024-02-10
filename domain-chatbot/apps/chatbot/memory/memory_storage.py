@@ -2,7 +2,6 @@ import json
 import logging
 
 from .zep.zep_memory import ChatHistroyService, ChatHistroy
-from typing import Any, Dict, List
 
 from ..service import portal_user_service
 
@@ -21,17 +20,17 @@ class MemoryStorageDriver:
         self.enable_long_memory = enable_long_memory
         self.search_memory_size = search_memory_size
 
-    def search_short_memory(self, query_text: str, you_name: str, role_name: str) -> list[ChatHistroy]:
+    def search_short_memory(self, you_name: str, limit: int = 6) -> list[ChatHistroy]:
         portal_user = portal_user_service.get_and_create(you_name)
         user_id = str(portal_user.id)
-        channel_id = str(portal_user.id)
-        return self.chat_histroy_service.list(user_id=user_id, channel_id=channel_id)
+        channel_id = "short_memory_" + str(portal_user.id)
+        return self.chat_histroy_service.list(user_id=user_id, channel_id=channel_id, limit=limit)
 
     def search_lang_memory(self, query_text: str, you_name: str, role_name: str) -> str:
         if self.enable_long_memory:
             portal_user = portal_user_service.get_and_create(you_name)
             user_id = str(portal_user.id)
-            channel_id = str(portal_user.id)
+            channel_id = "lang_memory_" + str(portal_user.id)
             # 查询长期记忆
             chat_histroys = self.chat_histroy_service.search(query=query_text, user_id=user_id, channel_id=channel_id,
                                                              limit=self.search_memory_size)
@@ -50,7 +49,7 @@ class MemoryStorageDriver:
         else:
             return ""
 
-    def save(self, you_name: str, query_text: str, role_name: str, answer_text: str) -> None:
+    def save_short_memory(self, you_name: str, query_text: str, role_name: str, answer_text: str) -> None:
         portal_user = portal_user_service.get_and_create(you_name)
         user_id = str(portal_user.id)
         channel_id = str(portal_user.id)

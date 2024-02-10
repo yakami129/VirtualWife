@@ -50,11 +50,10 @@ class ProcessCore():
                 character)
 
             # 识别对话中的用户画像
-            portrait_entitys = self.portrait_observation.observation(text=query)
+            # portrait_entitys = self.portrait_observation.observation(text=query)
 
             # 检索关联的短期记忆
-            short_history = singleton_sys_config.memory_storage_driver.search_short_memory(
-                query_text=query, you_name=you_name, role_name=role_name)
+            short_history = singleton_sys_config.memory_storage_driver.search_short_memory(you_name=you_name)
 
             # 检索用户画像和长期记忆
             long_history_strs = []
@@ -62,14 +61,14 @@ class ProcessCore():
                 query_text=query, you_name=you_name, role_name=role_name)
             logger.info(f"long_history_strs:{long_history_strs}")
             long_history_strs.append(current_user_history)
-            for entity in portrait_entitys:
-                if entity != you_name:
-                    long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
-                        query_text=query, you_name=entity, role_name=role_name)
-                    if long_history != "":
-                        print("long_history?", long_history)
-                        print(long_history != "")
-                        long_history_strs.append(long_history)
+            # for entity in portrait_entitys:
+            #     if entity != you_name:
+            #         long_history = singleton_sys_config.memory_storage_driver.search_lang_memory(
+            #             query_text=query, you_name=entity, role_name=role_name)
+            #         if long_history != "":
+            #             print("long_history?", long_history)
+            #             print(long_history != "")
+            #             long_history_strs.append(long_history)
 
             long_history_str = "\n".join(long_history_strs)
 

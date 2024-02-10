@@ -108,7 +108,7 @@ class ZepService:
         memory = Memory(messages=messages)
         self.zep_client.memory.add_memory(channel_id, memory)
 
-    def get_memorys(self, channel_id: str, limit: int = 5) -> list[ChatHistroy]:
+    def get_memorys(self, channel_id: str, limit: int = 6) -> list[ChatHistroy]:
         memory = self.zep_client.memory.get_memory(
             session_id=channel_id, lastn=limit)
         chat_historys = [ChatHistroy(role=m.role, content=m.content)
@@ -166,3 +166,13 @@ class ChatHistroyService:
             return []
 
         return self.zep_service.get_memorys(channel_id)
+
+    def list(self, user_id: str, channel_id: str, limit: int) -> list[ChatHistroy]:
+
+        # 查询用户和会话是否，只要有一个不存在，直接返回空
+        user = self.zep_service.get_user(user_id)
+        session = self.zep_service.get_session(user_id, channel_id)
+        if not user or not session:
+            return []
+
+        return self.zep_service.get_memorys(channel_id, limit)

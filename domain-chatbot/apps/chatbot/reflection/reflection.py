@@ -5,6 +5,147 @@ from ..llms.llm_model_strategy import LlmModelDriver
 logger = logging.getLogger(__name__)
 
 
+class SummarizeAI:
+    """将记忆进行总结的AI"""
+
+    llm_model_driver: LlmModelDriver
+    __system_prompt: str = """
+        你现在是一名对话总结AI，我给定一批对话历史，你需要总结与“小王”有关的事件。
+        Here are some examples:
+        Chat History：
+        ```
+        景天说今天樱花开得真美，很高兴能和你一起赏花。
+        曼玉说我也是，景天。你总能发现这样美丽的地方。
+        
+        景天说我在想，我们的下一个旅行目的地应该去哪里呢？
+        曼玉说我听说海边的小镇很不错，我们可以去那里画画，放松一下。
+        
+        景天说听起来不错！我来规划我们的行程。
+        曼玉说太好了，我已经开始期待我们的小冒险了。
+        
+        景天说曼玉，我今天尝试了画画，但我觉得我真的没有你那么有天赋。
+        曼玉说每个人的开始都不容易，景天。我相信你会进步的，重要的是享受创作的过程。
+        
+        景天说谢谢你的鼓励，我会继续努力的。
+        曼玉说我们一起进步，一起创造更多美好的回忆。
+        ```
+        Event:
+        ```
+        {"events":[
+         "景天和曼玉在春季的樱花节相遇并坠入爱河。",
+         "景天和曼玉计划了一次去海边小镇的旅行，希望在那里共同创作艺术作品。",
+         "景天尝试学习绘画，虽然遇到了困难，但曼玉的鼓励让他没有放弃。",
+         "景天和曼玉共同期待着更多的旅行和创作，希望通过这些经历加深彼此之间的理解和爱情。"
+        ]
+        ```
+        遵守的规则：
+        1. 请严格按照json格式输出内容。
+       """
+    __input_prompt: str = """
+        下面是我的对话历史：
+        Chat History：
+        ```
+        {chat_history}
+        ```
+        Event:
+          """
+
+    def __init__(self, llm_model_driver: LlmModelDriver, llm_model_driver_type: str) -> None:
+        self.llm_model_driver = llm_model_driver
+        self.llm_model_driver_type = llm_model_driver_type
+
+    def summarize(self, chat_history: str) -> str:
+        input_prompt = self.__input_prompt.format(chat_history=chat_history)
+        prompt = self.__system_prompt + input_prompt
+        result = self.llm_model_driver.chat(
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="",
+            short_history=[], long_history="")
+        logger.debug(f"=># summarize # => \n {result}")
+        summarize = []
+        try:
+            start_idx = result.find('{')
+            end_idx = result.rfind('}')
+            if start_idx != -1 and end_idx != -1:
+                json_str = result[start_idx:end_idx + 1]
+                json_data = json.loads(json_str)
+                summarize = json_data["events"]
+            else:
+                logger.warn("未找到匹配的JSON字符串")
+        except Exception as e:
+            logger.error("SummarizeAI error: %s" % str(e))
+        return summarize
+
+
+class InsightAI:
+    """需要根据以下陈述中推断出5个高级见解"""
+
+    llm_model_driver: LlmModelDriver
+    __system_prompt: str = """
+    你是一名洞察AI，你需要根据以下陈述中推断出5个高级见解。
+    Here are some examples:
+    Statements:
+    ```
+    1. Klaus Mueller is writing a research paper
+    2. Klaus Mueller enjoys reading a book on gentrification
+    3. Klaus Mueller is conversing with Ayesha Khan about exercising
+    ```
+    Output:
+    ```
+    {
+        "insights": [{
+            "insight": "克劳斯·穆勒有学术倾向或从事学术活动。写研究论文表明深入参与学术或智力追求，表明克劳斯有学术或研究导向的心态。",
+            "becauseOf": ["1"]
+        }, {
+            "insight": "克劳斯·穆勒对社会问题或城市发展感兴趣。阅读一本关于中产阶级化的书表明对复杂的社会和经济现象感兴趣，特别是那些影响城市环境的现象，表明克劳斯倾向于理解并可能解决社会挑战。",
+            "becauseOf": ["2"]
+        }, {
+            "insight": "克劳斯·穆勒重视身体健康。与某人谈论锻炼表明克劳斯重视身体活动，这通常与对健康的关注有关。",
+            "becauseOf": ["3"]
+        }, {
+            "insight": "克劳斯·穆勒是一个多维的个体，有着不同的兴趣。从事学术写作、阅读社会问题和讨论锻炼表明一个人在智力、社会和身体领域有着不同的兴趣。",
+            "becauseOf": ["1", "2", "3"]
+        }, {
+            "insight": "克劳斯·穆勒重视人际沟通和协作。参与关于锻炼的对话，尤其是与提到名字的特定人，表明克劳斯重视社交互动，并可能将锻炼视为公共或共享活动，强调对话的重要性，以及可能的团队合作或个人或职业生活中的共享经验。",
+            "becauseOf": ["3"]
+        }]
+    }
+    ```
+    """
+    __input_prompt: str = """
+      下面是我的Statements：
+        Statements:
+        ```
+        {statements}
+        ```
+        Output:
+   """
+
+    def __init__(self, llm_model_driver: LlmModelDriver, llm_model_driver_type: str) -> None:
+        self.llm_model_driver = llm_model_driver
+        self.llm_model_driver_type = llm_model_driver_type
+
+    def insight(self, statements: str) -> str:
+        input_prompt = self.__input_prompt.format(statements=statements)
+        prompt = self.__system_prompt + input_prompt
+        result = self.llm_model_driver.chat(
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="",
+            short_history=[], long_history="")
+        logger.debug(f"=># insight # => \n {result}")
+        insights = []
+        try:
+            start_idx = result.find('{')
+            end_idx = result.rfind('}')
+            if start_idx != -1 and end_idx != -1:
+                json_str = result[start_idx:end_idx + 1]
+                json_data = json.loads(json_str)
+                insights = json_data["insights"]
+            else:
+                logger.warn("未找到匹配的JSON字符串")
+        except Exception as e:
+            logger.error("InsightAI error: %s" % str(e))
+        return insights
+
+
 class ImportanceRating:
     """判断记忆的重要性"""
 
@@ -183,7 +324,7 @@ class PortraitAnalysis:
 
     def analysis(self, role_name: str, portrait: str, memory: str) -> str:
         input_prompt = self.input_prompt.format(role_name=role_name)
-        initialization_prompt = self.initialization_prompt.format(memory=memory,portrait=portrait)
+        initialization_prompt = self.initialization_prompt.format(memory=memory, portrait=portrait)
         prompt = input_prompt + self.output_prompt + initialization_prompt
         logger.debug(f"=> prompt:{prompt}")
         result = self.llm_model_driver.chat(
@@ -203,31 +344,3 @@ class PortraitAnalysis:
         except Exception as e:
             logger.error("PortraitAnalysis error: %s" % str(e))
         return analysis
-
-# class ReflectionGeneration():
-#     reflection_template: ReflectionTemplate
-#
-#     def __init__(self) -> None:
-#         self.reflection_template = ReflectionTemplate()
-#
-#     def generation(self, role_name: str) -> None:
-#         timestamp = time.time()
-#         expr = f'timestamp <= {timestamp}'
-#         result = singleton_sys_config.memory_storage_driver.pageQuery(
-#             1, 100, expr)
-#
-#         result = [item['text'] for item in result]
-#         prompt = self.reflection_template.format(result)
-#
-#         reflection_result = singleton_sys_config.memory_storage_driver.chat(prompt=prompt,
-#                                                                             type=singleton_sys_config.reflection_llm_model_driver_type,
-#                                                                             role_name=role_name, you_name="", query="",
-#                                                                             short_history="", long_history="")
-#         reflection_result_arr = self.reflection_template.output_format(
-#             reflection_result)
-#
-#         # 批量写入到向量数据库中
-#         for i in range(len(reflection_result_arr)):
-#             item = reflection_result_arr[i].strip()
-#             pk = singleton_sys_config.memory_storage_driver.get_current_entity_id()
-#             singleton_sys_config.memory_storage_driver.save(pk, item, role_name)
