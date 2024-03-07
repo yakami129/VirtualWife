@@ -30,22 +30,9 @@ cd domain-chatbot
 - 如何获取B站直播间ID？
     - 获取B站直播ID，前提是需要你自行注册B站直播用户
 ![](docs/16878718322092.jpg)
-- 创建.env文件，添加B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
-```shell
-# B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
-B_STATION_ID=27892212
-# 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
-# 在页面上登录B站后，打开https://api.bilibili.com/x/web-interface/nav
-# 找到uid
-B_UID=38ccccc
-# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie，一定要复制完整的cookie
-B_COOKIE="buvid3=Fggggg28116infoc;xxxxxxxxxxxxxxxxxxxxxxxxxx....... 此处略去其他的"
-# 时区
-TIMEZONE=Asia/Shanghai
-```
 - 安装domain-chatbot项目依赖
 ```shell
-pip3 install -r requirements.txt
+pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
 ```
 - 初始化项目数据库
 ```shell
@@ -66,6 +53,7 @@ cd domain-chatvrm
 ```
 - 安装domain-chatvrm项目依赖
 ```shell
+npm config set registry https://registry.npmmirror.com
 rm package-lock.json
 npm install
 ```
