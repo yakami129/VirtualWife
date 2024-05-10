@@ -12,16 +12,16 @@ headers = {
     "accept": "*/*",
     "accept-language": "zh-CN,zh;q=0.9",
     "content-type": "application/json",
-    "cookie": "_gid=GA1.2.33477232.1703826869; _ga_R1FN4KJKJH=GS1.1.1703924393.7.0.1703924393.0.0.0; _ga=GA1.2.245707418.1703683960",
+    "cookie": "_ga_R1FN4KJKJH=GS1.1.1715348492.9.0.1715348492.0.0.0; _ga=GA1.2.245707418.1703683960; _gid=GA1.2.1196486009.1715348493; _gat_gtag_UA_156449732_1=1",
     "origin": "https://v2.genshinvoice.top",
-    "referer": "https://v2.genshinvoice.top/?",
-    "sec-ch-ua": '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120""',
+    "referer": "https://v2.genshinvoice.top/",
+    "sec-ch-ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
     "sec-ch-ua-mobile": "?0",
     "sec-ch-ua-platform": '"macOS"',
     "sec-fetch-dest": "empty",
     "sec-fetch-mode": "cors",
     "sec-fetch-site": "same-origin",
-    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     "Accept-Encoding": "deflate, gzip"
 }
 
@@ -622,11 +622,11 @@ class BertVits2API:
     def request(self, params: dict[str, str]) -> str:
         # 合成语音
         body = json.dumps(params, ensure_ascii=False).encode('utf-8')
-        response = requests.post(url, headers=headers, data=body)
+        response = requests.post(url, headers=headers, data=body, verify=False)
         voice_result = json.loads(response.text)["data"]
         file_path = voice_result[1]["name"]
         # 下载文件
-        response = requests.get(file_url + file_path, headers=headers)
+        response = requests.get(file_url + file_path, headers=headers, verify=False)
         # 初始化文件夹
         file_name = generate() + ".wav"
         file_path = os.getcwd() + "/tmp/" + file_name
@@ -652,7 +652,7 @@ class BertVits2:
 
     def synthesis(self, text: str, speaker: str, noise: str, noisew: str, sdp_ratio: str) -> str:
         params = {
-            "data": [text, speaker, sdp_ratio, noise, noisew, 1, "ZH", None, "Happy", "Text prompt", "", 0.7],
+            "data": [text, speaker, sdp_ratio, noise, noisew, 1, "ZH", False, 1, 0.2, None, "Happy", "", 0.7],
             "event_data": None,
             "fn_index": 0,
             "session_hash": str(uuid.uuid4())
@@ -665,4 +665,4 @@ class BertVits2:
 
 if __name__ == '__main__':
     client = BertVits2()
-    client.synthesis(text="晚上好，yuki129", speaker="派蒙", noise=0.6, noisew=0.9, sdp_ratio=0.5)
+    client.synthesis(text="晚上好，yuki129", speaker="流萤_ZH", noise=0.6, noisew=0.9, sdp_ratio=0.5)

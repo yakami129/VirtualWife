@@ -9,7 +9,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile.postgres
     networks:
       - zep-network
@@ -24,7 +24,7 @@ services:
     image: okapi0129/getzep-zep-nlp-server:latest
     container_name: zep-nlp
     env_file:
-      - .env # You can set your embedding-related variables here
+      - ../.env # You can set your embedding-related variables here
     restart: on-failure
     networks:
       - zep-network
@@ -57,9 +57,9 @@ services:
       - ZEP_EXTRACTORS_MESSAGES_SUMMARIZER_EMBEDDINGS_SERVICE=local
       - ZEP_EXTRACTORS_MESSAGES_SUMMARIZER_EMBEDDINGS_DIMENSIONS=768
     env_file:
-      - .env # Store your OpenAI API key here as ZEP_OPENAI_API_KEY
+      - ../.env # Store your OpenAI API key here as ZEP_OPENAI_API_KEY
     build:
-      context: .
+      context: ..
       dockerfile: Dockerfile
     healthcheck:
       test: timeout 10s bash -c ':> /dev/tcp/127.0.0.1/8000' || exit 1
