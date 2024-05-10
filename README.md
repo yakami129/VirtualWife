@@ -128,6 +128,8 @@ http://localhost/
 ```
 这以openai模型为例，你只需要将OPENAI_API_KEY填写好即可
 如果有API代理可以将地址填写到OPENAI_BASE_URL
+
+OLLAMA_API_URL配置说明：如果是docker启动，请使用http://host.docker.internal:11434
 ```
 ![](docs/16925238212736.jpg)
 
@@ -136,6 +138,7 @@ http://localhost/
 如果没有OPENAI_BASE_URL，你需要配置http-proxy，
 如果是使用docker启动的程序，需要使用docker的dns，
 例如这样HTTP_PROXY=http://host.docker.internal:23457
+
 ```
 ![](docs/16925239975597.jpg)
 
@@ -151,9 +154,9 @@ http://localhost/
 
 ## 联系我们
 
-| 技术交流群                              | 打赏入股(注意备注姓名)  | 咨询或加群                           |
+| 技术交流群                              | 打赏、私有化一键整合包 | 咨询或加群                           |
 |------------------------------------|-------------------------------|---------------------------------|
-| ![winxin07.jpg](docs/winxin07.jpg) | ![wx-skm.jpg](docs/wx-skm.jpg) | ![wx-skm.jpg](docs/wx-alan.jpg) |
+| ![winxin07.jpg](docs/winxin07.jpg) | ![zhi_shi_xq.jpg](docs/zhi_shi_xq.jpg) | ![wx-skm.jpg](docs/wx-alan.jpg) |
 
 
 
