@@ -38,7 +38,7 @@ import {join} from 'path';
 import {voiceData, getVoices} from '@/features/tts/ttsApi';
 
 const tabNames = ['基础设置', '自定义角色设置', '大语言模型设置', '记忆模块设置', '高级设置'];
-const llm_enums = ["openai", "text_generation"]
+const llm_enums = ["openai", "ollama"]
 
 const publicDir = join(process.cwd(), 'public');
 
@@ -473,23 +473,23 @@ export const Settings = ({
                     </div>
                 </div>
                 <div className="section">
-                    <div className="title">text-generation-webui配置</div>
+                    <div className="title">ollama配置</div>
                     <div className="field">
-                        <label>TEXT_GENERATION_API_URL</label>
+                        <label>OLLAMA_API_URL</label>
                         <input type="text"
-                               defaultValue={formData.languageModelConfig.textGeneration.TEXT_GENERATION_API_URL}
+                               defaultValue={formData.languageModelConfig.ollama?.OLLAMA_API_BASE ? formData.languageModelConfig.ollama.OLLAMA_API_BASE : "http://localhost:11434"}
                                onChange={e => {
-                                   formData.languageModelConfig.textGeneration.TEXT_GENERATION_API_URL = e.target.value
+                                   formData.languageModelConfig.ollama.OLLAMA_API_BASE = e.target.value
                                    setFormData(formData);
                                }}
                         />
                     </div>
                     <div className="field">
-                        <label>TEXT_GENERATION_WEB_SOCKET_URL</label>
+                        <label>OLLAMA_API_MODEL_NAME</label>
                         <input type="text"
-                               defaultValue={formData.languageModelConfig.textGeneration.TEXT_GENERATION_WEB_SOCKET_URL ? formData.languageModelConfig.textGeneration.TEXT_GENERATION_WEB_SOCKET_URL : "ws://127.0.0.1:5005/api/v1/stream"}
+                               defaultValue={formData.languageModelConfig.ollama?.OLLAMA_API_MODEL_NAME ? formData.languageModelConfig.ollama.OLLAMA_API_MODEL_NAME : "qwen:7b"}
                                onChange={e => {
-                                   formData.languageModelConfig.textGeneration.TEXT_GENERATION_WEB_SOCKET_URL = e.target.value
+                                   formData.languageModelConfig.ollama.OLLAMA_API_MODEL_NAME = e.target.value
                                    setFormData(formData);
                                }}
                         />

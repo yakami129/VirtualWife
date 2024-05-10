@@ -198,7 +198,7 @@ export class Viewer {
             const relativeRotation = new THREE.Euler().setFromRotationMatrix(relativeMatrix);
 
             // 打印相对旋转值
-            console.log('Relative Rotation X:', relativeRotation.x, 'Y:', relativeRotation.y, 'Z:', relativeRotation.z);
+            // console.log('Relative Rotation X:', relativeRotation.x, 'Y:', relativeRotation.y, 'Z:', relativeRotation.z);
         }
     };
 }

@@ -16,9 +16,9 @@ export const initialFormData = {
             "OPENAI_API_KEY": "sk-",
             "OPENAI_BASE_URL": ""
         },
-        "textGeneration": {
-            "TEXT_GENERATION_API_URL": "http://127.0.0.1:5000",
-            "TEXT_GENERATION_WEB_SOCKET_URL": "ws://127.0.0.1:5005/api/v1/stream"
+        "ollama": {
+            "OLLAMA_API_BASE": "http://localhost:11434",
+            "OLLAMA_API_MODEL_NAME": "qwen:7b"
         }
     },
     "characterConfig": {

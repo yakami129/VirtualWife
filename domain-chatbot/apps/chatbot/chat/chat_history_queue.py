@@ -39,44 +39,54 @@ def put_message(message: ChatHistoryMessage):
     global chat_history_queue
     chat_history_queue.put(message)
 
-
 def send_message():
     global chat_history_queue
     while True:
         try:
             message = chat_history_queue.get()
             if (message != None and message != ''):
-                # 判断当前记忆的重要性
-                memory = f"{message.you_name}说{message.you_message}"
-                rating = singleton_sys_config.importance_rating.rating(memory)
-                # 存储到记忆库中
                 singleton_sys_config.memory_storage_driver.save(
                     message.you_name, message.you_message, message.role_name, message.role_message)
-
-                # 如果当前重要性大于5，进行一次人物画像更新
-                if rating > 5:
-                    portal_user = portal_user_service.get_and_create(message.you_name)
-                    user_id =  str(portal_user.id)
-                    channel_id = str(portal_user.id)
-                    user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(user_id)
-                    portrait = user.metadata["portrait"]
-                    recently_memory = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_memorys(
-                        channel_id=channel_id, limit=10)
-                    recently_memory.reverse()
-                    recently_memory_str = format_histroy(recently_memory)
-                    portrait = singleton_sys_config.portrait_analysis.analysis(message.you_name, portrait,
-                                                                               recently_memory_str)
-                    # 获取最新的人物画像信息，并且进行更新
-                    user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(
-                        user_id)
-                    user.metadata["portrait"] = portrait
-                    singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.update_user(
-                        user_id, user.metadata)
-                    logger.info(f"# user_id:{message.you_name} # update meta_data => {portrait}")
-
-
         except Exception as e:
             traceback.print_exc()
+
+# def send_message():
+#     global chat_history_queue
+#     while True:
+#         try:
+#             message = chat_history_queue.get()
+#             if (message != None and message != ''):
+#                 # 判断当前记忆的重要性
+#                 memory = f"{message.you_name}说{message.you_message}"
+#                 rating = singleton_sys_config.importance_rating.rating(memory)
+#                 # 存储到记忆库中
+#                 singleton_sys_config.memory_storage_driver.save(
+#                     message.you_name, message.you_message, message.role_name, message.role_message)
+#
+#                 # 如果当前重要性大于5，进行一次人物画像更新
+#                 if rating > 5:
+#                     portal_user = portal_user_service.get_and_create(message.you_name)
+#                     user_id =  str(portal_user.id)
+#                     channel_id = str(portal_user.id)
+#                     user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(user_id)
+#                     portrait = user.metadata["portrait"]
+#                     recently_memory = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_memorys(
+#                         channel_id=channel_id, limit=10)
+#                     recently_memory.reverse()
+#                     recently_memory_str = format_histroy(recently_memory)
+#                     portrait = singleton_sys_config.portrait_analysis.analysis(message.you_name, portrait,
+#                                                                                recently_memory_str)
+#                     # 获取最新的人物画像信息，并且进行更新
+#                     user = singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.get_user(
+#                         user_id)
+#                     user.metadata["portrait"] = portrait
+#                     singleton_sys_config.memory_storage_driver.chat_histroy_service.zep_service.update_user(
+#                         user_id, user.metadata)
+#                     logger.info(f"# user_id:{message.you_name} # update meta_data => {portrait}")
+#
+#
+#         except Exception as e:
+#             traceback.print_exc()
 
 
 def format_histroy(recently_memory: list[ChatHistroy]) -> str:

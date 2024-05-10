@@ -11,27 +11,27 @@ from ...memory.zep.zep_memory import ChatHistroy
 logger = logging.getLogger(__name__)
 
 
-class OpenAIGeneration:
-    model_name: str = "gpt-3.5-turbo"
+class OllamaGeneration:
+    model_name: str
     temperature: float = 0.7
-    openai_api_key: str
-    openai_base_url: str
+    ollama_api_base: str
 
     def __init__(self) -> None:
         from dotenv import load_dotenv
         load_dotenv()
-        self.openai_api_key = os.environ['OPENAI_API_KEY']
-        self.openai_base_url = os.environ['OPENAI_BASE_URL']
+        self.ollama_api_base = os.environ['OLLAMA_API_BASE']
+        self.model_name = "ollama/" + os.environ['OLLAMA_API_MODEL_NAME']
+        self.model_name = "ollama/qwen:7b"
 
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[ChatHistroy],
              long_history: str) -> str:
         prompt = prompt + query
         messages = [{"content": prompt, "role": "user"}]
-        if self.openai_base_url:
+        if self.ollama_api_base:
             response = completion(
                 model=self.model_name,
                 messages=messages,
-                api_base=self.openai_base_url,
+                api_base=self.ollama_api_base,
                 temperature=self.temperature,
             )
         else:
@@ -61,11 +61,11 @@ class OpenAIGeneration:
             messages.append(message)
         messages.append({'role': 'user', 'content': you_name + "说" + query})
 
-        if self.openai_base_url:
+        if self.ollama_api_base:
             response = completion(
                 model=self.model_name,
                 messages=messages,
-                api_base=self.openai_base_url,
+                api_base=self.ollama_api_base,
                 stream=True,
                 temperature=self.temperature,
             )
