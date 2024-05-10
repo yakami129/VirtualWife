@@ -100,11 +100,12 @@ class SysConfig:
                     personality=aili_zh.personality,
                     scenario=aili_zh.scenario,
                     examples_of_dialogue=aili_zh.examples_of_dialogue,
-                    custom_role_template_type=aili_zh.custom_role_template_type
+                    custom_role_template_type=aili_zh.custom_role_template_type,
+                    role_package_id=-1
                 )
                 custom_role.save()
         except Exception as e:
-            logger.debug("=> load default character ERROR: %s" % str(e))
+            logger.error("=> load default character ERROR: %s" % str(e))
 
         # 加载角色配置
         character = sys_config_json["characterConfig"]["character"]
