@@ -4,8 +4,8 @@ from . import views
 
 urlpatterns = [
     path('chat', views.chat, name='chat'),
-    path('memory/reflection', views.reflection_generation,
-         name='reflection_generation'),
+    # path('memory/reflection', views.reflection_generation,
+    #      name='reflection_generation'),
     path('memory/clear', views.clear_memory, name='clear_memory'),
     path('customrole/list', views.custom_role_list, name='custom_role_list'),
     path('customrole/create', views.create_custom_role, name='custom_role_create'),
@@ -21,4 +21,5 @@ urlpatterns = [
     path('config/vrm/upload', views.upload_vrm_model, name='upload_vrm_model'),
     path('config/vrm/user/show', views.show_user_vrm_models, name='show_user_vrm_models'),
     path('config/vrm/system/show', views.show_system_vrm_models, name='show_system_vrm_models'),
+    path('rolepackage/upload', views.upload_role_package, name='upload_role_package'),
 ]

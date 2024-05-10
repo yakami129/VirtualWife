@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class EmotionRecognition():
-
     """情感识别"""
 
     llm_model_driver: LlmModelDriver
@@ -62,15 +61,16 @@ class EmotionRecognition():
 
     def recognition(self, you_name: str, query: str) -> str:
         prompt = self.input_prompt.format(
-            input=f"{you_name}说{query}")+self.output_prompt
+            input=f"{you_name}说{query}") + self.output_prompt
         result = self.llm_model_driver.chat(
-            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[],
+            long_history="")
         logger.debug(f"=> recognition:{result}")
         start_idx = result.find('{')
         end_idx = result.rfind('}')
         intent = ""
         if start_idx != -1 and end_idx != -1:
-            json_str = result[start_idx:end_idx+1]
+            json_str = result[start_idx:end_idx + 1]
             json_data = json.loads(json_str)
             intent = json_data["intent"]
         else:
@@ -79,7 +79,6 @@ class EmotionRecognition():
 
 
 class EmotionRespond():
-
     """情感响应"""
 
     llm_model_driver: LlmModelDriver
@@ -105,15 +104,16 @@ class EmotionRespond():
 
     def respond(self, intent: str, you_name: str, query: str, long_history: str) -> str:
         prompt = self.input_prompt.format(
-            you_name=you_name, query=query, intent=intent, histroy=long_history)+self.output_prompt
+            you_name=you_name, query=query, intent=intent, histroy=long_history) + self.output_prompt
         result = self.llm_model_driver.chat(
-            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[], long_history="")
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query="", short_history=[],
+            long_history="")
         logger.debug(f"=> respond:{result}")
         start_idx = result.find('{')
         end_idx = result.rfind('}')
         intent = ""
         if start_idx != -1 and end_idx != -1:
-            json_str = result[start_idx:end_idx+1]
+            json_str = result[start_idx:end_idx + 1]
             json_data = json.loads(json_str)
             intent = json_data["respond"]
         else:
@@ -122,7 +122,6 @@ class EmotionRespond():
 
 
 class GenerationEmotionRespondChatPropmt():
-
     """根据响应响对话propmt"""
 
     prompt: str = """
@@ -137,7 +136,6 @@ class GenerationEmotionRespondChatPropmt():
 
 
 class GenerationEmote():
-
     """生成模型表情"""
 
     llm_model_driver: LlmModelDriver
@@ -163,14 +161,15 @@ class GenerationEmote():
     def generation_emote(self, query: str) -> str:
         prompt = self.input_prompt + self.output_prompt
         result = self.llm_model_driver.chat(
-            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query=f"text:{query}", short_history=[], long_history="")
+            prompt=prompt, type=self.llm_model_driver_type, role_name="", you_name="", query=f"text:{query}",
+            short_history=[], long_history="")
         logger.debug(f"=> emote:{result}")
         emote = "neutral"
         try:
             start_idx = result.find('{')
             end_idx = result.rfind('}')
             if start_idx != -1 and end_idx != -1:
-                json_str = result[start_idx:end_idx+1]
+                json_str = result[start_idx:end_idx + 1]
                 json_data = json.loads(json_str)
                 emote = json_data["emote"]
             else:
@@ -178,3 +177,5 @@ class GenerationEmote():
         except Exception as e:
             logger.error("GenerationEmote error: %s" % str(e))
         return emote
+
+

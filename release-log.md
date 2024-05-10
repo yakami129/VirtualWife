@@ -1,17 +1,19 @@
-# v2.0.7 发布日志（开发中）
+# v2.0.7 发布日志
 
 release:
-- [ ] 2. 简单情绪系统
+- [ ] 1. 支持ollama
+    
+fixbug:
+- [X] 1. 适配最新版本的OpenAI SDK
+- [X] 2. 修复Bert_vits2语音合成错误问题
+- [x] 3. 优化人物模型朝向
+    
+known issues:
+- [ ] 1. 源码部署，修改代码时，会导致重复接收和发送消息
+- [ ] 2. docker无法正常连接text-generation-webui  
 - [ ] 3. VRM支持PMX动画
 - [ ] 4. 表情表达功能能支持选择不同的模型
 - [ ] 5. 优化项目使用文档
-
-fixbug:
-- [ ] 1. 源码部署，修改代码时，会导致重复接收和发送消息
-- [ ] 2. docker无法正常连接text-generation-webui
-- [X] 3. 适配最新版本的OpenAI SDK
-- [X] 4. 修复Bert_vits2语音合成错误问题
-
 
 # v2.0.6 发布日志
 

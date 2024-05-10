@@ -1,5 +1,4 @@
-
-class Character(): 
+class Character():
     '''统一自定义角色定义数据结构
 
     role_name: 角色名称
@@ -15,14 +14,17 @@ class Character():
     scenario: str
     examples_of_dialogue: str
     custom_role_template_type: str
+    role_package_id: int
 
-    def __init__(self, role_name: str, persona: str, personality: str, scenario: str, examples_of_dialogue, custom_role_template_type: str) -> None:
+    def __init__(self, role_name: str, persona: str, personality: str, scenario: str, examples_of_dialogue,
+                 custom_role_template_type: str, role_package_id: int) -> None:
         self.role_name = role_name
         self.persona = persona
         self.personality = personality
         self.scenario = scenario
         self.examples_of_dialogue = examples_of_dialogue
         self.custom_role_template_type = custom_role_template_type
+        self.role_package_id = role_package_id
 
     def to_dict(self):
         return {
@@ -31,5 +33,6 @@ class Character():
             "personality": self.personality,
             "scenario": self.scenario,
             "examples_of_dialogue": self.examples_of_dialogue,
-            "custom_role_template_type": self.custom_role_template_type
+            "custom_role_template_type": self.custom_role_template_type,
+            "role_package_id": self.role_package_id
         }

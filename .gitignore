@@ -16,6 +16,7 @@
 domain-chatbot/tmp/
 domain-chatbot/media/
 installer/milvus/volumes
+installer/memory/config.yaml
 
 .DS_Store
 
@@ -221,3 +222,4 @@ dmypy.json
 cython_debug/
 
 .DS_Store
+domain-chatbot/logs/*.log

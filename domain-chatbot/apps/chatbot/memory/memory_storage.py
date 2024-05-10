@@ -1,20 +1,17 @@
 import json
 import logging
 import traceback
-from typing import Tuple
 
 from ..config.sys_config import SysConfig
-from typing import List
 from .milvus.milvus_storage_impl import MilvusStorage
 from .local.local_storage_impl import LocalStorage
-from .base_storage import BaseStorage
 from ..utils.snowflake_utils import SnowFlake
 from typing import Any, Dict, List
 
 logger = logging.getLogger(__name__)
 
-class MemoryStorageDriver():
 
+class MemoryStorageDriver:
     sys_config: SysConfig
     short_memory_storage: LocalStorage
     long_memory_storage: MilvusStorage
@@ -28,7 +25,7 @@ class MemoryStorageDriver():
 
     def search_short_memory(self, query_text: str, you_name: str, role_name: str) -> list[Dict[str, str]]:
         local_memory = self.short_memory_storage.pageQuery(
-            page_num=1, page_size=self.sys_config.local_memory_num, owner=role_name)
+            page_num=1, page_size=self.sys_config.local_memory_num)
         dict_list = []
         for json_string in local_memory:
             json_dict = json.loads(json_string)
@@ -56,13 +53,13 @@ class MemoryStorageDriver():
         else:
             return ""
 
-    def save(self,  you_name: str, query_text: str, role_name: str, answer_text: str) -> None:
+    def save(self, you_name: str, query_text: str, role_name: str, answer_text: str) -> None:
 
         # 存储短期记忆
         pk = self.get_current_entity_id()
         local_history = {
-            "ai": self.format_role_history(role_name=role_name, answer_text=answer_text),
-            "human": self.format_you_history(you_name=you_name, query_text=query_text)
+            "ai": self.__format_role_history(role_name=role_name, answer_text=answer_text),
+            "human": self.__format_you_history(you_name=you_name, query_text=query_text)
         }
         self.short_memory_storage.save(
             pk, json.dumps(local_history), you_name, role_name, importance_score=1)
@@ -85,18 +82,18 @@ class MemoryStorageDriver():
                 pk, history, you_name, role_name, importance_score)
 
     def format_history(self, you_name: str, query_text: str, role_name: str, answer_text: str):
-        you_history = self.format_you_history(
+        you_history = self.__format_you_history(
             you_name=you_name, query_text=query_text)
-        role_history = self.format_role_history(
+        role_history = self.__format_role_history(
             role_name=role_name, answer_text=answer_text)
         chat_history = you_history + ';' + role_history
         return chat_history
 
-    def format_you_history(self, you_name: str, query_text: str):
+    def __format_you_history(self, you_name: str, query_text: str):
         you_history = f"{you_name}说{query_text}"
         return you_history
 
-    def format_role_history(self, role_name: str, answer_text: str):
+    def __format_role_history(self, role_name: str, answer_text: str):
         role_history = f"{role_name}说{answer_text}"
         return role_history
 
@@ -109,8 +106,7 @@ class MemoryStorageDriver():
         self.short_memory_storage.clear(owner)
 
 
-class MemorySummary():
-
+class MemorySummary:
     sys_config: SysConfig
     prompt: str
 
@@ -129,7 +125,8 @@ class MemorySummary():
 
     def summary(self, llm_model_type: str, input: str) -> str:
         result = self.sys_config.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
-                                                       you_name="", query=f"input:{input}", short_history=[], long_history="")
+                                                       you_name="", query=f"input:{input}", short_history=[],
+                                                       long_history="")
         logger.debug("=> summary:", result)
         summary = input
         if result:
@@ -137,7 +134,7 @@ class MemorySummary():
             start_idx = result.find('{')
             end_idx = result.rfind('}')
             if start_idx != -1 and end_idx != -1:
-                json_str = result[start_idx:end_idx+1]
+                json_str = result[start_idx:end_idx + 1]
                 json_data = json.loads(json_str)
                 summary = json_data["Summary"]
             else:
@@ -145,8 +142,7 @@ class MemorySummary():
         return summary
 
 
-class MemoryImportance():
-
+class MemoryImportance:
     sys_config: SysConfig
     prompt: str
 
@@ -163,14 +159,15 @@ class MemoryImportance():
 
     def importance(self, llm_model_type: str, input: str) -> int:
         result = self.sys_config.llm_model_driver.chat(prompt=self.prompt, type=llm_model_type, role_name="",
-                                                       you_name="", query=f"memory:{input}", short_history=[], long_history="")
+                                                       you_name="", query=f"memory:{input}", short_history=[],
+                                                       long_history="")
         logger.debug("=> score:", result)
         # 寻找 JSON 子串的开始和结束位置
         start_idx = result.find('{')
         end_idx = result.rfind('}')
         score = 3
         if start_idx != -1 and end_idx != -1:
-            json_str = result[start_idx:end_idx+1]
+            json_str = result[start_idx:end_idx + 1]
             json_data = json.loads(json_str)
             score = int(json_data["score"])
         else:

@@ -3,14 +3,11 @@ import queue
 import re
 import threading
 import traceback
-import json
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from ..config import singleton_sys_config
 from ..utils.chat_message_utils import format_chat_text
 from ..utils.str_utils import remove_special_characters, remove_emojis
-from ..config import singleton_sys_config
 from ..emotion.emotion_manage import GenerationEmote
 import threading
 
@@ -29,7 +26,8 @@ class RealtimeMessage():
     action: str
     expand: str
 
-    def __init__(self, type: str, user_name: str, content: str, emote: str, expand: str = None, action: str = None) -> None:
+    def __init__(self, type: str, user_name: str, content: str, emote: str, expand: str = None,
+                 action: str = None) -> None:
         self.type = type
         self.user_name = user_name
         self.content = content
@@ -63,7 +61,7 @@ def send_message():
             message = chat_queue.get()
             if (message is not None and message != ''):
                 chat_message = {"type": "chat_message",
-                                "message":  message.to_dict()}
+                                "message": message.to_dict()}
                 send_message_exe(chat_channel, chat_message)
         except Exception as e:
             traceback.print_exc()

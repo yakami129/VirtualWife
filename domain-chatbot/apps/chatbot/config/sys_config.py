@@ -1,9 +1,11 @@
 import json
 import logging
 import os
+
 from ..llms.llm_model_strategy import LlmModelDriver
 from ..models import CustomRoleModel, SysConfigModel
 from ..character.sys.aili_zh import aili_zh
+from ..reflection.reflection import ImportanceRating, PortraitAnalysis
 
 config_dir = os.path.dirname(os.path.abspath(__file__))
 config_path = os.path.join(config_dir, 'sys_config.json')
@@ -27,8 +29,7 @@ def lazy_memory_storage(sys_config_json: any, sys_cofnig: any):
     return MemoryStorageDriver(memory_storage_config=memory_storage_config, sys_config=sys_cofnig)
 
 
-class SysConfig():
-
+class SysConfig:
     llm_model_driver: LlmModelDriver
     conversation_llm_model_driver_type: str
     enable_summary: bool
@@ -38,11 +39,19 @@ class SysConfig():
     reflection_llm_model_driver_type: str
     memory_storage_driver: any
     character: int
+    character_name: str
     your_name: str
     room_id: str
+    search_memory_size: int = 3
+    zep_url: str
+    zep_optional_api_key: str
+    importance_rating: ImportanceRating
+    portrait_analysis: PortraitAnalysis
     local_memory_num: int = 5
 
     def __init__(self) -> None:
+        self.bilibili_live_listener = None
+        self.thread_pool_manager = None
         self.load()
 
     def get(self):
@@ -78,6 +87,8 @@ class SysConfig():
 
         sys_config_json = self.get()
 
+        os.environ['TOKENIZERS_PARALLELISM'] = "false"
+
         # 初始化默认角色
         try:
             result = CustomRoleModel.objects.all()
@@ -98,18 +109,26 @@ class SysConfig():
         # 加载角色配置
         character = sys_config_json["characterConfig"]["character"]
         yourName = sys_config_json["characterConfig"]["yourName"]
+        character_name = sys_config_json["characterConfig"]["character_name"]
         logger.debug("=> character Config")
         logger.debug(f"character:{character}")
+        logger.debug(f"character_name:{character_name}")
         logger.debug(f"yourName:{yourName}")
         self.character = character
+        self.character_name = character_name
         self.yourName = yourName
 
         # 加载大语言模型配置
         os.environ['OPENAI_API_KEY'] = sys_config_json["languageModelConfig"]["openai"]["OPENAI_API_KEY"]
         os.environ['OPENAI_BASE_URL'] = sys_config_json["languageModelConfig"]["openai"]["OPENAI_BASE_URL"]
-        os.environ['TEXT_GENERATION_API_URL'] = sys_config_json["languageModelConfig"]["textGeneration"]["TEXT_GENERATION_API_URL"]
-        os.environ['TEXT_GENERATION_WEB_SOCKET_URL'] = sys_config_json["languageModelConfig"]["textGeneration"].get(
-            "TEXT_GENERATION_WEB_SOCKET_URL", "ws://127.0.0.1:5005/api/v1/stream")
+
+        ollama = sys_config_json["languageModelConfig"].get("ollama")
+        if ollama:
+            os.environ['OLLAMA_API_BASE'] = ollama.get("OLLAMA_API_BASE", "http://localhost:11434")
+            os.environ['OLLAMA_API_MODEL_NAME'] = ollama.get("OLLAMA_API_MODEL_NAME", "qwen:7b")
+        else:
+            os.environ['OLLAMA_API_BASE'] = "http://localhost:11434"
+            os.environ['OLLAMA_API_MODEL_NAME'] = "qwen:7b"
 
         # 是否开启proxy
         enableProxy = sys_config_json["enableProxy"]
@@ -120,8 +139,8 @@ class SysConfig():
             os.environ['HTTPS_PROXY'] = sys_config_json["httpsProxy"]
             os.environ['SOCKS5_PROXY'] = sys_config_json["socks5Proxy"]
             logger.debug(f"=> HTTP_PROXY:" + os.environ['HTTP_PROXY'])
-            logger.debug(f"=> HTTPS_PROXY:"+os.environ['HTTPS_PROXY'])
-            logger.debug(f"=> SOCKS5_PROXY:"+os.environ['SOCKS5_PROXY'])
+            logger.debug(f"=> HTTPS_PROXY:" + os.environ['HTTPS_PROXY'])
+            logger.debug(f"=> SOCKS5_PROXY:" + os.environ['SOCKS5_PROXY'])
         else:
             os.environ['HTTP_PROXY'] = ""
             os.environ['HTTPS_PROXY'] = ""
@@ -139,8 +158,8 @@ class SysConfig():
         logger.debug("=> Memory Config")
         self.enable_summary = sys_config_json["memoryStorageConfig"]["enableSummary"]
         self.enable_longMemory = sys_config_json["memoryStorageConfig"]["enableLongMemory"]
-        logger.debug("=> enable_longMemory："+str(self.enable_longMemory))
-        logger.debug("=> enable_summary："+str(self.enable_summary))
+        logger.debug("=> enable_longMemory：" + str(self.enable_longMemory))
+        logger.debug("=> enable_summary：" + str(self.enable_summary))
         if (self.enable_summary):
             self.summary_llm_model_driver_type = sys_config_json[
                 "memoryStorageConfig"]["languageModelForSummary"]
@@ -148,7 +167,7 @@ class SysConfig():
                          self.summary_llm_model_driver_type)
 
         self.enable_reflection = sys_config_json["memoryStorageConfig"]["enableReflection"]
-        logger.debug("=> enableReflection："+str(self.enable_reflection))
+        logger.debug("=> enableReflection：" + str(self.enable_reflection))
         if (self.enable_reflection):
             self.reflection_llm_model_driver_type = sys_config_json[
                 "memoryStorageConfig"]["languageModelForReflection"]

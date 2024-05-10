@@ -8,7 +8,7 @@ VirtualWife是一个虚拟数字人项目，项目还处于孵化阶段，有很
 - 支持自定义角色设定
 - 支持更换角色模型，可从VRM模型市场[Vroid](https://hub.vroid.com/)下载
 - 支持长短期记忆功能
-- 支持多LLM模型切换，并且支持私有化模型，具体使用说明请查阅[FAQ](FAQ.md)
+- 支持多LLM模型切换，并且支持私有化模型（ollama），具体使用说明请查阅[FAQ](FAQ.md)
 - 支持文字驱动表情，文字驱动动作
 - 支持B站进行直播，具体使用说明请查阅[FAQ](FAQ.md)
 - 支持通过中文进行语音对话
@@ -86,15 +86,6 @@ mv env_example .env
 ```
 - 设置环境变量
 ```
-# B站直播间ID（计划放在页面设置，目前有问题，暂时使用环境变量解决）
-B_STATION_ID=27892212
-# 主播UID 获取方法：https://sdl.moe/post/bili-live-wss/
-# 在页面上登录B站后，打开https://api.bilibili.com/x/web-interface/nav
-# 找到uid
-B_UID=38ccccc
-# 打开b站页面后登录，然后F12随便找一个B站接口，从请求头中获取cookie，一定要复制完整的cookie
-B_COOKIE="buvid3=Fggggg28116infoc;xxxxxxxxxxxxxxxxxxxxxxxxxx....... 此处略去其他的"
-
 # 时区
 TIMEZONE=Asia/Shanghai
 
@@ -137,6 +128,8 @@ http://localhost/
 ```
 这以openai模型为例，你只需要将OPENAI_API_KEY填写好即可
 如果有API代理可以将地址填写到OPENAI_BASE_URL
+
+OLLAMA_API_URL配置说明：如果是docker启动，请使用http://host.docker.internal:11434
 ```
 ![](docs/16925238212736.jpg)
 
@@ -145,6 +138,7 @@ http://localhost/
 如果没有OPENAI_BASE_URL，你需要配置http-proxy，
 如果是使用docker启动的程序，需要使用docker的dns，
 例如这样HTTP_PROXY=http://host.docker.internal:23457
+
 ```
 ![](docs/16925239975597.jpg)
 
@@ -160,9 +154,9 @@ http://localhost/
 
 ## 联系我们
 
-| 技术交流群                              | 打赏入股(注意备注姓名)  | 咨询或加群                           |
+| 技术交流群                              | 打赏、私有化一键整合包 | 咨询或加群                           |
 |------------------------------------|-------------------------------|---------------------------------|
-| ![winxin07.jpg](docs/winxin07.jpg) | ![wx-skm.jpg](docs/wx-skm.jpg) | ![wx-skm.jpg](docs/wx-alan.jpg) |
+| ![winxin07.jpg](docs/winxin07.jpg) | ![zhi_shi_xq.jpg](docs/zhi_shi_xq.jpg) | ![wx-skm.jpg](docs/wx-alan.jpg) |
 
 
 
