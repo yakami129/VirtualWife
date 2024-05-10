@@ -1,7 +1,9 @@
 # v2.0.7 发布日志
 
 release:
-- [ ] 1. 支持ollama
+- [X] 1. 支持ollama
+- [X] 2. 重写bilibili弹幕监听组件
+- [X] 3. 实验功能 - 角色安装包
     
 fixbug:
 - [X] 1. 适配最新版本的OpenAI SDK
