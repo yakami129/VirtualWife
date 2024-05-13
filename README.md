@@ -159,7 +159,9 @@ OLLAMA_API_URL配置说明：如果是docker启动，请使用http://host.docker
 | ![winxin07.jpg](docs/winxin07.jpg) | ![zhi_shi_xq.jpg](docs/zhi_shi_xq.jpg) | ![wx-skm.jpg](docs/wx-alan.jpg) |
 
 
+## Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=yakami129/VirtualWife&type=Date)](https://star-history.com/#yakami129/VirtualWife)
 
 
 
