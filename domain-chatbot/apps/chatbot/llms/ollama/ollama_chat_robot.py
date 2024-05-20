@@ -21,7 +21,6 @@ class OllamaGeneration:
         load_dotenv()
         self.ollama_api_base = os.environ['OLLAMA_API_BASE']
         self.model_name = "ollama/" + os.environ['OLLAMA_API_MODEL_NAME']
-        self.model_name = "ollama/qwen:7b"
 
     def chat(self, prompt: str, role_name: str, you_name: str, query: str, short_history: list[ChatHistroy],
              long_history: str) -> str:
