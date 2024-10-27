@@ -154,9 +154,9 @@ OLLAMA_API_URL配置说明：如果是docker启动，请使用http://host.docker
 
 ## 联系我们
 
-| 技术交流群                              | 打赏、私有化一键整合包 | 咨询或加群                           |
-|------------------------------------|-------------------------------|---------------------------------|
-| ![winxin07.jpg](docs/winxin07.jpg) | ![zhi_shi_xq.jpg](docs/zhi_shi_xq.jpg) | ![wx-skm.jpg](docs/wx-alan.jpg) |
+| 技术交流群                              | 打赏、私有化一键整合包 | 
+|------------------------------------|-------------------------------|
+| ![winxin08.jpg](docs/winxin08.jpg) | ![zhi_shi_xq.jpg](docs/zhi_shi_xq.jpg) |
 
 
 ## Star History
