@@ -38,7 +38,7 @@ import {join} from 'path';
 import {voiceData, getVoices} from '@/features/tts/ttsApi';
 
 const tabNames = ['基础设置', '自定义角色设置', '大语言模型设置', '记忆模块设置', '高级设置'];
-const llm_enums = ["openai", "ollama"]
+const llm_enums = ["openai", "ollama",'zhipuai']
 
 const publicDir = join(process.cwd(), 'public');
 
@@ -467,6 +467,18 @@ export const Settings = ({
                         <input type="text" defaultValue={formData.languageModelConfig.openai.OPENAI_BASE_URL}
                                onChange={e => {
                                    formData.languageModelConfig.openai.OPENAI_BASE_URL = e.target.value
+                                   setFormData(formData);
+                               }}
+                        />
+                    </div>
+                </div>
+                <div className="section">
+                    <div className="title">ZhipuAI配置</div>
+                    <div className="field">
+                        <label>ZHIPUAI_API_KEY</label>
+                        <input type="text" defaultValue={formData.languageModelConfig.zhipuai?.ZHIPUAI_API_KEY}
+                               onChange={e => {
+                                   formData.languageModelConfig.zhipuai.ZHIPUAI_API_KEY = e.target.value
                                    setFormData(formData);
                                }}
                         />

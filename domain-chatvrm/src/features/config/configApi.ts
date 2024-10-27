@@ -19,6 +19,9 @@ export const initialFormData = {
         "ollama": {
             "OLLAMA_API_BASE": "http://localhost:11434",
             "OLLAMA_API_MODEL_NAME": "qwen:7b"
+        },
+        "zhipuai":  {
+            "ZHIPUAI_API_KEY": "sk"
         }
     },
     "characterConfig": {

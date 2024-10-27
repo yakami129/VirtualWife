@@ -131,6 +131,13 @@ class SysConfig:
             os.environ['OLLAMA_API_BASE'] = "http://localhost:11434"
             os.environ['OLLAMA_API_MODEL_NAME'] = "qwen:7b"
 
+        zhipuai = sys_config_json["languageModelConfig"].get("zhipuai")
+        if zhipuai:
+            os.environ['ZHIPUAI_API_KEY'] = zhipuai.get("ZHIPUAI_API_KEY", "SK-")
+        else:
+            os.environ['ZHIPUAI_API_KEY'] = "SK-"
+
+
         # 是否开启proxy
         enableProxy = sys_config_json["enableProxy"]
         logger.debug("=> Proxy Config ")

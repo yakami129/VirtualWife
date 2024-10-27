@@ -2,9 +2,11 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 import threading
 import asyncio
+from typing import List, Dict
 
 from .ollama.ollama_chat_robot import OllamaGeneration
 from .openai.openai_chat_robot import OpenAIGeneration
+from .zhipuai.zhipuai_chat_robot import ZhipuAIGeneration
 from ..memory.zep.zep_memory import ChatHistroy
 
 
@@ -87,12 +89,27 @@ class OllamaLlmModelStrategy(LlmModelStrategy):
                                                        realtime_callback=realtime_callback,
                                                        conversation_end_callback=conversation_end_callback)
 
+class ZhipuaiLlmModelStrategy(LlmModelStrategy):
+    def __init__(self):
+        self.zhipuai = ZhipuAIGeneration()  # 确保已经有了ZhipuAIGeneration类的实现
+
+    def chat(self, prompt: str, role_name: str, you_name: str, query: str,
+             short_history: List[ChatHistroy], long_history: str) -> str:
+        # 这里简化了实现，具体实现应该根据ZhipuAIGeneration的chat方法来
+        return self.zhipuai.chat(prompt, role_name, you_name, query, short_history, long_history)
+
+    async def chatStream(self, prompt: str, role_name: str, you_name: str, query: str,
+                         history: List[Dict[str, str]], realtime_callback=None, conversation_end_callback=None):
+        # 这里简化了实现，具体实现应该根据ZhipuAIGeneration的chatStream方法来
+        await self.zhipuai.chatStream(prompt, role_name, you_name, query, history, realtime_callback, conversation_end_callback)
+
 
 class LlmModelDriver:
 
     def __init__(self):
         self.openai = OpenAIGeneration()
         self.ollama = OllamaLlmModelStrategy()
+        self.zhipuai = ZhipuaiLlmModelStrategy()
         self.chat_stream_lock = threading.Lock()
 
     def chat(self, prompt: str, type: str, role_name: str, you_name: str, query: str,
@@ -125,5 +142,7 @@ class LlmModelDriver:
             return self.openai
         elif type == "ollama":
             return self.ollama
+        elif type == "zhipuai":
+            return self.zhipuai
         else:
             raise ValueError("Unknown type")
